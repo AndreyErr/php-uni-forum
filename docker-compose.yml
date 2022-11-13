@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+  php-env:
+    build: ./server-config/apache
+    hostname: app.app
+    restart: always
+    volumes: 
+      - ./web/dynamic:/var/www/app
+      - ./server-config/apache/ports.conf:/etc/apache2/ports.conf
+      - ./server-config/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
+
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./web/static:/var/www/app
+      - ./server-config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+  Mysql_db:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    volumes: 
+        - ./server-config/init:/docker-entrypoint-initdb.d
+  
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8082:80
+    environment:
+      - PMA_ARBITRARY=1
+  
