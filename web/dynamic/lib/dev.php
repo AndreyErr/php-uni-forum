@@ -1,5 +1,7 @@
 <?php
 
+// Файл на время разработки с функциями для более удобной отладки
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 

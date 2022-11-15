@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: Mysql_db
--- Время создания: Окт 18 2022 г., 11:59
--- Версия сервера: 10.9.3-MariaDB-1:10.9.3+maria~ubu2204
--- Версия PHP: 8.0.24
+-- Время создания: Ноя 15 2022 г., 11:27
+-- Версия сервера: 10.9.4-MariaDB-1:10.9.4+maria~ubu2204
+-- Версия PHP: 8.0.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,57 +18,91 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `appDB`
+-- База данных: `forum`
 --
-CREATE DATABASE IF NOT EXISTS `appDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `appDB`;
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `product`
+-- Структура таблицы `banForTopic`
 --
 
-CREATE TABLE `product` (
+CREATE TABLE `banForTopic` (
   `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `cost` int(11) NOT NULL,
-  `img` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Дамп данных таблицы `product`
---
-
-INSERT INTO `product` (`id`, `name`, `type`, `cost`, `img`) VALUES
-(1, 'Samsung Galaxy A13', 'Телефон', 11120, 12542),
-(2, 'BBK 39LEM-1089', 'Телевизор', 13225, 496464),
-(3, 'Apple AirPods Pro 2', 'наушники', 19999, 16546),
-(4, 'Atlant ХМ 4214-000', 'Холодильник ', 34990, 64565465);
+  `IdUser` int(11) NOT NULL,
+  `reason` varchar(40) NOT NULL,
+  `dateTime` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `user`
+-- Структура таблицы `maintopic`
 --
 
-CREATE TABLE `user` (
+CREATE TABLE `maintopic` (
   `id` int(11) NOT NULL,
-  `name` char(50) NOT NULL,
-  `pass` char(60) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `topicName` varchar(30) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `descr` text NOT NULL,
+  `addDate` date NOT NULL,
+  `icon` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `user`
+-- Дамп данных таблицы `maintopic`
 --
 
-INSERT INTO `user` (`id`, `name`, `pass`) VALUES
-(1, '1', '$apr1$l93r1m4t$JLD8MD9JjpVnUqJcHdkfq0'),
-(2, '2', 'c4ca4238a0b923820dcc509a6f75849b'),
-(3, '3', '1'),
-(4, 'adm', '$apr1$5edrcs2w$NdkSWdoNV8ETayzMUbgaj1'),
-(5, 'admin', '$apr1$l2s6q1re$3sYAzhIu9RV5duE/6GWxC/');
+INSERT INTO `maintopic` (`id`, `topicName`, `name`, `descr`, `addDate`, `icon`) VALUES
+(1, 'android', 'Андроид', 'Всё о андроид мире', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>'),
+(2, 'android2', 'Андроид2', 'Всё о андроид мире uwu', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `messagesForTopic`
+--
+
+CREATE TABLE `messagesForTopic` (
+  `id` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
+  `idUserRef` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `datatime` datetime NOT NULL,
+  `rating` int(11) NOT NULL,
+  `atribute` int(11) NOT NULL COMMENT 'Для пометки как важного или что-то типа того'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `photoForTopic`
+--
+
+CREATE TABLE `photoForTopic` (
+  `id` int(11) NOT NULL,
+  `idMessage` int(11) NOT NULL,
+  `src` varchar(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `topic`
+--
+
+CREATE TABLE `topic` (
+  `id` int(11) NOT NULL,
+  `idUserCreator` int(11) NOT NULL,
+  `idMainTopic` int(11) NOT NULL,
+  `createDate` date NOT NULL,
+  `name` varchar(40) NOT NULL,
+  `descr` text NOT NULL,
+  `viewAllTime` int(11) NOT NULL,
+  `viewLastTime` int(11) NOT NULL,
+  `photo` int(11) NOT NULL COMMENT 'Мб надо'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -76,64 +110,63 @@ INSERT INTO `user` (`id`, `name`, `pass`) VALUES
 --
 
 CREATE TABLE `users` (
-  `ID` int(11) NOT NULL,
-  `name` varchar(20) NOT NULL,
-  `surname` varchar(40) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Дамп данных таблицы `users`
---
-
-INSERT INTO `users` (`ID`, `name`, `surname`) VALUES
-(1, 'Alex', 'Rover'),
-(2, 'Bob', 'Marley'),
-(3, 'Kate', 'Yandson'),
-(4, 'Lilo', 'Black');
+  `id` int(11) NOT NULL,
+  `login` varchar(20) NOT NULL,
+  `status` int(11) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `fname` varchar(30) NOT NULL,
+  `email` varchar(40) NOT NULL,
+  `pass` varchar(70) NOT NULL,
+  `photo` int(11) NOT NULL DEFAULT 0,
+  `regdate` date NOT NULL,
+  `descr` text NOT NULL,
+  `rating` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Индексы сохранённых таблиц
 --
 
 --
--- Индексы таблицы `product`
+-- Индексы таблицы `maintopic`
 --
-ALTER TABLE `product`
+ALTER TABLE `maintopic`
   ADD PRIMARY KEY (`id`);
 
 --
--- Индексы таблицы `user`
+-- Индексы таблицы `photoForTopic`
 --
-ALTER TABLE `user`
+ALTER TABLE `photoForTopic`
   ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `login` (`login`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
 --
--- AUTO_INCREMENT для таблицы `product`
+-- AUTO_INCREMENT для таблицы `maintopic`
 --
-ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `maintopic`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT для таблицы `user`
+-- AUTO_INCREMENT для таблицы `photoForTopic`
 --
-ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `photoForTopic`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

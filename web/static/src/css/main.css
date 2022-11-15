@@ -1,0 +1,25 @@
+*{
+  box-sizing: border-box;
+}
+body{
+  min-height: 100%;
+}
+.noneBlock{ /*Пустой блок за шапкой*/
+  height: 70px;
+}
+footer{
+  width: 100%;
+}
+
+/*Скролбар стили*/
+body::-webkit-scrollbar {
+  width: 12px;
+}
+body::-webkit-scrollbar-track {
+  background: rgb(37, 38, 68);
+}
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(174, 174, 214, 0.425);
+  border-radius: 0;
+  border: 0;
+}
