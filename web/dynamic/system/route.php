@@ -17,13 +17,17 @@ class route{
         $page = $path[0];
         if ($path[0] == "" || $path[0] == "about")
             $path[0] = $page = "main";
+        if ($path[0] == "f" || $path[0] == "forum")
+            $path[0] = $page = "forum";
+        if ($path[0] == "u" || $path[0] == "user")
+            $path[0] = $page = "user";
+        
         $controller = $this->checkController($path);
         $model = $this->checkModel($path);
-        //$view = $this->checkView($path);
-        if($controller != "-1" && $model != "-1" /*&& $view != "-1"*/){
+        if($controller != "-1" && $model != "-1"){
             $model = $path[0].'M';
-            //$view = $path[0].'V';
-            $controllerClass = new $controller($page);
+            $action = $this->checkAction($path);
+            $controllerClass = new $controller($page, $action);
         }    
         else
             krik("//////////Ошибка контроллер или модель не найдена");
@@ -55,17 +59,12 @@ class route{
         return -1;
     }
 
-    // Проверка существования образа
-    // public function checkView($path){
-    //     if ($path[0] == "") 
-    //         $path[0] = "main";
-    //     $viewPath = $_SERVER['DOCUMENT_ROOT'].'/'.$path[0].'/'.$path[0].'V.php'; // Задание пути к модели
-    //     $viewClass = $path[0].'V'; // Задание пути к классу образа
-    //     if(file_exists($viewPath)){
-    //         require_once $viewPath;
-    //         if(class_exists($viewClass))
-    //             return $viewClass;
-    //     }
-    //     return -1;
-    // }
+    public function checkAction($path){
+        if (array_key_exists(1, $path) && array_key_exists(2, $path) && $path[1] == 'a'){
+            $act = $path[2].'Action';
+            if(method_exists($path[0].'M', $act))
+                return $act;
+        }
+        return NULL;
+    }
 }

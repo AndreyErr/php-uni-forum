@@ -1,3 +1,5 @@
+<!--Верхний блок главной страницы-->
+<?php if(false): // Верхний блок для авторизированных ?>
 <div class="container col-xxl-9 px-4 py-5">
 <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
     <div class="col-10 col-sm-8 col-lg-6">
@@ -13,11 +15,33 @@
     </div>
   </div>
 </div>
+<?php else: // Верхний блок для не авторизированных ?>
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+  <div class="row align-items-center g-lg-5 py-5">
+    <div class="col-lg-7 text-center text-lg-start">
+      <h1 class="display-4 fw-bold lh-1 mb-3">Войти</h1>
+      <p class="col-lg-10 fs-4">Войдите в свой аккаунт для полного доступа к IT forum.</p>
+    </div>
+    <div class="col-md-10 mx-auto col-lg-5">
+      <form class="p-4 p-md-5 border rounded-3 bg-light text-center" action="/user/a/authorize" method="post">
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+          <label for="floatingInput">Логин</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <label for="floatingPassword">Пароль</label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+        <hr class="my-4">
+        <small class="text-muted">Нет аккаутна? <a href="/u/reg">Создайте!</a></small>
+      </form>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
 
-
-
-
-
+<!--Топ обсуждения главной страницы-->
 <div class="container px-4">
   <h2 class="pb-2 border-bottom">Топ обсуждения</h2>
   <div class="row align-items-md-stretch align-items-center">
@@ -37,22 +61,10 @@
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
+<!--Главные темы-->
 <div class="container px-4 py-5" id="hanging-icons">
   <h2 class="pb-2 border-bottom">Какая тема вас беспокоит?</h2>
   <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-
-
     <?php foreach ($data['mainTop'] as $kay):?>
     <div class="col d-flex align-items-start" style= "padding-bottom: 20px;">
       <div class="icon-square d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
@@ -61,22 +73,14 @@
       <div>
         <h3 class="fs-2"><?php echo $kay['name']?></h3>
         <p><?php echo $kay['descr']?></p>
-        <a href="/forum/<?php echo $kay['topicName']?>" class="btn btn-primary">Посмотреть про <?php echo $kay['name']?></a>
+        <a href="/f/<?php echo $kay['topicName']?>" class="btn btn-primary">Посмотреть про <?php echo $kay['name']?></a>
       </div>
     </div>
     <?php endforeach;?>
-
-    <div class="col d-flex align-items-start" style= "padding-bottom: 20px;">
-      <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-        <i class="fa-solid fa-house"></i>
+    <a href="/f">
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary" type="button">Смотреть все темы</button>
       </div>
-      <div>
-        <h3 class="fs-2">Featured title</h3>
-        <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-        <a href="#" class="btn btn-primary">
-          Primary button
-        </a>
-      </div>
-    </div>
+    </a>
   </div>
 </div>

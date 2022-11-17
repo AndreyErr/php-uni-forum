@@ -4,12 +4,12 @@ class view{
     // Рендер нужного вида 
     public function rander($path, $data = []){
         extract($data);
-        $path = $_SERVER['DOCUMENT_ROOT'].'/modules/main/views/'.$path.'.php'; // ИЗМЕНИТЬ ПУТЬ
+        $path = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path.'.php'; // ИЗМЕНИТЬ ПУТЬ
         if (file_exists($path)){
             ob_start();
             require $path;
             $content = ob_get_clean();
-            $content = $this->randlayouts($content, $data = []);
+            $content = $this->randlayouts($content, $data);
             echo $content;
         }else
         krik("//////////Ошибка представление не найдено");

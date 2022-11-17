@@ -1,0 +1,59 @@
+<main class="container px-4 py-5 my-5">
+              <div class="row">
+                    <div class="col-md-6">
+                        <form action="/user/a/reg" method="post" id="form">
+                        <fieldset><legend class="text-center">Valid information is required to register. <span class="req"><small> required *</small></span></legend>
+                        <label for="name"><span class="req">* </span> Имя: </label>
+                        <div class="form-group">
+                            <input type="text" name="name" id="name" maxlength="30" class="form-control" placeholder="Андрей"/> 
+                            <div id="passwordHelpBlock" class="form-text">Его не увидят другие пользователи, но мы сможем к вам обращаться.</div>                           
+                            <i class="fas fa-check-circle"></i>
+                            <i class="fas fa-exclamation-circle"></i>
+                            <small></small>
+                        </div>
+                        <label for="login"><span class="req">* </span> Логин: </label>
+                        <div class="form-group"> 	
+                        <input type="text" name="login" id="login" maxlength="20" class="form-control" placeholder="andreyerr"/> 
+                        <div id="passwordHelpBlock" class="form-text">Вас будут знать по этому логину.</div> 
+                        <i class="fas fa-check-circle"></i>
+			            <i class="fas fa-exclamation-circle"></i>
+			            <small></small>
+                        </div>
+                        <label for="pass"><span class="req">* </span> Пароль: </label>
+                        <div class="form-group"> 
+                            <input class="form-control" type="password" name="pass" id="pass" maxlength="20"/>  
+                            <div id="passwordHelpBlock" class="form-text">Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.</div>
+                            <i class="fas fa-check-circle"></i>
+			                <i class="fas fa-exclamation-circle"></i>
+			                <small></small>
+                        </div>   
+                        <label for="pass2"><span class="req">* </span> Повторить пароль: </label>
+                        <div class="form-group"> 
+                            <input class="form-control" type="password" name="pass2" id="pass2" maxlength="20"/>  
+                            <i class="fas fa-check-circle"></i>
+			                <i class="fas fa-exclamation-circle"></i>
+			                <small></small>
+                        </div>        
+                        <label for="email"><span class="req">* </span> Email: </label> 
+                        <div class="form-group">
+                            <input class="form-control mb-3" type="email" name="email" id="email" pattern="^\S+@\S+\.\S+$" maxlength="40" />   
+                            <div id="passwordHelpBlock" class="form-text"></div> 
+                            <i class="fas fa-check-circle"></i>
+			                <i class="fas fa-exclamation-circle"></i>
+			                <small></small>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-3">Регистрация</button>
+             
+            
+                        </fieldset>
+                        </form><!-- ends register form -->
+            
+            
+                    </div><!-- ends col-6 -->
+               
+                        <div class="col-md-6">
+                            <h1 class="page-header">Регистрация на форум</h1>
+                            <p>Вы в одном шаге от обсуждения мира IT</p>                           
+                        </div>           
+              </div>
+          </main>
