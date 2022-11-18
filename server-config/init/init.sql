@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: Mysql_db
--- Время создания: Ноя 15 2022 г., 11:27
+-- Время создания: Ноя 18 2022 г., 18:23
 -- Версия сервера: 10.9.4-MariaDB-1:10.9.4+maria~ubu2204
 -- Версия PHP: 8.0.25
 
@@ -22,6 +22,7 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `forum` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `forum`;
+
 -- --------------------------------------------------------
 
 --
@@ -115,7 +116,6 @@ CREATE TABLE `users` (
   `login` varchar(20) NOT NULL,
   `status` int(11) NOT NULL,
   `name` varchar(30) NOT NULL,
-  `fname` varchar(30) NOT NULL,
   `email` varchar(40) NOT NULL,
   `pass` varchar(70) NOT NULL,
   `photo` int(11) NOT NULL DEFAULT 0,
@@ -123,6 +123,14 @@ CREATE TABLE `users` (
   `descr` text NOT NULL,
   `rating` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `users`
+--
+
+INSERT INTO `users` (`id`, `login`, `status`, `name`, `email`, `pass`, `photo`, `regdate`, `descr`, `rating`) VALUES
+(1, 'AndreyErr', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$MMZ2GiTiJmV0HgBUrd7pY..qK2X.L9VK4tCqjXQFbtJFTs8iXZaba', 0, '2022-11-18', '', 0),
+-- Пароль: qwerty123#
 
 --
 -- Индексы сохранённых таблиц
@@ -167,7 +175,7 @@ ALTER TABLE `photoForTopic`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
