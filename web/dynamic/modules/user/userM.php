@@ -31,6 +31,22 @@ class userM{
         }
     }
     public function authorizeAction(){
-        krik("АВТОРИЗАЦИ ЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯ");
+        if (!empty($_POST)) {
+            if(!passCheck($_POST['pass']) || !loginCheck($_POST['login']))
+                krik("АВТОРИЗАЦИЯ НЕ ПРОШЛА");
+            else{
+                $mysqli = openmysqli();
+                $login = $mysqli->real_escape_string($_POST['login']);
+                $pass = $mysqli->real_escape_string($_POST['pass']);
+                $user = mysqli_fetch_assoc($mysqli->query("SELECT * FROM users WHERE login = '".$login."';"));
+                $mysqli->close();
+                if(!$user['id'] || !password_verify($pass, $user['pass']))
+                    krik("Неверные логин или пароль!");
+                else
+                    krik("АВТОРИЗАЦИЯ ПРОШЛА С ПОЛЬЗОВАТЕЛЕМ ".$user['login']);
+            }
+        }else{
+            krik("АВТОРИЗАЦИ ЯЯЯЯЯЯЯЯЯ ПУСТА");
+        }
     }
 }

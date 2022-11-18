@@ -19,17 +19,17 @@
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
   <div class="row align-items-center g-lg-5 py-5">
     <div class="col-lg-7 text-center text-lg-start">
-      <h1 class="display-4 fw-bold lh-1 mb-3">Войти</h1>
+      <h1 class="display-4 fw-bold lh-1 mb-3">Войти qwerty123#</h1>
       <p class="col-lg-10 fs-4">Войдите в свой аккаунт для полного доступа к IT forum.</p>
     </div>
     <div class="col-md-10 mx-auto col-lg-5">
       <form class="p-4 p-md-5 border rounded-3 bg-light text-center" action="/user/a/authorize" method="post">
         <div class="form-floating mb-3">
-          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+          <input type="text" class="form-control" id="floatingInput" name="login" placeholder="Login" required>
           <label for="floatingInput">Логин</label>
         </div>
         <div class="form-floating mb-3">
-          <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <input type="password" class="form-control" id="floatingPassword" name="pass" placeholder="Password" required>
           <label for="floatingPassword">Пароль</label>
         </div>
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
