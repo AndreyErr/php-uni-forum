@@ -40,24 +40,24 @@
                   </li>
                 </ul>
               </div>
-<?php if(false): // Шапка для авторизированных ?>
+<?php if(array_key_exists('login', $_COOKIE)): // Шапка для авторизированных ?>
               <div class="collapse navbar-collapse justify-content-end" id="navbarScroll">
                 <ul class="navbar-nav navbar-nav-scroll" style="--bs-scroll-height: 100px;">
                   <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="#">Home</a>
                   </li>
                   <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">login</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><? echo decode($_COOKIE['login'])?></a>
                     <ul class="dropdown-menu">
                       <li class="dropdown-item">Последние темы:</li>
                       <li><a class="dropdown-item" href="#">Action</a></li>
                       <li><a class="dropdown-item" href="#">Another action</a></li>
                       <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="#">Моя страница</a></li>
+                      <li><a class="dropdown-item" href="/u">Моя страница</a></li>
                     </ul>
                   </li>
                   <li class="nav-item navbar-brand">
-                    <a href="#" class="d-block">
+                    <a href="/u" class="d-block">
                         <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                     </a>
                   </li>
@@ -66,14 +66,15 @@
 <?php else: // Шапка для не авторизированных  ?>
               <div class="text-end">
                 <a href="/"><button type="button" class="btn btn-outline-light me-2">Войти</button></a>
-                <a href="/user/reg"><button type="button" class="btn btn-warning">Регистрация</button></a>
+                <a href="/u/reg"><button type="button" class="btn btn-warning">Регистрация</button></a>
               </div>
 <?php endif; ?>
             </div>
           </nav>
           <div class="noneBlock"></div>
           <!--Основное тело-->
-
+          
+          <?php echo $message ?>
           <?php echo $content ?>
 
           <!--Подвал-->

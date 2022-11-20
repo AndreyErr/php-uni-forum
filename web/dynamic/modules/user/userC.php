@@ -19,14 +19,16 @@ class userC{
         $view = new $view;
         if($action != NULL){
             $model->$action();
-        }
-        if ($path[1] == "reg"){
+        }else if($path[1] == "reg" || ($path[1] == "" && !array_key_exists('login', $_COOKIE))){
             $css = "reg";
             $js = "formValid";
             $c = array("css" => $css, "js" => $js);
             $view->rander('user/views/regisration', $c);
         }else{
-            $view->rander('user/views/'.$page.'Select');
+            $css = "user";
+            $js = "formValid";
+            $c = array("css" => $css, "js" => $js);
+            $view->rander('user/views/'.$page.'Select', $c);
         }
 
     }

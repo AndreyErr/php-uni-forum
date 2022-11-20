@@ -4,11 +4,12 @@ function hashPass($pass){
     return password_hash($pass, PASSWORD_DEFAULT);
 }
 
-///кодир и декодир
-function codeStr($str){
+// Кодирование строки
+function encode($str){
     return base64_encode($str);
 }
 
-function decodeStr($str){
+// Декодирование строки
+function decode($str){
     return base64_decode($str);
 }

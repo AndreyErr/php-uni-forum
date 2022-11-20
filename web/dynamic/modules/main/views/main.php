@@ -1,5 +1,5 @@
 <!--Верхний блок главной страницы-->
-<?php if(false): // Верхний блок для авторизированных ?>
+<?php if(array_key_exists('login', $_COOKIE)): // Верхний блок для авторизированных ?>
 <div class="container col-xxl-9 px-4 py-5">
 <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
     <div class="col-10 col-sm-8 col-lg-6">
@@ -31,6 +31,10 @@
         <div class="form-floating mb-3">
           <input type="password" class="form-control" id="floatingPassword" name="pass" placeholder="Password" required>
           <label for="floatingPassword">Пароль</label>
+        </div>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="rememb" name="rememb" value="yes">
+          <label class="form-check-label" for="rememb">Запомнить меня в этом браузере</label>
         </div>
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
         <hr class="my-4">
