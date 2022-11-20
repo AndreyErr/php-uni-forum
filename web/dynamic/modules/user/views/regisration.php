@@ -1,7 +1,7 @@
 <main class="container px-4 py-5 my-5">
     <div class="row">
         <div class="col-md-6">
-            <form action="/user/a/reg" method="post" id="form">
+            <form action="/user/a/reg" method="post" id="formReg">
             <fieldset><legend class="text-center">Valid information is required to register. <span class="req"><small> required *</small></span></legend>
             <label for="name"><span class="req">* </span> Имя: </label>
             <div class="form-group">

@@ -18,7 +18,6 @@ form.addEventListener('submit', e => {
 });
 
 function checkInputs() {
-	// trim to remove the whitespaces
 
     if(fname){
         const fnameValue = fname.value.trim();

@@ -23,5 +23,6 @@ RewriteBase /
 # [L] - останавливает процесс преобразования на этом месте и не применяет больше никаких правил преобразований
 #RewriteRule ^.*$ [NC,L]
 # Переадресация любого запроса в index.php
+RewriteRule ^(files) - [L]
 RewriteRule ^(.*)$ index.php [NC,L]
 AddType 'text/html; charset=utf-8' .html .htm .shtml

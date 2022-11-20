@@ -10,7 +10,9 @@
         <link href="/src/css/lib/bootstrap.min.css" rel="stylesheet">
         <link href="/src/css/main.css" rel="stylesheet">
         <?php if(array_key_exists('css', $data)){
-          echo '<link href="/src/css/'.$data['css'].'.css" rel="stylesheet">';
+          foreach($data['css'] as &$value){
+          echo '<link href="/src/css/'.$value.'.css" rel="stylesheet">';
+        }
         }?>
     </head>
     <body>
@@ -47,7 +49,7 @@
                     <a class="nav-link" aria-current="page" href="#">Home</a>
                   </li>
                   <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><? echo decode($_COOKIE['login'])?></a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">@<? echo decode($_COOKIE['login'])?></a>
                     <ul class="dropdown-menu">
                       <li class="dropdown-item">Последние темы:</li>
                       <li><a class="dropdown-item" href="#">Action</a></li>
@@ -58,7 +60,7 @@
                   </li>
                   <li class="nav-item navbar-brand">
                     <a href="/u" class="d-block">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <img src="files/img/avatar/<?php echo $_COOKIE['photo'] ?>.png" alt="mdo" width="32" height="32" class="rounded-circle">
                     </a>
                   </li>
                 </ul>
@@ -93,7 +95,9 @@
         <script src="/src/js/lib/bootstrap.min.js"></script>
         <script src="/src/js/lib/bootstrap.bundle.min.js"></script>
         <?php if(array_key_exists('js', $data)){
-          echo '<script src="/src/js/'.$data['js'].'.js"></script>';
+          foreach($data['js'] as &$value){
+          echo '<script src="/src/js/'.$value.'.js"></script>';
+        }
         }?>
     </body>
 </html>

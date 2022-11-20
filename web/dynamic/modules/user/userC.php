@@ -20,15 +20,26 @@ class userC{
         if($action != NULL){
             $model->$action();
         }else if($path[1] == "reg" || ($path[1] == "" && !array_key_exists('login', $_COOKIE))){
-            $css = "reg";
-            $js = "formValid";
-            $c = array("css" => $css, "js" => $js);
-            $view->rander('user/views/regisration', $c);
+            $css = array("formCh");
+            $js = array("formValid");
+            $dataToView = array(
+                "css" => $css, 
+                "js" => $js
+            );
+            $view->rander('user/views/regisration', $dataToView);
         }else{
-            $css = "user";
-            $js = "formValid";
-            $c = array("css" => $css, "js" => $js);
-            $view->rander('user/views/'.$page.'Select', $c);
+            $css = array("user", "formCh");
+            $js = array();
+            $allAboutActualUser = $model->SelectAllAboutUser(decode($_COOKIE['login']));
+            $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');
+            $status = $status[$allAboutActualUser['status']];
+            $dataToView = array(
+                "css" => $css, 
+                "js" => $js, 
+                "user" => $allAboutActualUser, 
+                "userstatus" => $status
+            );
+            $view->rander('user/views/'.$page, $dataToView);
         }
 
     }

@@ -30,7 +30,7 @@ class view{
 
     // Показ сообщений после действий, если они есть
     public function messageShow() {
-        if (array_key_exists(0, $_SESSION['message'])){
+        if (array_key_exists('message', $_SESSION) && array_key_exists(0, $_SESSION['message'])){
             switch ($_SESSION['message'][0]) {
                 case 2: // Удача
                     $bg = "success";
