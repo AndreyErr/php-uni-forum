@@ -15,8 +15,8 @@ class userM extends model{
                 $mysqli = openmysqli();
                 $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
                 $login = $mysqli->real_escape_string($_POST['login']);
-                $photo = rand(0, 9); // Вулючительно
-                $photo = 0; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
+                $photo = rand(1, 9); // Включительно
+                $photo = 1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
                 $testLogin = $mysqli->query("SELECT id FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
                     relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
@@ -27,8 +27,10 @@ class userM extends model{
                     $date = date("Y-m-d");
                     $mysqli->query("INSERT INTO users VALUES (NULL, '".$login."', 0, '".$name."', '".$email."', '".$pass."', ".$photo.", '".$date."', '', 0);");
                 }
+                $id = mysqli_fetch_assoc($mysqli->query("SELECT id FROM users WHERE login = '".$login."';"));
                 $mysqli->close();
                 $cookTime = time()+(3600);
+                setcookie("id", $id['id'], $cookTime, "/");
                 setcookie("login", encode($_POST['login']), $cookTime, "/");
                 setcookie("status", encode('0'), $cookTime, "/");
                 setcookie("photo", $photo, $cookTime, "/");
@@ -54,14 +56,18 @@ class userM extends model{
                     relocate('/', 3, 'Неверные логин или пароль или пользователя не существует!');
                 else{
                     $cookTime = 0;
-                    if(array_key_exists('rememb', $_POST) && $_POST['rememb'] == "yes"){
+                    if(array_key_exists('rememb', $_POST) && $_POST['rememb'] == "yes")
                         $cookTime = time()+(3600 * 24 * 10);
-                    }else{
+                    else
                         $cookTime = time()+(3600);
-                    }
+                    if($user['photo'] == 0)
+                        $photo = $user['id'];
+                    else 
+                        $photo = $user['photo'];
+                    setcookie("id", $user['id'], $cookTime, "/");
                     setcookie("login", encode($user['login']), $cookTime, "/");
                     setcookie("status", encode($user['status']), $cookTime, "/");
-                    setcookie("photo", $user['photo'], $cookTime, "/");
+                    setcookie("photo", $photo, $cookTime, "/");
                     relocate('/u');
                 }
             }
@@ -70,6 +76,7 @@ class userM extends model{
         }
     }
 
+    // Смена имени
     public function changeNameAction(){
         if (!empty($_POST) || $_COOKIE['login']) {
             if(!nameCheck($_POST['name']))
@@ -85,6 +92,7 @@ class userM extends model{
             relocate('/u');
     }
 
+    // Смена пароля
     public function changePassAction(){
         if (!empty($_POST)) {
             if(!$_POST['oldPass'] || !passCheck($_POST['pass']) || $_POST['pass'] != $_POST['pass2'])
@@ -106,6 +114,7 @@ class userM extends model{
             relocate('/u');
     }
 
+    // Смена email
     public function changeEmailAction(){
         if (!empty($_POST)) {
             if(!emailCheck($_POST['email']))
@@ -121,50 +130,67 @@ class userM extends model{
             relocate('/u');
     }
 
+    // Изменение аватарки
     public function updatePhotoAction(){
-        $uploaddir = '/files/img/avatar/';
+        $uploaddir = $_SERVER['DOCUMENT_ROOT'].'/files/img/avatar/';
         if (!empty($_FILES)) {
-            $errors = array();
-            $file_name = $_FILES['avatar']['name'];
-            $file_size = $_FILES['avatar']['size'];
-            $file_tmp = $_FILES['avatar']['tmp_name'];
-            $file_type = $_FILES['avatar']['type'];
-            $file_ext = strtolower(end(explode('.',$_FILES['avatar']['name'])));
-            
+            $error = "";
+            $fileName = $_FILES['avatar']['name'];
+            $fileSize = $_FILES['avatar']['size'];
+            $fileTmp = $_FILES['avatar']['tmp_name'];
+            $fileType = $_FILES['avatar']['type'];
+            $fileExt = explode('.',$fileName);
+            $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
+            //debug($fileName);
             $expensions = array("lpeg","jpg","png");
-            
-            if($file_size > 2097152){
-              $errors[] = 'Файл > 2mb';  
+            if ($fileSize == 0) {
+                $error = 'Файл пустой';
+            }else if($fileSize > 2097152){ // Биты
+                $error = 'Файл > 2mb';  
+            }else if(!array_search($fileExt, $expensions)) {
+                $error = 'Неправильный формат файла!'; 
             }
-            
-            if(empty($errors) == true){
-                move_uploaded_file($file_tmp,"resource/avatar/1/".$_SESSION['USER_LOGIN'].".jpg");
-                mysqli_query($CONNECT, "UPDATE `users`  SET `avatar` = 1 WHERE `id` = $_SESSION[USER_ID]");
+            if($error == ""){
+                $filename = $_COOKIE['id'].'.png';
+                move_uploaded_file($fileTmp, $uploaddir.$filename);
+                $mysqli = openmysqli();
+                $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
+                $mysqli->close();
+                setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
+                relocate('/u', 2, "Файл загружен!");
             }else{
-                print $errors;
+                relocate('/u', 3, $error."!");
             }
-            krik("AAAAAAAAAAAAAAAAAAAAAA");
         }else
             relocate('/u');
     }
 
-    // public function deletePhotoAction(){
-    //     $uploaddir = '/files/img/avatar/';
-    //     if ($_COOKIE['login']) {
-    //         $mysqli = openmysqli();
-    //         $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
-    //         $mysqli->close();
-    //         relocate('/u', 2, 'Аватар удалён!');
-    //     }else
-    //         relocate('/u');
-    // }
+    // Удаление аватарки
+    public function deletePhotoAction(){
+        $uploaddir = '/files/img/avatar/';
+        if ($_COOKIE['photo'] != 0) {
+            if ($_COOKIE['photo'] >= 0) {
+                $photo = rand(1, 9); // Вулючительно
+                $photo = 1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
+                $mysqli = openmysqli();
+                $mysqli->query("UPDATE users SET photo = ".$photo." WHERE login = '".decode($_COOKIE['login'])."';");
+                $mysqli->close();
+                unlink($_SERVER['DOCUMENT_ROOT'].$uploaddir.$_COOKIE['photo'].".png");
+                setcookie("photo", $photo, time()+(3600), "/");
+                relocate('/u', 2, 'Аватар удалён!');
+            }else
+                relocate('/u', 3, 'Вы не загружали аватарку :(');
+        }else
+            relocate('/u');
+    }
     
     // Выход из аккаунта
     public function exitAction(){
         if(array_key_exists('login', $_COOKIE)){
-            setcookie('login', '', time(), '/');
-            setcookie('status', '', time(), '/');
-            setcookie('photo', '', time(), '/');
+            setcookie('id', '', time() - 3600, '/');
+            setcookie('login', '', time() - 3600, '/');
+            setcookie('status', '', time() - 3600, '/');
+            setcookie('photo', '', time() - 3600, '/');
             relocate('/');
         }else
             relocate('/', 3, 'Вы не в аккаунте, чтоб из него выходить!');

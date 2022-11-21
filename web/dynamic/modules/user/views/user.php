@@ -102,7 +102,7 @@
                       <label for="name">Новая авотарка: </label>
                       <div class="form-group">
                           <input type="file" class="form-control" id="customFile" name="avatar">
-                          <div id="passwordHelpBlock" class="form-text">Его не увидят другие пользователи, но мы сможем к вам обращаться.</div>                           
+                          <div id="passwordHelpBlock" class="form-text">Тип: png, jpg, jpeg<br>Размер: не более 2 мб<br>Лучше аватарку загружать в виде квадрата т.к. она именно так будет отображаться на сайте.</div>                           
                       </div>
                       <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>
 
@@ -112,7 +112,6 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Сохранить изменения</button>
                   </div>
                 </div>
               </div>
