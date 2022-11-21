@@ -2,14 +2,14 @@
 
 class view{
     // Рендер нужного вида 
-    public function rander($path, $data = []){
+    public function rander($path, $data = [], $addonLayout = ''){
         extract($data);
         $path = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path.'.php'; // ИЗМЕНИТЬ ПУТЬ
         if (file_exists($path)){
             ob_start();
             require $path;
             $content = ob_get_clean();
-            $content = $this->randlayouts($content, $data);
+            $content = $this->randLayouts($content, $data, $addonLayout);
             echo $content;
         }else
         krik("//////////Ошибка представление не найдено");
@@ -17,10 +17,22 @@ class view{
     }
 
     // Рендер доп контента (шипки и подвала)
-    public function randlayouts($content, $data = []){
+    public function randLayouts($content, $data = [], $addonLayout = ''){
         $path = $_SERVER['DOCUMENT_ROOT'].'/modules/views/headerFooter.php';
+        if ($addonLayout != '')
+            $content = $this->randAddonLayouts($content, $data, $addonLayout);
         if (file_exists($path)){
             $message = $this->messageShow();
+            ob_start();
+            require $path;
+            return ob_get_clean();
+        }else
+        krik("//////////Ошибка layout не найден");
+    }
+
+    public function randAddonLayouts($content, $data = [], $addonLayout = ''){
+        $path = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$addonLayout.'.php';
+        if (file_exists($path)){
             ob_start();
             require $path;
             return ob_get_clean();

@@ -46,6 +46,6 @@ class userC extends controller{
             "user" => $allAboutActualUser, 
             "userstatus" => $status
         );
-        $this->view->rander('user/views/'.$page, $dataToView);
+        $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout');
     }
 }
