@@ -17,8 +17,10 @@ class userC extends controller{
             $this->model->$action();
         }else if($this->path[1] == "reg" || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
             $this->regForming();
+        }else if($this->path[1] != "" ){
+            $this->userPageForming($page, $this->path[1]);
         }else{
-            $this->userRegForming($page);
+            $this->userPageForming($page, decode($_COOKIE['login']));
         }
     }
 
@@ -34,17 +36,25 @@ class userC extends controller{
     }
 
     // Формирование страницы зарег пользователя
-    private function userRegForming($page){
+    private function userPageForming($page, $user){
         $css = array("user", "formCh");
         $js = array();
-        $allAboutActualUser = $this->model->SelectAllAboutUser(decode($_COOKIE['login']));
+        $allAboutActualUser = $this->model->SelectAllAboutUser($user);
         $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');
-        $status = $status[$allAboutActualUser['status']];
+        if($allAboutActualUser != -1){
+            $status = $status[$allAboutActualUser['status']];
+            $statusdig = $allAboutActualUser['status'];
+        }else{
+            $status = $status[-1];
+            $statusdig = -1;
+        }
         $dataToView = array(
             "css" => $css, 
             "js" => $js, 
-            "user" => $allAboutActualUser, 
-            "userstatus" => $status
+            "user" => $allAboutActualUser,
+            "userstatusdig" => $statusdig,
+            "userstatus" => $status,
+            "decodedMyLogin" => decode($_COOKIE['login'])
         );
         $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout');
     }

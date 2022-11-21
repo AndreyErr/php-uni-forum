@@ -17,7 +17,7 @@ class view{
     }
 
     // Рендер доп контента (шипки и подвала)
-    public function randLayouts($content, $data = [], $addonLayout = ''){
+    private function randLayouts($content, $data = [], $addonLayout = ''){
         $path = $_SERVER['DOCUMENT_ROOT'].'/modules/views/headerFooter.php';
         if ($addonLayout != '')
             $content = $this->randAddonLayouts($content, $data, $addonLayout);
@@ -30,7 +30,7 @@ class view{
         krik("//////////Ошибка layout не найден");
     }
 
-    public function randAddonLayouts($content, $data = [], $addonLayout = ''){
+    private function randAddonLayouts($content, $data = [], $addonLayout = ''){
         $path = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$addonLayout.'.php';
         if (file_exists($path)){
             ob_start();
@@ -41,7 +41,7 @@ class view{
     }
 
     // Показ сообщений после действий, если они есть
-    public function messageShow() {
+    private function messageShow() {
         if (array_key_exists('message', $_SESSION) && array_key_exists(0, $_SESSION['message'])){
             switch ($_SESSION['message'][0]) {
                 case 2: // Удача

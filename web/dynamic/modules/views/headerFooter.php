@@ -60,7 +60,7 @@
                   </li>
                   <li class="nav-item navbar-brand">
                     <a href="/u" class="d-block">
-                        <img src="files/img/avatar/<?php echo $_COOKIE['photo'] ?>.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <img src="../files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="32" height="32" class="rounded-circle">
                     </a>
                   </li>
                 </ul>

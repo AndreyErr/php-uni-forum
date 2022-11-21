@@ -204,6 +204,8 @@ class userM extends model{
         if(!$user && $login == decode($_COOKIE['login']))
             $this->exitAction();
         $mysqli->close();
+        if(!$user)
+            $user = -1;
         return $user;
     }
 
