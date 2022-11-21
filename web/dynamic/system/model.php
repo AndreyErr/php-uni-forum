@@ -3,7 +3,7 @@
 namespace system;
 
 abstract class model{
-    public function teeest(){
-        debug("99999999999999999999");
+    public function specialDataConnect(){
+        return require 'config/config_data.php'; // Некоторые стандартные функции
     }
 }

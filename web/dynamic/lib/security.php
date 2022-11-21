@@ -1,5 +1,8 @@
 <?php
 
+// Функции безопасности
+
+// Хеширование пароля
 function hashPass($pass){
     return password_hash($pass, PASSWORD_DEFAULT);
 }

@@ -50,11 +50,14 @@ class userM extends model{
                 $login = $mysqli->real_escape_string($_POST['login']);
                 $pass = $mysqli->real_escape_string($_POST['pass']);
                 $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
+                $userban = $mysqli->query("SELECT * FROM banSite WHERE loginUser = '".$login."';");
                 $user = mysqli_fetch_assoc($user1);
                 $mysqli->close();
                 if($user1->num_rows == 0 || !password_verify($pass, $user['pass']))
                     relocate('/', 3, 'Неверные логин или пароль или пользователя не существует!');
-                else{
+                elseif($userban->num_rows != 0){
+                    relocate('/', 3, 'Данный аккаунт заблокирован на сайте!');
+                }else{
                     $cookTime = 0;
                     if(array_key_exists('rememb', $_POST) && $_POST['rememb'] == "yes")
                         $cookTime = time()+(3600 * 24 * 10);
@@ -71,9 +74,8 @@ class userM extends model{
                     relocate('/u');
                 }
             }
-        }else{
+        }else
             relocate('/');
-        }
     }
 
     // Смена имени
@@ -207,6 +209,19 @@ class userM extends model{
         if(!$user)
             $user = -1;
         return $user;
+    }
+
+    // Проверка блокировки пользователя
+    public function userBanStat($login){
+        $mysqli = openmysqli();
+        $login = $mysqli->real_escape_string($login);
+        $user = $mysqli->query("SELECT * FROM banSite WHERE loginUser = '".$login."';");
+        if(array_key_exists('login', $_COOKIE) && $login == decode($_COOKIE['login']) && $user->num_rows != 0)
+            $this->exitAction();
+        $mysqli->close();
+        if($user->num_rows == 0)
+            return 0;
+        return 1;
     }
 
     // Удаление аккаунта

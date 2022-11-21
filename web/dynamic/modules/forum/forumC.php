@@ -6,7 +6,7 @@ use system;
 use main\models;
 
 class forumC{
-    public function __construct($page, $action){ // $page - вызванный контроллер, $path[0] - требуемая страница
+    public function __construct($page, $action){
         // Подключение модели и представления
         $path = explode('/', trim($_SERVER['REDIRECT_URL'], '/'));
         require_once($_SERVER['DOCUMENT_ROOT'].'/modules/'.$page.'/'.$page.'M.php'); // Задание пути к модели

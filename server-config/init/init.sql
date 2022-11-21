@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: Mysql_db
--- Время создания: Ноя 18 2022 г., 18:23
+-- Время создания: Ноя 21 2022 г., 19:21
 -- Версия сервера: 10.9.4-MariaDB-1:10.9.4+maria~ubu2204
 -- Версия PHP: 8.0.25
 
@@ -35,6 +35,25 @@ CREATE TABLE `banForTopic` (
   `reason` varchar(40) NOT NULL,
   `dateTime` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `banSite`
+--
+
+CREATE TABLE `banSite` (
+  `id` int(11) NOT NULL,
+  `loginUser` varchar(20) NOT NULL,
+  `dateTime` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `banSite`
+--
+
+INSERT INTO `banSite` (`id`, `loginUser`, `dateTime`) VALUES
+(10, 'adsf', '2022-11-21');
 
 -- --------------------------------------------------------
 
@@ -129,12 +148,26 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `login`, `status`, `name`, `email`, `pass`, `photo`, `regdate`, `descr`, `rating`) VALUES
-(1, 'AndreyErr', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$MMZ2GiTiJmV0HgBUrd7pY..qK2X.L9VK4tCqjXQFbtJFTs8iXZaba', 0, '2022-11-18', '', 0),
--- Пароль: qwerty123#
+(5, 'adsf', 0, 'asdf', 'sdf@sdf.df', 'egsrhd4654', 1, '2020-08-01', '', 0),
+(8, 'AndreyErr1', 0, 'asdf', 'sdf@sdf.df', 'egsrhd4654', 1, '2020-08-01', '', 0),
+(9, 'AndreyErr2', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$MMZ2GiTiJmV0HgBUrd7pY..qK2X.L9VK4tCqjXQFbtJFTs8iXZaba', 1, '2022-11-18', '', 0),
+(11, 'AndreyErr3', 1, 'Андрей', 'a9165185808@gmail.com', '$2y$10$xgFPBYo0QWFN.Id6jzppVOVqj.bE0zuS.NdsiWzdM.JCJt4UKc74m', 1, '2022-11-18', '', 0),
+(12, 'AndreyErr8', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$FX26IX4YTaS/DsjAuhXisuv0juyI2z6K0CBidoA/ZGI18qy1JEDB2', 1, '2022-11-18', '', 0),
+(14, 'AndreyErr10', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$hl.nuUTCru32DUhzh05BiO16eec49P/Xx/ARIVR6LZwUVenQBMnXS', 1, '2022-11-20', '', 0),
+(15, 'AndreyErr11', 1, 'аНдРей', 'a9165185808@gmail.com', '$2y$10$rnU2bwZteYin2lBlHUJsc.93Cmx1ABBeL7u3nOuJB.vy66uSY/9pK', 1, '2022-11-20', '', 0),
+(16, 'AndreyErr12', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$M4qinnYXe64qxUqKyV2EoecWZ3dhZsxDn3lVPUNiqF9ksyOHI1qdi', 1, '2022-11-20', '', 0),
+(17, 'AndreyErr14', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$dDCSSGnH/VpV7ehfJKzl4u3SNaJsa.A6Cg5SfEt4/u5I/uaP07ptC', 1, '2022-11-20', '', 0),
+(19, 'AndreyErr', 2, 'Андрей', 'a9165185808@gmail.com', '$2y$10$S1GhPLcB3cptp3mOV7UhO.hOxiLpwOaK6n.VGC.qnk21X5V566dGu', 0, '2022-11-20', '', 0);
 
 --
 -- Индексы сохранённых таблиц
 --
+
+--
+-- Индексы таблицы `banSite`
+--
+ALTER TABLE `banSite`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `maintopic`
@@ -160,6 +193,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT для таблицы `banSite`
+--
+ALTER TABLE `banSite`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
 -- AUTO_INCREMENT для таблицы `maintopic`
 --
 ALTER TABLE `maintopic`
@@ -175,7 +214,7 @@ ALTER TABLE `photoForTopic`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

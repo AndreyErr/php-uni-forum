@@ -16,6 +16,8 @@
 
             <?php if($data['userstatusdig'] != -1) echo '@'.$data['user']['login']; // Отображение логина?>
 
+            <?php if($data['bloclstat'] == 1) echo ' (заблокирован)'; // Отображение логина?>
+
           </div>
         <div class="profile-usertitle-job"><?php
 
@@ -26,7 +28,7 @@
 
       <?php if($data['userstatusdig'] != -1): // Запрет отображения для несуществующего пользователя?>
 
-        <?php if($data['user']['name'] == $data['decodedMyLogin'] || decode($_COOKIE['status']) == 2): // Отображение кнопок под фото?>
+        <?php if($data['user']['name'] == $data['decodedMyLogin'] || (array_key_exists('status',$_COOKIE) && decode($_COOKIE['status']) == 2)): // Отображение кнопок под фото?>
 
           <div class="profile-userbuttons">
 
@@ -35,6 +37,16 @@
               <a href="/adm"><button type="button" class="btn btn-success btn-sm">Админ панель</button></a>
 
             <?php endif; // Отображение если пользователь страницы - админ?>
+
+            <?php if(decode($_COOKIE['status']) == 2 && $data['userstatusdig'] != 2): // Отображение кнопок управления?>
+                
+                <?php // Подбор цвета иконки в зависимости от статуса
+                $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');
+                if($data['bloclstat'] == 0) echo '<a href="/adm/a/ban/'.$data['user']['login'].'"><button type="button" class="btn btn-warning btn-sm">Заблок</button></a>';
+                else echo '<a href="/adm/a/unban/'.$data['user']['login'].'"><button type="button" class="btn btn-primary btn-sm">Разблок</button></a>';
+                ?>
+
+            <?php endif; // Отображение кнопок управления?>
 
             <form method="post" action="/user/a/exit" class="btn"><button type="submit" class="btn btn-danger btn-sm">Выход</button></form>
           </div>
