@@ -201,7 +201,7 @@ class userM extends model{
         $mysqli = openmysqli();
         $login = $mysqli->real_escape_string($login);
         $user = mysqli_fetch_assoc($mysqli->query("SELECT * FROM users WHERE login = '".$login."';"));
-        if(!$user && $login == decode($_COOKIE['login']))
+        if(array_key_exists('login', $_COOKIE) && !$user && $login == decode($_COOKIE['login']))
             $this->exitAction();
         $mysqli->close();
         if(!$user)

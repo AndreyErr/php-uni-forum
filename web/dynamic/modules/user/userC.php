@@ -48,13 +48,17 @@ class userC extends controller{
             $status = $status[-1];
             $statusdig = -1;
         }
+        if(array_key_exists('login', $_COOKIE))
+            $myLogin = decode($_COOKIE['login']);
+        else
+            $myLogin = -999;
         $dataToView = array(
             "css" => $css, 
             "js" => $js, 
             "user" => $allAboutActualUser,
             "userstatusdig" => $statusdig,
             "userstatus" => $status,
-            "decodedMyLogin" => decode($_COOKIE['login'])
+            "decodedMyLogin" => $myLogin
         );
         $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout');
     }

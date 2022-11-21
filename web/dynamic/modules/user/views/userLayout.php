@@ -6,7 +6,8 @@
           <img src="../files/img/avatar/<?php // Отображение фото
 
             if($data['userstatusdig'] == -1) echo "nonUser";
-            else echo $_COOKIE['photo'];
+            else if($data['user']['photo'] == 0) echo $data['user']['id'];
+            else echo $data['user']['photo'];
           
           ?>.png" class="img-responsive rounded mx-auto d-block" alt="" >
         </div>
@@ -31,7 +32,7 @@
 
             <?php if($data['userstatusdig'] == 2): // Отображение если пользователь страницы - админ?>
 
-              <button type="button" class="btn btn-success btn-sm">Админ панель</button>
+              <a href="/adm"><button type="button" class="btn btn-success btn-sm">Админ панель</button></a>
 
             <?php endif; // Отображение если пользователь страницы - админ?>
 
