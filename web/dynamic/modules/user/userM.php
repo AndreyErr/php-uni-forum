@@ -1,8 +1,10 @@
 <?php
 
+use system\model;
+
 require_once 'lib/formCheck.php'; // Проверка форм
 
-class userM{
+class userM extends model{
     
     // Регистрация пользователя
     public function regAction(){
@@ -13,20 +15,23 @@ class userM{
                 $mysqli = openmysqli();
                 $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
                 $login = $mysqli->real_escape_string($_POST['login']);
-                $pass = hashPass($mysqli->real_escape_string($_POST['pass']));
-                $email = $mysqli->real_escape_string($_POST['email']);
-                $date = date("Y-m-d");
+                $photo = rand(0, 9); // Вулючительно
+                $photo = 0; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
                 $testLogin = $mysqli->query("SELECT id FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
                     relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
                     $mysqli->close();
-                }else
-                    $mysqli->query("INSERT INTO users VALUES (NULL, '".$login."', 0, '".$name."', '".$email."', '".$pass."', 0, '".$date."', '', 0);");
+                }else{
+                    $pass = hashPass($mysqli->real_escape_string($_POST['pass']));
+                    $email = $mysqli->real_escape_string($_POST['email']);
+                    $date = date("Y-m-d");
+                    $mysqli->query("INSERT INTO users VALUES (NULL, '".$login."', 0, '".$name."', '".$email."', '".$pass."', ".$photo.", '".$date."', '', 0);");
+                }
                 $mysqli->close();
                 $cookTime = time()+(3600);
                 setcookie("login", encode($_POST['login']), $cookTime, "/");
                 setcookie("status", encode('0'), $cookTime, "/");
-                setcookie("photo", 0, $cookTime, "/");
+                setcookie("photo", $photo, $cookTime, "/");
                 relocate('/u', 2, 'Добро пожаловать на форум, '.$name);
             }
         }else
@@ -118,20 +123,26 @@ class userM{
 
     public function updatePhotoAction(){
         $uploaddir = '/files/img/avatar/';
-        $fileType = $_FILES["avatar"]["type"];
         if (!empty($_FILES)) {
-        if ($_FILES["avatar"]["size"] == 0 || $fileType != "image/png" || $fileType != "image/jpeg") {
-            relocate('/u', 3, 'Неправильный формат!');
-        }
-        else if ($_FILES["avatar"]["size"] > 2000000) {
-            $uploadOk = 0;
-            relocate('/u', 3, 'Слишком большой файл!');
-        }
-
-
-
-            $_FILES['avatar']['name'] = decode($_COOKIE['login']);
-            debug($_FILES['avatar']['type']);
+            $errors = array();
+            $file_name = $_FILES['avatar']['name'];
+            $file_size = $_FILES['avatar']['size'];
+            $file_tmp = $_FILES['avatar']['tmp_name'];
+            $file_type = $_FILES['avatar']['type'];
+            $file_ext = strtolower(end(explode('.',$_FILES['avatar']['name'])));
+            
+            $expensions = array("lpeg","jpg","png");
+            
+            if($file_size > 2097152){
+              $errors[] = 'Файл > 2mb';  
+            }
+            
+            if(empty($errors) == true){
+                move_uploaded_file($file_tmp,"resource/avatar/1/".$_SESSION['USER_LOGIN'].".jpg");
+                mysqli_query($CONNECT, "UPDATE `users`  SET `avatar` = 1 WHERE `id` = $_SESSION[USER_ID]");
+            }else{
+                print $errors;
+            }
             krik("AAAAAAAAAAAAAAAAAAAAAA");
         }else
             relocate('/u');

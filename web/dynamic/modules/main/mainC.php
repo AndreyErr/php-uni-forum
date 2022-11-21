@@ -2,30 +2,22 @@
 
 namespace controllers;
 
-use system;
-use main\models;
+use system\controller;
 
-class mainC{
+class mainC extends controller{
     public function __construct($page, $action){ // $page - вызванный контроллер, $path[0] - требуемая страница
-        // Подключение модели и представления
-        $path = explode('/', trim($_SERVER['REDIRECT_URL'], '/'));
-        if ($path[0] == "")
-            $path[0] = $page = "main";
-        require_once($_SERVER['DOCUMENT_ROOT'].'/modules/'.$page.'/'.$page.'M.php'); // Задание пути к модели
-        require_once($_SERVER['DOCUMENT_ROOT'].'/system/view.php'); // Задание пути к модели
-        $model = $page.'M';
-        $view = 'view';
-        $model = new $model;
-        $view = new $view;
-        $mainTopics = $model->selectTopics(6);
-        // Формирование данных для представления
+        parent::__construct($page, $action);
+        $this->dataCollect();
+    }
+
+    // Формирование данных для представления
+    private function dataCollect(){
+        $mainTopics = $this->model->selectTopics(6);
         $a = array(1, 2, 3, 4, 5);
         $b = array(1, 2, 3, 4, 5);
         $c = array("a" => $a, "b" => $b, "mainTop" => $mainTopics);
         //debug($path[0]);
         //debug($c);
-        $view->rander('main/views/'.$path[0], $c);
-
-
+        $this->view->rander('main/views/'.$this->path[0], $c);
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
-class mainM{
+use system\model;
+
+class mainM extends model{
     // Взятие тем для главной страницы
     public function selectTopics($quantity = 6){
         $mysqli = openmysqli();

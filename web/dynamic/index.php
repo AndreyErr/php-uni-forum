@@ -12,4 +12,13 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/system/route.php'); // Задание �
 
 date_default_timezone_set("Europe/Moscow");
 
+// Автоподключение классов
+// Срабатывает перед выводом ошибки
+spl_autoload_register(function ($class) {
+    $path = str_replace('\\', '/', $class.'.php'); // Замена слешей в пути
+    if(file_exists($path)){
+        require $path;
+    }
+});
+
 $app = new route;
