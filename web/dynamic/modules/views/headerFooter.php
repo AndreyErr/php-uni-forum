@@ -56,6 +56,7 @@
                       <li><a class="dropdown-item" href="#">Another action</a></li>
                       <li><hr class="dropdown-divider"></li>
                       <li><a class="dropdown-item" href="/u">Моя страница</a></li>
+                      <li><a class="dropdown-item" href="/user/a/exit">Выход</a></li>
                     </ul>
                   </li>
                   <li class="nav-item navbar-brand">
@@ -83,9 +84,7 @@
           <footer class="footer py-3 bg-dark mt-auto">
             <ul class="nav justify-content-center pb-3 mb-3">
               <li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Главная</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+              <li class="nav-item"><a href="/f" class="nav-link px-2 text-muted">Форум</a></li>
               <li class="nav-item"><a href="/about" class="nav-link px-2 text-muted">О форуме</a></li>
             </ul>
             <p class="text-center text-muted">&copy; IT forum, 2022</p>

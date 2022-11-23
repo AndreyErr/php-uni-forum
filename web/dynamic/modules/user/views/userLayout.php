@@ -48,7 +48,7 @@
 
             <?php endif; // Отображение кнопок управления?>
 
-            <form method="post" action="/user/a/exit" class="btn"><button type="submit" class="btn btn-danger btn-sm">Выход</button></form>
+            <a href="/user/a/exit" class="btn"><button type="submit" class="btn btn-danger btn-sm">Выход</button></a>
           </div>
 
         <?php endif; // Отображение кнопок под фото?>

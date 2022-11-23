@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: Mysql_db
--- Время создания: Ноя 21 2022 г., 19:21
+-- Время создания: Ноя 23 2022 г., 18:58
 -- Версия сервера: 10.9.4-MariaDB-1:10.9.4+maria~ubu2204
 -- Версия PHP: 8.0.25
 
@@ -63,11 +63,11 @@ INSERT INTO `banSite` (`id`, `loginUser`, `dateTime`) VALUES
 
 CREATE TABLE `maintopic` (
   `id` int(11) NOT NULL,
-  `topicName` varchar(30) NOT NULL,
-  `name` varchar(30) NOT NULL,
+  `topicName` varchar(40) NOT NULL,
+  `name` varchar(20) NOT NULL,
   `descr` text NOT NULL,
   `addDate` date NOT NULL,
-  `icon` varchar(50) NOT NULL
+  `icon` varchar(70) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -76,7 +76,11 @@ CREATE TABLE `maintopic` (
 
 INSERT INTO `maintopic` (`id`, `topicName`, `name`, `descr`, `addDate`, `icon`) VALUES
 (1, 'android', 'Андроид', 'Всё о андроид мире', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>'),
-(2, 'android2', 'Андроид2', 'Всё о андроид мире uwu', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>');
+(2, 'android2', 'Андроид2', 'Всё о андроид мире uwu', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>'),
+(3, 'androidd', 'Андроидd', 'adswertyuioesghm', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>'),
+(4, 'teeeeeeema', 'Тееееееема', 'Тееееееееееее __ ! __ сссссс тттттт ', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>'),
+(5, 'ruka-boga', 'Рука бога', 'Описание чего-то великого! А это дополнение к теме %)', '2022-11-23', '<i class=\"fa-brands fa-discord\"></i>'),
+(6, 'androiddsfdgfhdgj', 'Андроидdsfdgfhdgj', 'sfdwafe wswf w f )', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>');
 
 -- --------------------------------------------------------
 
@@ -173,7 +177,8 @@ ALTER TABLE `banSite`
 -- Индексы таблицы `maintopic`
 --
 ALTER TABLE `maintopic`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `topicName` (`topicName`);
 
 --
 -- Индексы таблицы `photoForTopic`
@@ -202,7 +207,7 @@ ALTER TABLE `banSite`
 -- AUTO_INCREMENT для таблицы `maintopic`
 --
 ALTER TABLE `maintopic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `photoForTopic`
