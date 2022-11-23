@@ -45,9 +45,9 @@
           
   <!--Главные темы-->
   <div class="container px-4 py-5" id="hanging-icons">
-    <h2 class="pb-2 border-bottom">Все главные темы <?php if(array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2):?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalPass">Добавить главную тему</button><?php endif;?></h2>
+    <h2 class="pb-2 border-bottom">Все главные темы <?php if(array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2):?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalAddMain">Добавить главную тему</button><?php endif;?></h2>
     <?php if(array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2):?>
-    <div class="modal fade" tabindex="-1" id="ModalPass" aria-hidden="true">
+    <div class="modal fade" tabindex="-1" id="ModalAddMain" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
@@ -61,7 +61,7 @@
                 <label for="name">Тема:</label>
                 <div class="form-group"> 
                   <input class="form-control" type="text" name="name" maxlength="30" required/>  
-                  <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 20. <b class="text-danger">Поле должно содержать 1-2 слова, так как оно будет отображаться в url!</b></div>
+                  <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 20. <b class="text-danger">Поле должно содержать 1-2 слова, так как оно будет отображаться в url!<br>Вы сможете поменять название, но не сможете поменять url!</b></div>
                 </div> 
                 <label for="icon">Иконка:</label>
                 <div class="form-group"> 
@@ -71,7 +71,7 @@
                 <label for="descr">Описание:</label>
                 <div class="form-group"> 
                   <textarea class="form-control" type="text" name="descr" maxlength="400"></textarea>
-                  <div id="passwordHelpBlock" class="form-text">Разрешённые символы: a-z A-Z а-я А-Я 1-9 пробел -+_=/&^:;"#%!@&,.</div>
+                  <div id="passwordHelpBlock" class="form-text">Разрешённые символы: a-z A-Z а-я А-Я 1-9 пробел -+_=/&^:;"#%!()@&,.</div>
                 </div>                 
                 <button type="submit" class="btn btn-primary mb-3 mt-3">Добавить</button>
               </fieldset>
@@ -97,18 +97,6 @@
         </div>
       </div>
       <?php endforeach;?>
-      <div class="col d-flex align-items-start"  style= "padding-bottom: 20px;">
-        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-          <i class="fa-solid fa-house"></i>
-        </div>
-        <div>
-          <h3 class="fs-2">Featured title</h3>
-          <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-          <a href="#" class="btn btn-primary">
-            Primary button
-          </a>
-        </div>
-      </div>
     </div>
   </div>
 </main>

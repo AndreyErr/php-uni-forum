@@ -81,10 +81,10 @@
       </div>
     </div>
     <?php endforeach;?>
-    <a href="/f">
+  </div>
+  <a href="/f">
       <div class="d-grid gap-2">
         <button class="btn btn-primary" type="button">Смотреть все темы</button>
       </div>
     </a>
-  </div>
 </div>
