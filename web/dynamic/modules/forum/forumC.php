@@ -2,21 +2,23 @@
 
 namespace controllers;
 
-use system;
-use main\models;
+use system\controller;
 
-class forumC{
+class forumC extends controller{
     public function __construct($page, $action){
-        // Подключение модели и представления
-        $path = explode('/', trim($_SERVER['REDIRECT_URL'], '/'));
-        require_once($_SERVER['DOCUMENT_ROOT'].'/modules/'.$page.'/'.$page.'M.php'); // Задание пути к модели
-        require_once($_SERVER['DOCUMENT_ROOT'].'/system/view.php'); // Задание пути к модели
-        $model = $page.'M';
-        $view = 'view';
-        $model = new $model;
-        $view = new $view;
-        //echo($model->test());
-        $view->rander('forum/views/'.$page.'Select');
+        parent::__construct($page, $action);
+        $this->dataCollect($page, $action);
+    }
+    private function dataCollect($page,$action){
+        if($action != NULL){
+            $this->model->$action();
+        }else{
+            $mainTopics = $this->model->selectMainTopics();
+            $data = array(
+                "mainTop" => $mainTopics
+            );
+            $this->view->rander('forum/views/'.$page, $data);
+        }
         //<input type="hidden" value="0" name="activate" />
 
     }

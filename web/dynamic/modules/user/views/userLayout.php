@@ -41,7 +41,7 @@
             <?php if(decode($_COOKIE['status']) == 2 && $data['userstatusdig'] != 2): // Отображение кнопок управления?>
                 
                 <?php // Подбор цвета иконки в зависимости от статуса
-                $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');
+                $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
                 if($data['bloclstat'] == 0) echo '<a href="/adm/a/ban/'.$data['user']['login'].'"><button type="button" class="btn btn-warning btn-sm">Заблок</button></a>';
                 else echo '<a href="/adm/a/unban/'.$data['user']['login'].'"><button type="button" class="btn btn-primary btn-sm">Разблок</button></a>';
                 ?>
@@ -72,7 +72,7 @@
                         <legend class="text-center">Сейчас ваше имя - <?php echo $data['user']['name']?>.</legend>
                         <label for="name">Новое имя: </label>
                         <div class="form-group">
-                          <input type="text" name="name" id="name" maxlength="25" class="form-control" placeholder="<?php echo $data['user']['name']?>"/> 
+                          <input type="text" name="name" id="name" maxlength="25" class="form-control" placeholder="<?php echo $data['user']['name']?>  required"/> 
                           <div id="passwordHelpBlock" class="form-text">Его не увидят другие пользователи, но мы сможем к вам обращаться.</div>                           
                         </div>
                         <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>                 
@@ -99,25 +99,19 @@
                         <legend class="text-center">Запомните новый пароль. qwerty123#</legend>
                         <label for="pass">Старый пароль: </label>
                         <div class="form-group"> 
-                          <input class="form-control" type="password" name="oldPass" id="pass" maxlength="20"/>  
+                          <input class="form-control" type="password" name="oldPass" id="pass" maxlength="20" required/>  
                           <div id="passwordHelpBlock" class="form-text">Пароль должен быть в длинну не меньше 5 и не больше 16, содеррить цифры, буквы и спец символ (@#$%^&*).</div>
                         </div>   
                         <label for="pass">Новый пароль: </label>
                         <div class="form-group"> 
-                          <input class="form-control" type="password" name="pass" id="pass" maxlength="20"/>  
+                          <input class="form-control" type="password" name="pass" id="pass" maxlength="20" required/>  
                           <div id="passwordHelpBlock" class="form-text">Пароль должен быть в длинну не меньше 5 и не больше 16, содеррить цифры, буквы и спец символ (@#$%^&*).</div>
-                          <i class="fas fa-check-circle"></i>
-                          <i class="fas fa-exclamation-circle"></i>
-                          <small></small>
                         </div>   
                         <label for="pass2">Повторить новый пароль: </label>
                         <div class="form-group"> 
-                          <input class="form-control" type="password" name="pass2" id="pass2" maxlength="20"/>  
-                          <i class="fas fa-check-circle"></i>
-                          <i class="fas fa-exclamation-circle"></i>
-                          <small></small>
+                          <input class="form-control" type="password" name="pass2" id="pass2" maxlength="20" required/>  
                         </div>
-                        <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>
+                        <button type="submit" class="btn btn-primary mb-3 mt-3">Сохранить изменения</button>
                       </fieldset>
                     </form> 
                   </div>
@@ -141,7 +135,7 @@
                         <legend class="text-center">Загрузите вашу новую аватарку.</legend>
                         <label for="name">Новая авотарка: </label>
                         <div class="form-group">
-                          <input type="file" class="form-control" id="customFile" name="avatar">
+                          <input type="file" class="form-control" id="customFile" name="avatar" required>
                           <div id="passwordHelpBlock" class="form-text">Тип: png, jpg, jpeg<br>Размер: не более 2 мб<br>Лучше аватарку загружать в виде квадрата т.к. она именно так будет отображаться на сайте.</div>                           
                         </div>
                         <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>
@@ -169,7 +163,7 @@
                         <legend class="text-center">Ваша новая почта.</legend>
                         <label for="email"><span class="req">* </span> Новый email: </label> 
                         <div class="form-group">
-                            <input class="form-control mb-3" type="email" name="email" id="email" maxlength="40" />   
+                            <input class="form-control mb-3" type="email" name="email" id="email" maxlength="40" required/>   
                             <div id="passwordHelpBlock" class="form-text"></div> 
                         </div>
                         <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>

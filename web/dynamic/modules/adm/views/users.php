@@ -7,7 +7,7 @@
         <strong class="text-gray-dark"><?php echo $kay['name']?></strong>
 
           <?php // Подбор цвета иконки в зависимости от статуса
-          $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');
+          $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
           if($kay['status'] == 0) $color = "primary";
           else $color = "warning";
           ?>

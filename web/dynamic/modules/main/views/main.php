@@ -76,7 +76,7 @@
       </div>
       <div>
         <h3 class="fs-2"><?php echo $kay['name']?></h3>
-        <p><?php echo $kay['descr']?></p>
+        <p><?php echo $kay['descr']?>.</p>
         <a href="/f/<?php echo $kay['topicName']?>" class="btn btn-primary">Посмотреть про <?php echo $kay['name']?></a>
       </div>
     </div>

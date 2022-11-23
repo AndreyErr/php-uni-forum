@@ -48,7 +48,7 @@ class userC extends controller{
 
         $allAboutActualUser = $this->model->SelectAllAboutUser($user);
         $userBanStat = $this->model->userBanStat($user);
-        $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');
+        $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
 
         if($allAboutActualUser != -1){
             $status = $status[$allAboutActualUser['status']];

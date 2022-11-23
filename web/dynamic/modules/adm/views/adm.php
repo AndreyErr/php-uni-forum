@@ -1,4 +1,4 @@
-<?php $status = require($_SERVER['DOCUMENT_ROOT'].'/config/status.php');?>
+<?php $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');?>
 
 <h2>Админ панель</h2>
 <hr>

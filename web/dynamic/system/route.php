@@ -12,16 +12,8 @@ class route{
     }
 
     // Выбор контроллера (по первому параметру ссылки)
-    public function router($path)
-    {
-        $page = $path[0];
-        if ($path[0] == "" || $path[0] == "about")
-            $path[0] = $page = "main";
-        if ($path[0] == "f" || $path[0] == "forum")
-            $path[0] = $page = "forum";
-        if ($path[0] == "u" || $path[0] == "user")
-            $path[0] = $page = "user";
-        
+    public function router($path){
+        $page = $path[0] = $this->selectControllerByPage($path[0]);
         $controller = $this->checkController($path);
         $model = $this->checkModel($path);
         if($controller != "-1" && $model != "-1"){
@@ -31,6 +23,17 @@ class route{
         }    
         else
             krik("//////////Ошибка контроллер или модель не найдена");
+    }
+
+    // Преобразование страницы
+    public function selectControllerByPage($path){
+        if ($path == "" || $path == "about")
+            $page = "main";
+        if ($path == "f" || $path == "forum")
+            $page = "forum";
+        if ($path == "u" || $path == "user")
+            $page = "user";
+        return $page;
     }
 
     // Проверка существования контроллера
@@ -59,6 +62,7 @@ class route{
         return -1;
     }
 
+    // Проверка существования действия
     public function checkAction($path){
         if (array_key_exists(1, $path) && array_key_exists(2, $path) && $path[1] == 'a'){
             $act = $path[2].'Action';

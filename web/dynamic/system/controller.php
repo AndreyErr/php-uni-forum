@@ -2,7 +2,7 @@
 
 namespace system;
 
-abstract class controller{
+class controller{
 
     protected $path;
     protected $model;
