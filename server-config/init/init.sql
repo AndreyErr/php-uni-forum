@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: Mysql_db
--- Время создания: Ноя 23 2022 г., 18:58
+-- Время создания: Ноя 24 2022 г., 16:29
 -- Версия сервера: 10.9.4-MariaDB-1:10.9.4+maria~ubu2204
 -- Версия PHP: 8.0.25
 
@@ -22,19 +22,6 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `forum` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `forum`;
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `banForTopic`
---
-
-CREATE TABLE `banForTopic` (
-  `id` int(11) NOT NULL,
-  `IdUser` int(11) NOT NULL,
-  `reason` varchar(40) NOT NULL,
-  `dateTime` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -79,36 +66,7 @@ INSERT INTO `maintopic` (`id`, `topicName`, `name`, `descr`, `addDate`, `icon`) 
 (2, 'android2', 'Андроид2', 'Всё о андроид мире uwu', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>'),
 (3, 'androidd', 'Андроидd', 'adswertyuioesghm', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>'),
 (4, 'teeeeeeema', 'Тееееееема', 'Тееееееееееее __ ! __ сссссс тттттт ', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>'),
-(5, 'ruka-boga', 'Рука бога', 'Описание чего-то великого! А это дополнение к теме %)', '2022-11-23', '<i class=\"fa-brands fa-discord\"></i>'),
 (6, 'androiddsfdgfhdgj', 'Андроидdsfdgfhdgj', 'sfdwafe wswf w f )', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>');
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `messagesForTopic`
---
-
-CREATE TABLE `messagesForTopic` (
-  `id` int(11) NOT NULL,
-  `idUser` int(11) NOT NULL,
-  `idUserRef` int(11) NOT NULL,
-  `message` text NOT NULL,
-  `datatime` datetime NOT NULL,
-  `rating` int(11) NOT NULL,
-  `atribute` int(11) NOT NULL COMMENT 'Для пометки как важного или что-то типа того'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `photoForTopic`
---
-
-CREATE TABLE `photoForTopic` (
-  `id` int(11) NOT NULL,
-  `idMessage` int(11) NOT NULL,
-  `src` varchar(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -121,11 +79,10 @@ CREATE TABLE `topic` (
   `idUserCreator` int(11) NOT NULL,
   `idMainTopic` int(11) NOT NULL,
   `createDate` date NOT NULL,
-  `name` varchar(40) NOT NULL,
-  `descr` text NOT NULL,
+  `name` varchar(70) NOT NULL,
+  `type` int(11) NOT NULL,
   `viewAllTime` int(11) NOT NULL,
-  `viewLastTime` int(11) NOT NULL,
-  `photo` int(11) NOT NULL COMMENT 'Мб надо'
+  `viewLastTime` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -181,9 +138,9 @@ ALTER TABLE `maintopic`
   ADD UNIQUE KEY `topicName` (`topicName`);
 
 --
--- Индексы таблицы `photoForTopic`
+-- Индексы таблицы `topic`
 --
-ALTER TABLE `photoForTopic`
+ALTER TABLE `topic`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -207,13 +164,13 @@ ALTER TABLE `banSite`
 -- AUTO_INCREMENT для таблицы `maintopic`
 --
 ALTER TABLE `maintopic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT для таблицы `photoForTopic`
+-- AUTO_INCREMENT для таблицы `topic`
 --
-ALTER TABLE `photoForTopic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `topic`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

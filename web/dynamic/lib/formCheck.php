@@ -56,3 +56,20 @@ function mainTopicDescrCheck($descr){
         return false;
     return true;
 }
+
+
+// Для подтем
+
+// Название
+function topicNameCheck($name){
+    if(!preg_match('/^[a-zA-Zа-яА-ЯёЁ1-9\s\!\?\-]{3,70}$/u', $name))
+        return false;
+    return true;
+}
+
+// Сообщение
+function topicTextCheck($text){
+    if(strlen($text) < 1 || strlen($text) > 1000)
+        return false;
+    return true;
+}

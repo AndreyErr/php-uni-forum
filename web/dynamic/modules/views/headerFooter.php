@@ -14,6 +14,11 @@
           echo '<link href="/src/css/'.$value.'.css" rel="stylesheet">';
         }
         }?>
+        <?php if(array_key_exists('jsUpSrc', $data)){
+          foreach($data['jsUpSrc'] as &$value){
+            echo '<script src="'.$value.'"></script>';
+        }
+        }?>
     </head>
     <body>
         <!--Шапка-->
@@ -93,6 +98,11 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
         <script src="/src/js/lib/bootstrap.min.js"></script>
         <script src="/src/js/lib/bootstrap.bundle.min.js"></script>
+        <?php if(array_key_exists('jsSrc', $data)){
+          foreach($data['jsSrc'] as &$value){
+          echo '<script src="'.$value.'"></script>';
+        }
+        }?>
         <?php if(array_key_exists('js', $data)){
           foreach($data['js'] as &$value){
           echo '<script src="/src/js/'.$value.'.js"></script>';

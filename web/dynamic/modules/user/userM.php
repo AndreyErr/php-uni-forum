@@ -132,7 +132,7 @@ class userM extends model{
             relocate('/u');
     }
 
-    // Изменение аватарки
+    // Изменение аватарки ИСПРАВИТЬ
     public function updatePhotoAction(){
         $uploaddir = $_SERVER['DOCUMENT_ROOT'].'/files/img/avatar/';
         if (!empty($_FILES)) {

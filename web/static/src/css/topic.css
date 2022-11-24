@@ -1,0 +1,158 @@
+
+
+
+
+  * {
+    box-sizing: border-box;
+  }
+  .up {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    color: #222;
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+  .up article {
+    width: 100%;
+    max-width: 1300px;
+  }
+  .up .summary {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0;
+    padding: 0px 30px;
+    border-radius: 16px;
+    box-shadow: 0 0 0 1px #f2f2f2;
+  }
+  .up .summary .summary-item {
+    width: 100%;
+    padding-right: 20px;
+  }
+  .up .summary .summary-item .item-title {
+    color: #999;
+    padding-top: 1rem;
+  }
+  .up .summary .summary-item .item-text {
+    margin-top: 12px;
+    font-size: 1.5rem;
+  }
+  
+  @media screen and (max-width: 1300px) {
+    .up {
+      padding: 50px;
+    }
+  }
+  @media screen and (max-width: 768px) {
+    .up article .summary {
+      flex-direction: column;
+    }
+    .up article .summary .summary-item:not(:last-child) {
+      padding-bottom: 30px;
+    }
+    .up article .main-article .gallery {
+      grid-template-areas: "img1 img1" "img1 img1" "img2 img3" "img4 img5";
+    }
+  }
+  @media screen and (max-width: 425px) {
+    .up {
+      padding: 25px;
+    }
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .wrapper {
+    margin: 0px auto;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .card {
+    background: white;
+    position: relative;
+    border-radius: 3px;
+    padding: 1.25em;
+    margin: 10px 0;
+    box-shadow: 0 2px 6px rgba(23, 26, 28, 0.1);
+  }
+  .card:hover {
+    box-shadow: 0 5px 12px rgba(23, 26, 28, 0.2);
+  }
+  .card .card-profile {
+    display: table;
+  }
+  .card .card-profile .card-profile__photo, .card .card-profile .card-profile__info {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .card .card-profile .card-profile__photo:hover, .card .card-profile .card-profile__info:hover {
+    opacity: 0.84;
+  }
+  .card .card-profile .card-profile__photo {
+    width: 70px;
+  }
+  .card .card-profile .card-profile__photo .profile-photo__img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #ced0ce;
+  }
+  .card .card-profile .card-profile__info {
+    text-decoration: none;
+    color: inherit;
+    line-height: 1;
+  }
+  .card .card-profile .card-profile__info .profile-info__name {
+    font-size: 1.1em;
+    font-weight: 700;
+    margin-bottom: 0.2em;
+  }
+  .card .card-profile .card-profile__info .profile-info__username {
+    font-size: 0.9em;
+    color: #656565;
+  }
+  .card .card-profile .card-profile__info span {
+    display: block;
+  }
+  .card .card-message .card-message-stamp {
+    font-size: 0.9em;
+    color: #656565;
+  }
+
+
+.time{
+  margin-right: 7px;
+}
+
+.upvo{
+  text-decoration: none;
+  color: green;
+}
+.dowvo{
+  text-decoration: none;
+  color: red;
+}
+
+
+
+
+
+
+

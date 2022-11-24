@@ -1,5 +1,5 @@
 <?php
-
+// Small bug fix
 namespace controllers;
 
 use system\controller;
@@ -11,8 +11,12 @@ class forumC extends controller{
     }
     
     private function dataCollect($page,$action){
-        if($action != NULL){
+        if($action != NULL && array_key_exists(3,$this->path)){
+            $this->model->$action($this->path[3]);
+        }elseif($action != NULL){
             $this->model->$action();
+        }elseif(array_key_exists(2,$this->path)){
+            $this->topicsForming();
         }elseif(array_key_exists(1,$this->path)){
             $this->topicsListForming();
         }else{
@@ -34,9 +38,29 @@ class forumC extends controller{
     // Страница списка тем под главнной темой
     private function topicsListForming(){
         $allAboutTopic = $this->model->selectAllAboutTopic($this->path[1]);
-        $data = array(
-            "aboutMainTopic" => $allAboutTopic
-        );
-        $this->view->rander('forum/views/topicsList', $data);
+        if($allAboutTopic != -1){
+            $data = array(
+                "aboutMainTopic" => $allAboutTopic,
+                "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),
+            );
+            $this->view->rander('forum/views/topicsList', $data);
+        }else{
+            relocate('/f', 3, 'Тема не найдена!');
+        }
+    }
+
+    // Страница темы
+    private function topicsForming(){
+        $allAboutTopic = $this->model->selectAllAboutTopic($this->path[1]);
+        if($allAboutTopic != -1){
+            $data = array(
+                "css" => array("topic"),
+                "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),
+                "jsSrc" => array(),
+            );
+            $this->view->rander('forum/views/topic', $data);
+        }else{
+            relocate('/f', 3, 'Тема не найдена!');
+        }
     }
 }
