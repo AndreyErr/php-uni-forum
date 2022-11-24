@@ -132,7 +132,7 @@ class userM extends model{
             relocate('/u');
     }
 
-    // Изменение аватарки ИСПРАВИТЬ
+    // Изменение аватарки
     public function updatePhotoAction(){
         $uploaddir = $_SERVER['DOCUMENT_ROOT'].'/files/img/avatar/';
         if (!empty($_FILES)) {
@@ -141,16 +141,16 @@ class userM extends model{
             $fileSize = $_FILES['avatar']['size'];
             $fileTmp = $_FILES['avatar']['tmp_name'];
             $fileType = $_FILES['avatar']['type'];
+            $fileFormat = explode('/',$fileType)[1];
             $fileExt = explode('.',$fileName);
             $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
-            //debug($fileName);
-            $expensions = array("lpeg","jpg","png");
-            if ($fileSize == 0) {
+            $expensions = array("000","jpeg","jpg","png");
+            if(!array_search($fileFormat, $expensions)) {
+                $error = 'Неправильный формат файла'; 
+            }elseif ($fileSize == 0) {
                 $error = 'Файл пустой';
-            }else if($fileSize > 2097152){ // Биты
+            }elseif($fileSize > 2097152){ // Биты
                 $error = 'Файл > 2mb';  
-            }else if(!array_search($fileExt, $expensions)) {
-                $error = 'Неправильный формат файла!'; 
             }
             if($error == ""){
                 $filename = $_COOKIE['id'].'.png';

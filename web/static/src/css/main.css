@@ -8,6 +8,10 @@ body{
 .noneBlock{ /*Пустой блок за шапкой*/
   height: 70px;
 }
+.img-top{
+  float: none;
+  object-fit: cover;
+}
 footer{
   width: 100%;
 }
