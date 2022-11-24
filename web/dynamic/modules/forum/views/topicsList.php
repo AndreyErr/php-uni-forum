@@ -1,4 +1,4 @@
-<?php $tupe = require($_SERVER['DOCUMENT_ROOT'].'/settings/theme_type.php');?>
+<?php $tupe = require($_SERVER['DOCUMENT_ROOT'].'/settings/topic_type.php');?>
 <main class="container">
   <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold"><?php echo $data["aboutMainTopic"]["name"]?></h1>
@@ -7,7 +7,7 @@
       <?php if(array_key_exists('status', $_COOKIE)):?>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
         <?php if(decode($_COOKIE['status']) == 2):?>
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChMain">Изменить</button>
+        <button type="button" class="btn btn-primary btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChMain">Изменить</button>
         <div class="modal fade" tabindex="-1" id="ModalChMain" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm-down">
             <div class="modal-content">
@@ -49,7 +49,7 @@
             </div>
         </div>
         </div>
-        <button type="button" class="btn btn-danger btn-lg px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalDelMain">Удалить</button>
+        <button type="button" class="btn btn-danger btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalDelMain">Удалить</button>
         <div class="modal fade" tabindex="-1" id="ModalDelMain" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm-down">
             <div class="modal-content">
@@ -59,7 +59,7 @@
             </div>
             <div class="modal-body">
                 <p>Будет удалена эта тема и все подтемы!</p>
-                <form method="post" action="/f/a/deleteMain"><button type="submit" class="btn btn-outline-secondary btn-lg px-4 btn-danger text-light">Удалить</button></form>
+                <form method="post" action="/f/a/deleteMain/<?php echo $data["aboutMainTopic"]["id"]?>"><button type="submit" class="btn btn-outline-secondary btn-sm px-4 btn-danger text-light">Удалить</button></form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -75,8 +75,8 @@
 
 
 
-        <button type="button" class="btn btn-success btn-lg px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalAddTheme">Создать педтему в "<?php echo $data["aboutMainTopic"]["name"]?>"</button>
-        <div class="modal fade" tabindex="-1" id="ModalAddTheme" aria-hidden="true">
+        <button type="button" class="btn btn-success btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalAddTopic">Создать педтему в "<?php echo $data["aboutMainTopic"]["name"]?>"</button>
+        <div class="modal fade" tabindex="-1" id="ModalAddTopic" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm-down">
             <div class="modal-content">
             <div class="modal-header">
@@ -85,13 +85,13 @@
             </div>
             <div class="modal-body">
                 <p>Будет удалена эта тема и все подтемы!</p>
-                <form action="/f/a/addTheme/<?php echo $data["aboutMainTopic"]["topicName"]?>" method="post" id="app" enctype="multipart/form-data">
+                <form action="/f/a/addTopic/<?php echo $data["aboutMainTopic"]["topicName"]?>" method="post" id="app" enctype="multipart/form-data">
                 <fieldset>
                     <legend class="text-center">Тема для подтем!</legend> 
                     <label for="name">Название (вопрос коротко):</label>
                     <div class="form-group"> 
                     <input class="form-control" type="text" name="name" maxlength="70" placeholder=" Что такое '<?php echo $data["aboutMainTopic"]["name"]?>'?" required/>  
-                    <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 70.</div>
+                    <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 70. Можно использовать: a-z A-Z а-я А-Я 1-9 пробел !?-</div>
                     </div>
                     <label for="type">Тип:</label>
                     <div class="form-group"> 
@@ -113,11 +113,10 @@
                     <div class="mb-3">
                     <label class="form-label" for="inputGroupFile01">Файлы к сообщению:</label>
                     <input type="file" name="messageFiles[]" class="form-control" id="inputGroupFile01" multiple>
-                    <div id="passwordHelpBlock" class="form-text">Текст должен быть в длинну не меньше 1 и не больше 1000. Можно использовать разметку md!</div>
+                    <div id="passwordHelpBlock" class="form-text">До 5 файлов включительно. Каждый файл не больше 2мб! Разрешено большенство типов.</div>
                     </div>
-                    <p class="lead">Как будет выглядеть:</p>
+                    <p class="lead">Как будет выглядеть сообщение в md:</p>
                     <div v-html="compiledMarkdown" class="compiledMarkdown text-left" v-show="!focus" @click="setFocus()"></div>
-
                     </div>
                     <button type="submit" class="btn btn-primary mb-3 mt-3">Создать</button>
                 </fieldset>
@@ -168,8 +167,27 @@
     <li class="breadcrumb-item active" aria-current="page"><?php echo $data["aboutMainTopic"]["name"]?></li>
   </ol>
 </nav>
-  <h2>Последние темы</h2>
   <div class="list-group w-auto" style="margin-bottom: 2vh;">
+  <?php if($data['allTopics']->num_rows == 0):?>
+    <h2>Топиков пока нет :( <?php if(array_key_exists('id', $_COOKIE)):?>Но вы можете создать!<?php endif;?></h2>
+  <?php else:?>
+    <h2>Последние темы</h2>
+  <?php foreach ($data['allTopics'] as $kay):?>
+    <a href="/f/<?php echo $data["aboutMainTopic"]["topicName"]?>/<?php echo $kay["id"]?>" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded flex-shrink-0">
+      <div class="d-flex gap-2 w-100 justify-content-between">
+        <div>
+          <span class="badge rounded-pill text-bg-secondary">Danger</span>
+          <h6 class="mb-0"><?php echo $kay["name"]?></h6>
+          <p class="mb-0 opacity-75">@sfdsgfsdg - 254 сообщений</p>
+        </div>
+        <small class="opacity-50 text-nowrap"><span class="badge rounded-pill text-bg-danger">Danger</span> now</small>
+      </div>
+    </a>
+    <?php endforeach;?>
+    <?php endif;?>
+  
+  
     <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
       <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded flex-shrink-0">
       <div class="d-flex gap-2 w-100 justify-content-between">

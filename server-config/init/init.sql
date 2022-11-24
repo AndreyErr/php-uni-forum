@@ -135,7 +135,6 @@ ALTER TABLE `banSite`
 --
 ALTER TABLE `maintopic`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `topicName` (`topicName`);
 
 --
 -- Индексы таблицы `topic`

@@ -11,6 +11,7 @@ class forumC extends controller{
     }
     
     private function dataCollect($page,$action){
+        //debug($action);
         if($action != NULL && array_key_exists(3,$this->path)){
             $this->model->$action($this->path[3]);
         }elseif($action != NULL){
@@ -37,10 +38,12 @@ class forumC extends controller{
 
     // Страница списка тем под главнной темой
     private function topicsListForming(){
-        $allAboutTopic = $this->model->selectAllAboutTopic($this->path[1]);
+        $allAboutTopic = $this->model->selectAllAboutMainTopic($this->path[1]);
         if($allAboutTopic != -1){
+            $allTopics = $this->model->selectAllTopics($this->path[1]);
             $data = array(
                 "aboutMainTopic" => $allAboutTopic,
+                "allTopics" => $allTopics,
                 "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),
             );
             $this->view->rander('forum/views/topicsList', $data);
@@ -51,9 +54,11 @@ class forumC extends controller{
 
     // Страница темы
     private function topicsForming(){
-        $allAboutTopic = $this->model->selectAllAboutTopic($this->path[1]);
+        $allAboutTopic = $this->model->selectAllAboutTopic($this->path[2]);
         if($allAboutTopic != -1){
             $data = array(
+                "mainTopic" => $this->path[1],
+                "topicData" => $allAboutTopic,
                 "css" => array("topic"),
                 "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),
                 "jsSrc" => array(),
