@@ -227,27 +227,27 @@ class forumM extends model{
             if(!$topic)
                 $topic = -1;
             return $topic;
-        }
-        return -1;
+        }else
+            return -1;
     }
 
     // Обновление топика
     public function changeTopicAction($id){
-        if (!empty($_POST) && $_POST['name'] && $_POST['mainTopic']) {
-            if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['mainTopic'])
-                relocate('/f/'.$_POST['mainTopic'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
+        if (!empty($_POST) && $_POST['name'] && $_POST['mainTopicSrc']) {
+            if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['mainTopicSrc'])
+                relocate('/f/'.$_POST['mainTopicSrc'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
             else{
             $mysqli = openmysqli();
             $id = $mysqli->real_escape_string($id);
             $chechUrl = $mysqli->query("SELECT 'topic_id' FROM topic WHERE topic_id = '".$id."';");
             if($chechUrl->num_rows == 0){
                 $mysqli->close();
-                relocate('/f/'.$_POST['mainTopic'].'/'.$id, 3, 'Топик с не найден!');
+                relocate('/f/'.$_POST['mainTopicSrc'].'/'.$id, 3, 'Топик с не найден!');
             }
             $name = $mysqli->real_escape_string($_POST['name']);
             $mysqli->query("UPDATE topic SET topic_name = '".$name."' WHERE topic_id = '".$id."';");
             $mysqli->close();
-            relocate('/f/'.$_POST['mainTopic'].'/'.$id, 2, 'Изменена тема '.$name.'!');
+            relocate('/f/'.$_POST['mainTopicSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
             }
         }else
             relocate('/f');
@@ -257,10 +257,53 @@ class forumM extends model{
     public function selectAllTopics($urlName){
         $mysqli = openmysqli();
         $urlName = $mysqli->real_escape_string($urlName);
-        $topic = mysqli_fetch_assoc($mysqli->query("SELECT id FROM maintopic WHERE topicName  = '".$urlName."';"));
+        $topic = mysqli_fetch_assoc($mysqli->query("SELECT id FROM maintopic WHERE topicName = '".$urlName."';"));
         $topics = $mysqli->query("SELECT * FROM topic INNER JOIN users ON topic.idUserCreator = users.user_id AND topic.idMainTopic = '".$topic['id']."';");
         $mysqli->close();
         return $topics;
+    }
+
+    public function selectMessages($type, $id){
+        $mysqli = openmysqli();
+        $topMessage = -1;
+        $topType = -1;
+        $all;
+        if($type == 2){
+            $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".atribute = 1;");
+            if($topMessage->num_rows == 0){
+                $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".rating = (SELECT max(rating) FROM messagesForTopicId".$id.");");
+                $topType = 2;
+            }else{
+                $topType = 1;
+            }
+            $topMessage = mysqli_fetch_assoc($topMessage);
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".id != ".$topMessage['id'].";");
+        }else{
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id;");
+        }
+        $mysqli->close();
+        $data = array(
+            'topMessage' => $topMessage,
+            'topType' => $topType,
+            'all' => $all
+        );
+        return $data;
+    }
+
+    public function upperTopicView($id){
+        $mysqli = openmysqli();
+        $id = $mysqli->real_escape_string($id);
+        $topicViews = mysqli_fetch_assoc($mysqli->query("SELECT viewAllTime, viewLastTime FROM topic WHERE topic_id = '".$id."';"));
+        $mysqli->query("UPDATE topic SET viewAllTime = '".++$topicViews['viewAllTime']."', viewLastTime = '".++$topicViews['viewLastTime']."' WHERE topic_id = '".$id."';");
+        $mysqli->close();
+    }
+
+    public function countTopicMessages($id){
+        $mysqli = openmysqli();
+        $id = $mysqli->real_escape_string($id);
+        $topicCountMessages = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(id) FROM messagesForTopicId".$id.";"));
+        $mysqli->close();
+        return $topicCountMessages['COUNT(id)'];
     }
 
     // Удаление топика

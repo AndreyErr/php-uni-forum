@@ -2,8 +2,9 @@
             <article>
             <div class="p-4 p-md-5 mb-4 rounded text-bg-dark">
     <div class=" px-0">
-      <h1 class="display-4">Title of a longer featured blog post</h1>
-      <p class="lead mb-0">Тип, Автор, дата</p>
+      <h1 class="display-4"><?php echo $data["topicData"]["topic_name"]?></h1>
+      <hr>
+      <p class="lead mb-0"><?php echo $data["typeTopic"][$data["topicData"]["type"]]?> от <a href="/u/<?php echo $data["topicData"]["login"]?>" class="text-light" style="text-decoration: none;">@<?php echo $data["topicData"]["login"]?></a></p>
     </div>
   </div>
   <div class="px-1 py-1 my-1 text-center">
@@ -20,7 +21,7 @@
                 <fieldset>
                   <label for="name">Главная тема (только для чтения):</label>
                     <div class="form-group"> 
-                    <input class="form-control" type="text" name="mainTopic" value="<?php echo $data["mainTopic"]?>" readonly/>
+                    <input class="form-control" type="text" name="mainTopicSrc" value="<?php echo $data["mainTopicSrc"]?>" readonly/>
                     <div id="passwordHelpBlock" class="form-text">Изменить её нельзя, для изменения пересоздайте топик в нужной теме!</div>  
                     </div> 
                     <label for="name">Название:</label>
@@ -62,9 +63,9 @@
                     <h5 class="item-title">
                       <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                          <li class="breadcrumb-item"><a href="#">Home</a></li>
-                          <li class="breadcrumb-item"><a href="#">Library</a></li>
-                          <li class="breadcrumb-item active" aria-current="page">Data</li>
+                          <li class="breadcrumb-item"><a href="/f">Форум</a></li>
+                          <li class="breadcrumb-item"><a href="/f/<?php echo $data["mainTopicSrc"]?>"><?php echo $data["mainTopic"]?></a></li>
+                          <li class="breadcrumb-item active" aria-current="page"><?php echo $data["topicData"]["topic_name"]?></li>
                         </ol>
                       </nav>
                     </h5>
@@ -72,16 +73,16 @@
             </section>
                 <section class="summary">
                     <div class="summary-item">
-                        <h5 class="item-title">Reading Time</h5>
-                        <p class="item-text">6 Mins</p>
+                        <h5 class="item-title">Сообщений</h5>
+                        <p class="item-text"><?php echo $data["topicViews"]?></p>
                     </div>
                     <div class="summary-item">
-                        <h5 class="item-title">View</h5>
-                        <p class="item-text">1288 Views</p>
+                        <h5 class="item-title">Просмотров</h5>
+                        <p class="item-text"><?php echo ++$data["topicData"]["viewAllTime"]?></p>
                     </div>
                     <div class="summary-item">
-                        <h5 class="item-title">Publish Date</h5>
-                        <p class="item-text">27.02.2022</p>
+                        <h5 class="item-title">Дата публикации</h5>
+                        <p class="item-text"><?php echo $data["topicData"]["createDate"]?></p>
                     </div>
                 </section>
             </article>
@@ -96,7 +97,12 @@
               <div class="col-md-8">
 
             <div class="wrapper">
-              <p class="display-6"><strong>Самый популярный ответ:</strong></p>
+            <?php if($data['messages']['topType'] != -1):?>
+              <?php if($data['messages']['topType'] == 2):?>
+              <p class="display-6"><strong>Самое популярное сообщение:</strong></p>
+              <?php elseif($data['messages']['topType'] == 1):?>
+              <p class="display-6"><strong>Ответ, помеченный автором:</strong></p>
+              <?php endif;?>
                 <div class="card">
                   <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">Son Goku</span><span class="profile-info__username">@supersaiyan_goku</span></a></div>
                   <div class="card-message">
@@ -117,8 +123,13 @@
                         });
                       </script>
                   </div>
-                </div>
-                <hr><p class="lead">Остальные ответы:</p>
+                </div><hr>
+                <?php endif;?>
+                <?php if($data['messages']['all']->num_rows == 0):?>
+                <hr><p class="display-6">Это всё ~' '~</p>
+                <?php else:?>
+                <p class="display-6">Сообщения:</p>
+                <?php foreach ($data['messages']['all'] as $kay):?>
                 <div class="card">
                   <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">Son Goku</span><span class="profile-info__username">@supersaiyan_goku</span></a></div>
                   <div class="card-message">
@@ -140,6 +151,8 @@
                       </script>
                   </div>
                 </div>
+                <?php endforeach;?>
+                <?php endif;?>
                 <div class="card">
                     <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">Son Goku</span><span class="profile-info__username">@supersaiyan_goku</span></a></div>
                     <div class="card-message">
@@ -199,20 +212,28 @@
               <div class="col-md-4">
                 <div class="position-sticky" style="top: 6rem;">
                   <div class="p-4 mb-3 bg-light rounded">
-                    <h4 class="fst-italic">About</h4>
-                    <p class="mb-0">Customize this section to tell your visitors a little bit about your publication, writers, content, or something else entirely. Totally up to you.</p>
+                    <h4 class="fst-italic"><?php echo $data["typeTopic"][$data["topicData"]["type"]]?></h4>
+                    <p class="mb-0"><?php echo $data["topicData"]["topic_name"]?></p>
                   </div>
                   
                   <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h6 class="border-bottom pb-2 mb-0">Recent updates</h6>
-                    <div class="d-flex text-muted pt-3">
-                      <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"/><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
-                
+                    <h6 class="border-bottom pb-2 mb-0">Задал вопрос</h6>
+                    <a href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
+                    <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
-                        <strong class="d-block text-gray-dark">@username</strong>
-                        Some representative placeholder content, with some information about this user. Imagine this being some sort of status update, perhaps?
+                        <strong class="d-block text-gray-dark">@<?php echo $data["topicData"]["login"]?></strong>
+                        <?php echo $data["topicData"]["rating"]?>
                       </p>
-                    </div>
+                    </div></a>
+                    <h6 class="border-bottom pb-2 mb-0 my-3">Дал ответ</h6>
+                    <a href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
+                    <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
+                      <p class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">@<?php echo $data["topicData"]["login"]?></strong>
+                        <?php echo $data["topicData"]["rating"]?>
+                      </p>
+                    </div></a>
+                    <h6 class="border-bottom pb-2 mb-0 my-3">Топ пользователей в обсуждении</h6>
                     <div class="d-flex text-muted pt-3">
                       <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"/><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
                 
@@ -229,9 +250,6 @@
                         This user also gets some representative placeholder content. Maybe they did something interesting, and you really want to highlight this in the recent updates.
                       </p>
                     </div>
-                    <small class="d-block text-end mt-3">
-                      <a href="#">All updates</a>
-                    </small>
                   </div>
                 </div>
               </div>
