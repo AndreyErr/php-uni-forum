@@ -79,7 +79,7 @@ class forumC extends controller{
             );
             $this->view->rander('forum/views/topic', $data);
         }else{
-            relocate('/f', 3, 'Тема не найдена!');
+            relocate('/f', 3, 'Топик не найден!');
         }
     }
 }

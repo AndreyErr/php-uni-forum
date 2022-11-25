@@ -155,26 +155,22 @@
                 <?php endif;?>
 
               <hr><h5 style="margin-top: 35px;">Добавть свой ответ:</h5>
-              <form id="app">
-                <!-- <div class="markdownWrapper" id="app">
-    
-                  <textarea v-model="input" @blur="focus = false" :value="input" @input="update" id="input" class="form-control"></textarea>
-                  <div v-html="compiledMarkdown" class="compiledMarkdown" v-show="!focus" @click="setFocus()"></div>
-                  
-                </div>
-                <p class="text-muted text-center"><strong>Note:</strong> Click on the text above to edit the markdown.</p> -->
-                
-                <div class="mb-3">
-                  <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-                  <textarea class="form-control" v-model="input" @blur="focus = false" :value="input" @input="update" id="input" rows="3" placeholder="Click on the text above to edit the markdown."></textarea>
-                </div>
-                <div class="input-group mb-3">
-                  <label class="input-group-text" for="inputGroupFile01">Upload</label>
-                  <input type="file" class="form-control" id="inputGroupFile01" multiple>
-                </div>
-                <input class="btn btn-primary" type="button" value="Input">
-                <p class="lead">Как будет выглядеть:</p>
-                <div v-html="compiledMarkdown" class="compiledMarkdown" v-show="!focus" @click="setFocus()"></div>
+              <form action="/f/a/addMessage/<?php echo $data["topicData"]["topic_id"]?>" method="post" id="app" enctype="multipart/form-data">
+                <div class="form-group"> 
+                  <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Первое сообщение:</label>
+                    <textarea class="form-control" name="text" v-model="input" @blur="focus = false" :value="input" @input="update" id="input" rows="3" placeholder="Ваше сообщение. Можно использовать разметку md!" required></textarea>
+                    <div id="passwordHelpBlock" class="form-text">Текст должен быть в длинну не меньше 1 и не больше 1000. Можно использовать разметку md!</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="inputGroupFile01">Файлы к сообщению:</label>
+                    <input type="file" name="messageFiles[]" class="form-control" id="inputGroupFile01" multiple>
+                    <div id="passwordHelpBlock" class="form-text">До 5 файлов включительно. Каждый файл не больше 2мб! Разрешено большенство типов.</div>
+                  </div>
+                    <p class="lead">Как будет выглядеть сообщение в md:</p>
+                    <div v-html="compiledMarkdown" class="compiledMarkdown text-left" v-show="!focus" @click="setFocus()"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-3 mt-3">Создать</button>
               </form>
 
               <script type="application/javascript">
@@ -182,7 +178,7 @@
                 el: '#app',
                 data: {
                   focus: false,
-                  input: '### Markdown Demo \r\n**Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt.'
+                  input: '### Markdown Demo **Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt.'
                 },
                 computed: {
                   compiledMarkdown: function () {

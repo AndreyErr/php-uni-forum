@@ -119,7 +119,7 @@ class forumM extends model{
                 $type = $mysqli->real_escape_string($_POST['type']);
                 $date = date("Y-m-d");
                 $datetime = date("Y-m-d H:i:s");
-                $text = $mysqli->real_escape_string($_POST['text']);
+                $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
                 $mysqli->query("INSERT INTO topic VALUES (NULL, ".$_COOKIE['id'].", ".$chechUrl['id'].", '".$date."', '".$name."', ".$type.", 0, 0);");
                 $topicId = mysqli_fetch_assoc($mysqli->query("SELECT topic_id FROM topic WHERE idUserCreator = '".$_COOKIE['id']."' ORDER BY topic_id DESC;"));
                 
@@ -215,6 +215,52 @@ class forumM extends model{
             move_uploaded_file($fileTmp, $uploaddir.$filename);
             $mysqli->close();
         }
+    }
+
+    public function addMessageAction($topicId){
+    if (!empty($_POST) && array_key_exists('login', $_COOKIE)) {
+        $mysqli = openmysqli();
+        $topicId = $mysqli->real_escape_string($topicId);
+        $mainTopicSrc = mysqli_fetch_assoc($mysqli->query("SELECT idMainTopic  FROM topic WHERE topic_id  = '".$topicId."';"));
+        $mainTopicSrc = mysqli_fetch_assoc($mysqli->query("SELECT topicName FROM maintopic WHERE id = '".$mainTopicSrc['idMainTopic']."';"));
+        $mysqli->close();
+        if(!$_POST['text'])
+        relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Неверное заполнение некоторых полей!');
+        elseif(!topicTextCheck($_POST['text']))
+            relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Неправильно заполнено поле сообщения!');
+        else{
+            $fileStatus = 0;
+            if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
+                relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Слишком много файлов, можно загрузить не более 5!');
+                exit;
+            }elseif($_FILES['messageFiles']["type"][0] != ""){
+                $files = array();
+                    foreach($_FILES['messageFiles'] as $k => $l) {
+                        foreach($l as $i => $v) {
+                            $files[$i][$k] = $v;
+                        }
+                    }		
+                    $_FILES['messageFiles'] = $files;
+                    $fileCheck = $this->messageFileCheck();
+                    if($fileCheck != 0){
+                        relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
+                        exit;
+                    }
+                    $fileStatus = 1;
+            }
+            $mysqli = openmysqli();      
+            $datetime = date("Y-m-d H:i:s");
+            $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
+            $mysqli->query("INSERT INTO messagesForTopicId".$topicId." VALUES (NULL, ".$_COOKIE['id'].", 0, '".$text."', '".$datetime."', 0, 0, ".$fileStatus.");");
+            $messageId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM messagesForTopicId".$topicId." WHERE idUser = '".$_COOKIE['id']."' ORDER BY id DESC LIMIT 1;"));
+            if($fileStatus == 1){
+                $this->messageFileUpload($mainTopicSrc['topicName'], $topicId, $messageId['id']);
+            }
+            $mysqli->close();
+            relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 2, 'Сообщение добавлено!');
+        }
+    }else
+        relocate('/f');
     }
 
     // Взятие всего о топике
