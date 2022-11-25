@@ -3,7 +3,7 @@
     <div class="col-md-3">
       <div class="profile-sidebar">
         <div class="profile-userpic">
-          <img src="../files/img/avatar/<?php // Отображение фото
+          <img src="/files/img/avatar/<?php // Отображение фото
 
             if($data['userstatusdig'] == -1) echo "nonUser";
             else if($data['user']['photo'] == 0) echo $data['user']['user_id'];

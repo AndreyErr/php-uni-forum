@@ -104,15 +104,15 @@
               <p class="display-6"><strong>Ответ, помеченный автором:</strong></p>
               <?php endif;?>
                 <div class="card">
-                  <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">Son Goku</span><span class="profile-info__username">@supersaiyan_goku</span></a></div>
+                  <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">@<?php echo $data['messages']['topMessage']['login']?></span><span class="profile-info__username"><?php echo $data['messages']['topMessage']['datatime']?></span></a></div>
                   <div class="card-message">
-                    <p v-html="markdownToHtml" id="mes"></p><div class="card-message-stamp"><span class="time">Дата</span><a href="#" class="upvo">&#5169;</a> 221 <a href="#" class="dowvo">&#5167;</a></div>
+                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span><a href="#" class="upvo">&#5169;</a> <?php echo $data['messages']['topMessage']['user_rating']?> <a href="#" class="dowvo">&#5167;</a></div>
                     <script type="application/javascript">
                       var vm = new Vue({
-                          el: '#mes',
+                          el: '#mes<?php echo $data['messages']['topMessage']['id']?>',
                           data(){
                             return{
-                              markdown: "**Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt. `aelkjflskeef` ___kshagklahdfgk___",
+                              markdown: "<?php echo $data['messages']['topMessage']['message']?>",
                             };
                         },
                           computed: {
@@ -131,15 +131,15 @@
                 <p class="display-6">Сообщения:</p>
                 <?php foreach ($data['messages']['all'] as $kay):?>
                 <div class="card">
-                  <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">Son Goku</span><span class="profile-info__username">@supersaiyan_goku</span></a></div>
+                  <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">@<?php echo $kay['login']?></span><span class="profile-info__username"><?php echo $kay['datatime']?></span></a></div>
                   <div class="card-message">
-                    <p v-html="markdownToHtml" id="mes1"></p><a class="card-message-stamp" href="#"><span class="time">1:05 PM</span>&nbsp;&ndash;&nbsp;<span class="date">December 1, 2017</span></a>
+                  <p v-html="markdownToHtml" id="mes<?php echo $kay['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span><a href="#" class="upvo">&#5169;</a> <?php echo $kay['user_rating']?> <a href="#" class="dowvo">&#5167;</a></div>
                     <script type="application/javascript">
                       var vm = new Vue({
-                          el: '#mes1',
+                          el: '#mes<?php echo $kay['id']?>',
                           data(){
                             return{
-                              markdown: "**Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt.  ```aaaaaaaaaaaaaa```  <br> ```aaaaaaaaaaaaaa```.",
+                              markdown: "<?php echo $kay['message']?>",
                             };
                         },
                           computed: {
@@ -153,13 +153,6 @@
                 </div>
                 <?php endforeach;?>
                 <?php endif;?>
-                <div class="card">
-                    <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">Son Goku</span><span class="profile-info__username">@supersaiyan_goku</span></a></div>
-                    <div class="card-message">
-                      <p>Shout out to the homie <a href="#">Yajirobe</a>&nbsp;for keeping it &#x1F4AF;. Always coming through with the Senzu Beans &#x2615; for the fam.</p><a class="card-message-stamp" href="#"><span class="time">1:05 PM</span>&nbsp;&ndash;&nbsp;<span class="date">December 1, 2017</span></a>
-                    </div>
-                  </div>
-              </div>
 
               <hr><h5 style="margin-top: 35px;">Добавть свой ответ:</h5>
               <form id="app">
@@ -208,7 +201,7 @@
               });
               </script>
 
-              </div>
+              </div></div>
               <div class="col-md-4">
                 <div class="position-sticky" style="top: 6rem;">
                   <div class="p-4 mb-3 bg-light rounded">
@@ -217,22 +210,29 @@
                   </div>
                   
                   <div class="my-3 p-3 bg-body rounded shadow-sm">
-                    <h6 class="border-bottom pb-2 mb-0">Задал вопрос</h6>
+                    <h6 class="border-bottom pb-2 mb-0">Автор</h6>
                     <a href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
-                    <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
+                    <img src="/files/img/avatar/<?php // Отображение фото
+                        //if($data['userstatusdig'] == -1) echo "nonUser";
+                        if($data['topicData']['photo'] == 0) echo $data['topicData']['user_id'];
+                        else echo $data['topicData']['photo'];
+
+                        ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
                         <strong class="d-block text-gray-dark">@<?php echo $data["topicData"]["login"]?></strong>
-                        <?php echo $data["topicData"]["rating"]?>
+                        <?php echo $data["topicData"]["user_rating"]?>
                       </p>
                     </div></a>
+                    <?php if($data['messages']['topType'] == 1):?>
                     <h6 class="border-bottom pb-2 mb-0 my-3">Дал ответ</h6>
                     <a href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
                     <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
                         <strong class="d-block text-gray-dark">@<?php echo $data["topicData"]["login"]?></strong>
-                        <?php echo $data["topicData"]["rating"]?>
+                        <?php echo $data["topicData"]["user_rating"]?>
                       </p>
                     </div></a>
+                    <?php endif;?>
                     <h6 class="border-bottom pb-2 mb-0 my-3">Топ пользователей в обсуждении</h6>
                     <div class="d-flex text-muted pt-3">
                       <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"/><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>

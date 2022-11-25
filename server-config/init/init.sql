@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: Mysql_db
--- Время создания: Ноя 24 2022 г., 16:29
+-- Время создания: Ноя 25 2022 г., 17:56
 -- Версия сервера: 10.9.4-MariaDB-1:10.9.4+maria~ubu2204
 -- Версия PHP: 8.0.25
 
@@ -22,6 +22,18 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `forum` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `forum`;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `banForTopicId25`
+--
+
+CREATE TABLE `banForTopicId25` (
+  `id` int(11) NOT NULL,
+  `IdUser` int(11) NOT NULL,
+  `dateTime` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -45,6 +57,25 @@ INSERT INTO `banSite` (`id`, `loginUser`, `dateTime`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `filesForTopicId25`
+--
+
+CREATE TABLE `filesForTopicId25` (
+  `id` int(11) NOT NULL,
+  `idMessage` int(11) NOT NULL,
+  `type` varchar(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `filesForTopicId25`
+--
+
+INSERT INTO `filesForTopicId25` (`id`, `idMessage`, `type`) VALUES
+(1, 1, 'jpeg');
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `maintopic`
 --
 
@@ -62,11 +93,32 @@ CREATE TABLE `maintopic` (
 --
 
 INSERT INTO `maintopic` (`id`, `topicName`, `name`, `descr`, `addDate`, `icon`) VALUES
-(1, 'android', 'Андроид', 'Всё о андроид мире', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>'),
-(2, 'android2', 'Андроид2', 'Всё о андроид мире uwu', '2022-11-15', '<i class=\"fa-brands fa-android\"></i>'),
-(3, 'androidd', 'Андроидd', 'adswertyuioesghm', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>'),
-(4, 'teeeeeeema', 'Тееееееема', 'Тееееееееееее __ ! __ сссссс тттттт ', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>'),
-(6, 'androiddsfdgfhdgj', 'Андроидdsfdgfhdgj', 'sfdwafe wswf w f )', '2022-11-23', '<i class=\"fa-solid fa-eye\"></i>');
+(16, 'ruka-boga', 'Рука бога', 'Рука бога', '2022-11-24', '<i class=\"fa-solid fa-eye\"></i>');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `messagesForTopicId25`
+--
+
+CREATE TABLE `messagesForTopicId25` (
+  `id` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
+  `idUserRef` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `datatime` datetime NOT NULL,
+  `rating` int(11) NOT NULL,
+  `atribute` int(11) NOT NULL,
+  `photo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `messagesForTopicId25`
+--
+
+INSERT INTO `messagesForTopicId25` (`id`, `idUser`, `idUserRef`, `message`, `datatime`, `rating`, `atribute`, `photo`) VALUES
+(1, 19, 0, '## zxcvbfcdcvb', '2022-11-25 15:03:32', 0, 0, 1),
+(2, 19, 0, 'tdhg;oguryrkhg ieih gilrhe glirh gth tg rg;hoer ', '2022-11-25 16:58:43', 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -75,15 +127,22 @@ INSERT INTO `maintopic` (`id`, `topicName`, `name`, `descr`, `addDate`, `icon`) 
 --
 
 CREATE TABLE `topic` (
-  `id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
   `idUserCreator` int(11) NOT NULL,
   `idMainTopic` int(11) NOT NULL,
   `createDate` date NOT NULL,
-  `name` varchar(70) NOT NULL,
+  `topic_name` varchar(70) NOT NULL,
   `type` int(11) NOT NULL,
   `viewAllTime` int(11) NOT NULL,
   `viewLastTime` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Дамп данных таблицы `topic`
+--
+
+INSERT INTO `topic` (`topic_id`, `idUserCreator`, `idMainTopic`, `createDate`, `topic_name`, `type`, `viewAllTime`, `viewLastTime`) VALUES
+(25, 19, 16, '2022-11-25', 'Андрей тема 1', 2, 106, 106);
 
 -- --------------------------------------------------------
 
@@ -92,7 +151,7 @@ CREATE TABLE `topic` (
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `login` varchar(20) NOT NULL,
   `status` int(11) NOT NULL,
   `name` varchar(30) NOT NULL,
@@ -101,14 +160,14 @@ CREATE TABLE `users` (
   `photo` int(11) NOT NULL DEFAULT 0,
   `regdate` date NOT NULL,
   `descr` text NOT NULL,
-  `rating` int(11) NOT NULL DEFAULT 0
+  `user_rating` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `login`, `status`, `name`, `email`, `pass`, `photo`, `regdate`, `descr`, `rating`) VALUES
+INSERT INTO `users` (`user_id`, `login`, `status`, `name`, `email`, `pass`, `photo`, `regdate`, `descr`, `user_rating`) VALUES
 (5, 'adsf', 0, 'asdf', 'sdf@sdf.df', 'egsrhd4654', 1, '2020-08-01', '', 0),
 (8, 'AndreyErr1', 0, 'asdf', 'sdf@sdf.df', 'egsrhd4654', 1, '2020-08-01', '', 0),
 (9, 'AndreyErr2', 0, 'Андрей', 'a9165185808@gmail.com', '$2y$10$MMZ2GiTiJmV0HgBUrd7pY..qK2X.L9VK4tCqjXQFbtJFTs8iXZaba', 1, '2022-11-18', '', 0),
@@ -125,9 +184,21 @@ INSERT INTO `users` (`id`, `login`, `status`, `name`, `email`, `pass`, `photo`, 
 --
 
 --
+-- Индексы таблицы `banForTopicId25`
+--
+ALTER TABLE `banForTopicId25`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Индексы таблицы `banSite`
 --
 ALTER TABLE `banSite`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `filesForTopicId25`
+--
+ALTER TABLE `filesForTopicId25`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -135,23 +206,37 @@ ALTER TABLE `banSite`
 --
 ALTER TABLE `maintopic`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `topicName` (`topicName`),
+  ADD UNIQUE KEY `topicName_2` (`topicName`);
+
+--
+-- Индексы таблицы `messagesForTopicId25`
+--
+ALTER TABLE `messagesForTopicId25`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `topic`
 --
 ALTER TABLE `topic`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`topic_id`);
 
 --
 -- Индексы таблицы `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `login` (`login`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
 --
+
+--
+-- AUTO_INCREMENT для таблицы `banForTopicId25`
+--
+ALTER TABLE `banForTopicId25`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `banSite`
@@ -160,22 +245,34 @@ ALTER TABLE `banSite`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
+-- AUTO_INCREMENT для таблицы `filesForTopicId25`
+--
+ALTER TABLE `filesForTopicId25`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT для таблицы `maintopic`
 --
 ALTER TABLE `maintopic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT для таблицы `messagesForTopicId25`
+--
+ALTER TABLE `messagesForTopicId25`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `topic`
 --
 ALTER TABLE `topic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `topic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
