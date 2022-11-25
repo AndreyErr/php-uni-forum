@@ -12,11 +12,11 @@
         <div class="modal-dialog modal-fullscreen-sm-down">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Изменить тему "<?php echo $data["topicData"]["name"]?>"</h5>
+                <h5 class="modal-title">Изменить тему "<?php echo $data["topicData"]["topic_name"]?>"</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/f/a/changeTopic/<?php echo $data["topicData"]["id"]?>" method="post">
+                <form action="/f/a/changeTopic/<?php echo $data["topicData"]["topic_id"]?>" method="post">
                 <fieldset>
                   <label for="name">Главная тема (только для чтения):</label>
                     <div class="form-group"> 
@@ -25,7 +25,7 @@
                     </div> 
                     <label for="name">Название:</label>
                     <div class="form-group"> 
-                    <input class="form-control" type="text" name="name" maxlength="30" value="<?php echo $data["topicData"]["name"]?>" required/>  
+                    <input class="form-control" type="text" name="name" maxlength="30" value="<?php echo $data["topicData"]["topic_name"]?>" required/>  
                     <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 70. Можно использовать: a-z A-Z а-я А-Я 1-9 пробел !?-</div>
                     </div> 
                     <button type="submit" class="btn btn-primary mb-3 mt-3">Сохранить</button>
@@ -44,12 +44,12 @@
         <div class="modal-dialog modal-fullscreen-sm-down">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Вы уверены, что хотите безвозвратно удалить тему "<?php echo $data["topicData"]["name"]?>"</h5>
+                <h5 class="modal-title">Вы уверены, что хотите безвозвратно удалить тему "<?php echo $data["topicData"]["topic_name"]?>"</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Будет удалена эта тема и все подтемы!</p>
-                <form method="post" action="/f/a/deleteTopic/<?php echo $data["topicData"]["id"]?>"><button type="submit" class="btn btn-outline-secondary btn-lg px-4 btn-danger text-light">Удалить</button></form>
+                <form method="post" action="/f/a/deleteTopic/<?php echo $data["topicData"]["topic_id"]?>"><button type="submit" class="btn btn-outline-secondary btn-lg px-4 btn-danger text-light">Удалить</button></form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
