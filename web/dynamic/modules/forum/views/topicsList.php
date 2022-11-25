@@ -1,4 +1,4 @@
-<?php $tupe = require($_SERVER['DOCUMENT_ROOT'].'/settings/topic_type.php');?>
+<?php $typeTopics = require($_SERVER['DOCUMENT_ROOT'].'/settings/topic_type.php');?>
 <main class="container">
   <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold"><?php echo $data["aboutMainTopic"]["name"]?></h1>
@@ -75,7 +75,7 @@
 
 
 
-        <button type="button" class="btn btn-success btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalAddTopic">Создать педтему в "<?php echo $data["aboutMainTopic"]["name"]?>"</button>
+        <button type="button" class="btn btn-success btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalAddTopic">Создать топик в "<?php echo $data["aboutMainTopic"]["name"]?>"</button>
         <div class="modal fade" tabindex="-1" id="ModalAddTopic" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm-down">
             <div class="modal-content">
@@ -97,9 +97,9 @@
                     <div class="form-group"> 
                     <select class="form-select" aria-label="Default select example" name="type">
 
-                      <?php $c = 0; foreach ($tupe as $kay){$c++;}; $i = 1; while ($i <= $c):?>
+                      <?php $c = 0; foreach ($typeTopics as $kay){$c++;}; $i = 1; while ($i <= $c):?>
                       
-                      <option value="<?php echo $i?>"><?php echo $tupe[$i]?></option>
+                      <option value="<?php echo $i?>"><?php echo $typeTopics[$i]?></option>
                       
                       <?php $i++; endwhile;?>
 
@@ -173,44 +173,23 @@
   <?php else:?>
     <h2>Последние темы</h2>
   <?php foreach ($data['allTopics'] as $kay):?>
-    <a href="/f/<?php echo $data["aboutMainTopic"]["topicName"]?>/<?php echo $kay["id"]?>" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+    <a href="/f/<?php echo $data["aboutMainTopic"]["topicName"]?>/<?php echo $kay["topic_id"]?>" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
       <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded flex-shrink-0">
       <div class="d-flex gap-2 w-100 justify-content-between">
         <div>
-          <span class="badge rounded-pill text-bg-secondary">Danger</span>
-          <h6 class="mb-0"><?php echo $kay["name"]?></h6>
-          <p class="mb-0 opacity-75">@sfdsgfsdg - 254 сообщений</p>
+        <?php if($kay['type'] != 1):?>
+          <span class="badge rounded-pill text-bg-secondary"><?php echo $typeTopics[$kay['type']]?></span>
+          <?php endif;?>
+          <h6 class="mb-0"><?php echo $kay["topic_name"]?></h6>
+          <p class="mb-0 opacity-75">@<?php echo $kay["login"]?> - <i class="fa-solid fa-calendar-plus"></i> <?php echo $kay["createDate"]?> - <i class="fa-solid fa-eye"></i> <?php echo $kay["viewAllTime"]?></p>
         </div>
-        <small class="opacity-50 text-nowrap"><span class="badge rounded-pill text-bg-danger">Danger</span> now</small>
+        <?php if($data['nowDate'] == $kay["createDate"]):?>
+        <small class="opacity-50 text-nowrap"><span class="badge rounded-pill text-bg-danger">Новое</span></small>
+        <?php endif;?>
       </div>
     </a>
     <?php endforeach;?>
     <?php endif;?>
-  
-  
-    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <span class="badge rounded-pill text-bg-secondary">Danger</span>
-          <h6 class="mb-0">List group item heading</h6>
-          <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
-          <p class="mb-0 opacity-75">@sfdsgfsdg - 254 сообщений</p>
-        </div>
-        <small class="opacity-50 text-nowrap"><span class="badge rounded-pill text-bg-danger">Danger</span> now</small>
-      </div>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <h6 class="mb-0">List group item heading</h6>
-          <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
-          <p class="mb-0 opacity-75">@sfdsgfsdg - 254 сообщений</p>
-        </div>
-        <small class="opacity-50 text-nowrap">now</small>
-      </div>
-    </a>
   </div>
 
 </main>

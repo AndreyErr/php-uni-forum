@@ -120,10 +120,10 @@ class forumM extends model{
                 $datetime = date("Y-m-d H:i:s");
                 $text = $mysqli->real_escape_string($_POST['text']);
                 $mysqli->query("INSERT INTO topic VALUES (NULL, ".$_COOKIE['id'].", ".$chechUrl['id'].", '".$date."', '".$name."', ".$type.", 0, 0);");
-                $topicId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM topic WHERE idUserCreator = '".$_COOKIE['id']."' ORDER BY id DESC;"));
+                $topicId = mysqli_fetch_assoc($mysqli->query("SELECT topic_id FROM topic WHERE idUserCreator = '".$_COOKIE['id']."' ORDER BY id DESC;"));
                 
                 $mysqli->query("
-                CREATE TABLE messagesForTopicId".$topicId['id']." (
+                CREATE TABLE messagesForTopicId".$topicId['topic_id']." (
                     id int(11) NOT NULL AUTO_INCREMENT,
                     idUser int(11) NOT NULL,
                     idUserRef int(11) NOT NULL,
@@ -136,10 +136,10 @@ class forumM extends model{
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
 
-                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['id']." VALUES (NULL, ".$_COOKIE['id'].", 0, '".$text."', '".$datetime."', 0, 0, ".$photoStatus.");");
+                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topic_id']." VALUES (NULL, ".$_COOKIE['id'].", 0, '".$text."', '".$datetime."', 0, 0, ".$photoStatus.");");
                 
                 $mysqli->query("
-                CREATE TABLE filesForTopicId".$topicId['id']." (
+                CREATE TABLE filesForTopicId".$topicId['topic_id ']." (
                     id int(11) NOT NULL AUTO_INCREMENT,
                     idMessage int(11) NOT NULL,
                     type varchar(11) NOT NULL,
@@ -147,26 +147,14 @@ class forumM extends model{
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
 
-                mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId['id']);
+                mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId['topic_id']);
 
                 if($photoStatus == 1){
-                    $uploaddir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId['id']."/";
-                    foreach($_FILES['messageFiles'] as $k) {
-                        $fileType = $k['type'];
-                        $fileFormat = explode('/',$fileType)[1];
-                        $mysqli->query("INSERT INTO filesForTopicId".$topicId['id']." VALUES (NULL, 1, '".$fileFormat."');");
-                        $photoId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM filesForTopicId".$topicId['id']." WHERE idMessage = 1 ORDER BY id DESC;"));
-                        $fileName = $k['name'];
-                        $fileTmp = $k['tmp_name'];
-                        $fileExt = explode('.',$fileName);
-                        $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
-                        $filename = $photoId['id'].'.'.$fileExt;
-                        move_uploaded_file($fileTmp, $uploaddir.$filename);
-                    }
+                    $this->messageFileUpload($mainTopic, $topicId['topic_id']);
                 }
 
                 $mysqli->query("
-                CREATE TABLE banForTopicId".$topicId['id']." (
+                CREATE TABLE banForTopicId".$topicId['topic_id']." (
                     id int(11) NOT NULL AUTO_INCREMENT,
                     IdUser int(11) NOT NULL,
                     dateTime datetime NOT NULL,
@@ -174,7 +162,7 @@ class forumM extends model{
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
                 $mysqli->close();
-                relocate('/f/'.$mainTopic.'/'.$topicId['id'], 2, 'Добавлена тема <a href="/f/'.$mainTopic.'/'.$topicId['id'].'">'.$name.'</a>!');
+                relocate('/f/'.$mainTopic.'/'.$topicId['topic_id'], 2, 'Добавлена тема <a href="/f/'.$mainTopic.'/'.$topicId['topic_id'].'">'.$name.'</a>!');
             }
         }else
             relocate('/f');
@@ -205,14 +193,36 @@ class forumM extends model{
             return $error;
     }
 
-    public function selectAllAboutTopic($topicId){
+    public function messageFileUpload($mainTopic, $topicId){
         $mysqli = openmysqli();
-        $topicId = $mysqli->real_escape_string($topicId);
-        $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE id  = ".$topicId.";"));
-        $mysqli->close();
-        if(!$topic)
-            $topic = -1;
-        return $topic;
+        $uploaddir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId['id']."/";
+        foreach($_FILES['messageFiles'] as $k) {
+            $fileType = $k['type'];
+            $fileFormat = explode('/',$fileType)[1];
+            $fileId = mysqli_fetch_assoc($mysqli->query("INSERT INTO filesForTopicId".$topicId." VALUES (NULL, 1, '".$fileFormat."'); RETURNING id;"));
+            debug($fileId);
+            //$fileId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM filesForTopicId".$topicId." WHERE idMessage = 1 ORDER BY id DESC;"));
+            $fileName = $k['name'];
+            $fileTmp = $k['tmp_name'];
+            $fileExt = explode('.',$fileName);
+            $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
+            $filename = $fileId['id'].'.'.$fileExt;
+            move_uploaded_file($fileTmp, $uploaddir.$filename);
+            $mysqli->close();
+        }
+    }
+
+    public function selectAllAboutTopic($topicId){
+        if(is_numeric($topicId)){
+            $mysqli = openmysqli();
+            $topicId = $mysqli->real_escape_string($topicId);
+            $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic INNER JOIN users ON topic.idUserCreator = users.user_id AND topic.topic_id = '".$topicId."';"));///////////////////////////////////////////////////////
+            $mysqli->close();
+            if(!$topic)
+                $topic = -1;
+            return $topic;
+        }
+        return -1;
     }
 
     // Обновление топика
@@ -242,7 +252,7 @@ class forumM extends model{
         $mysqli = openmysqli();
         $urlName = $mysqli->real_escape_string($urlName);
         $topic = mysqli_fetch_assoc($mysqli->query("SELECT id FROM maintopic WHERE topicName  = '".$urlName."';"));
-        $topics = $mysqli->query("SELECT * FROM topic WHERE idMainTopic  = '".$topic['id']."';");
+        $topics = $mysqli->query("SELECT * FROM topic INNER JOIN users ON topic.idUserCreator = users.user_id AND topic.idMainTopic = '".$topic['id']."';");
         $mysqli->close();
         return $topics;
     }

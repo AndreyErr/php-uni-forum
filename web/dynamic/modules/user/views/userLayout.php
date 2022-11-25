@@ -6,7 +6,7 @@
           <img src="../files/img/avatar/<?php // Отображение фото
 
             if($data['userstatusdig'] == -1) echo "nonUser";
-            else if($data['user']['photo'] == 0) echo $data['user']['id'];
+            else if($data['user']['photo'] == 0) echo $data['user']['user_id'];
             else echo $data['user']['photo'];
           
           ?>.png" class="img-responsive rounded mx-auto d-block" alt="" >
@@ -72,7 +72,7 @@
                         <legend class="text-center">Сейчас ваше имя - <?php echo $data['user']['name']?>.</legend>
                         <label for="name">Новое имя: </label>
                         <div class="form-group">
-                          <input type="text" name="name" id="name" maxlength="25" class="form-control" placeholder="<?php echo $data['user']['name']?>  required"/> 
+                          <input type="text" name="name" id="name" maxlength="25" class="form-control" placeholder="<?php echo $data['user']['name']?>" required/> 
                           <div id="passwordHelpBlock" class="form-text">Его не увидят другие пользователи, но мы сможем к вам обращаться.</div>                           
                         </div>
                         <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>                 

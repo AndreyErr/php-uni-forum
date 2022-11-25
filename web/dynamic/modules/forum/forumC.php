@@ -36,12 +36,14 @@ class forumC extends controller{
         $this->view->rander('forum/views/mainTopList', $data);
     }
 
-    // Страница списка тем под главнной темой
+    // Страница списка топиков под главнной темой
     private function topicsListForming(){
         $allAboutTopic = $this->model->selectAllAboutMainTopic($this->path[1]);
         if($allAboutTopic != -1){
             $allTopics = $this->model->selectAllTopics($this->path[1]);
+            $date = date("Y-m-d");
             $data = array(
+                "nowDate" => $date,
                 "aboutMainTopic" => $allAboutTopic,
                 "allTopics" => $allTopics,
                 "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),

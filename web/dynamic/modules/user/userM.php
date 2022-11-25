@@ -17,7 +17,7 @@ class userM extends model{
                 $login = $mysqli->real_escape_string($_POST['login']);
                 $photo = rand(1, 9); // Включительно
                 $photo = 1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
-                $testLogin = $mysqli->query("SELECT id FROM users WHERE login = '".$login."';");
+                $testLogin = $mysqli->query("SELECT user_id FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
                     relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
                     $mysqli->close();
@@ -27,10 +27,10 @@ class userM extends model{
                     $date = date("Y-m-d");
                     $mysqli->query("INSERT INTO users VALUES (NULL, '".$login."', 0, '".$name."', '".$email."', '".$pass."', ".$photo.", '".$date."', '', 0);");
                 }
-                $id = mysqli_fetch_assoc($mysqli->query("SELECT id FROM users WHERE login = '".$login."';"));
+                $id = mysqli_fetch_assoc($mysqli->query("SELECT user_id FROM users WHERE login = '".$login."';"));
                 $mysqli->close();
                 $cookTime = time()+(3600);
-                setcookie("id", $id['id'], $cookTime, "/");
+                setcookie("id", $id['user_id'], $cookTime, "/");
                 setcookie("login", encode($_POST['login']), $cookTime, "/");
                 setcookie("status", encode('0'), $cookTime, "/");
                 setcookie("photo", $photo, $cookTime, "/");
@@ -64,10 +64,10 @@ class userM extends model{
                     else
                         $cookTime = time()+(3600);
                     if($user['photo'] == 0)
-                        $photo = $user['id'];
+                        $photo = $user['user_id'];
                     else 
                         $photo = $user['photo'];
-                    setcookie("id", $user['id'], $cookTime, "/");
+                    setcookie("id", $user['user_id'], $cookTime, "/");
                     setcookie("login", encode($user['login']), $cookTime, "/");
                     setcookie("status", encode($user['status']), $cookTime, "/");
                     setcookie("photo", $photo, $cookTime, "/");
