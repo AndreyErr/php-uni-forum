@@ -26,12 +26,12 @@ class route{
     }
 
     // Преобразование страницы
-    public function selectControllerByPage($path){
-        if ($path == "" || $path == "about")
+    public function selectControllerByPage($page){
+        if ($page == "" || $page == "about")
             $page = "main";
-        if ($path == "f" || $path == "forum")
+        if ($page == "f" || $page == "forum")
             $page = "forum";
-        if ($path == "u" || $path == "user")
+        if ($page == "u" || $page == "user")
             $page = "user";
         return $page;
     }

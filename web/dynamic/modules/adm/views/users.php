@@ -1,5 +1,5 @@
 <div class="my-3 p-3 bg-body rounded shadow-sm">
-  <h6 class="border-bottom pb-2 mb-0">Пользователи <?php echo $data['allUsers']['COUNT(id)'];?></h6>
+  <h6 class="border-bottom pb-2 mb-0">Пользователи <?php echo $data['allUsers']['COUNT(user_id)'];?></h6>
   <?php foreach ($data['users'] as $kay): // Перебор всех пользователей?>
   <div class="d-flex text-muted pt-3">
     <div class="pb-3 mb-0 small lh-sm border-bottom w-100">

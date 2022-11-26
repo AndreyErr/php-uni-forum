@@ -21,7 +21,7 @@ class admM extends model{
     // Подсчёт пользователей
     public function selectCountUsers(){
         $mysqli = openmysqli();
-        $count = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(id) FROM users"));
+        $count = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(user_id) FROM users"));
         return $count;
     }
 

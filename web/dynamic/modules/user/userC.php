@@ -41,7 +41,7 @@ class userC extends controller{
         $this->view->rander('user/views/regisration', $dataToView);
     }
 
-    // Формирование страницы зарег пользователя
+    // Формирование страницы пользователя
     private function userPageForming($page, $user){
         $css = array("user", "formCh");
         $js = array();
@@ -50,9 +50,9 @@ class userC extends controller{
         $userBanStat = $this->model->userBanStat($user);
         $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
 
-        if($allAboutActualUser != -1){
-            $status = $status[$allAboutActualUser['status']];
-            $statusdig = $allAboutActualUser['status'];
+        if($allAboutActualUser['allAboutUser'] != -1){
+            $status = $status[$allAboutActualUser['allAboutUser']['status']];
+            $statusdig = $allAboutActualUser['allAboutUser']['status'];
         }else{
             $status = $status[-1];
             $statusdig = -1;
@@ -66,7 +66,8 @@ class userC extends controller{
         $dataToView = array(
             "css" => $css, 
             "js" => $js, 
-            "user" => $allAboutActualUser,
+            "user" => $allAboutActualUser['allAboutUser'],
+            "lastTopics" => $allAboutActualUser['lastTopics'],
             "userstatusdig" => $statusdig,
             "userstatus" => $status,
             "bloclstat" => $userBanStat,

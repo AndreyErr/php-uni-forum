@@ -45,29 +45,26 @@
 </div>
 <?php endif; ?>
 
+<?php if(is_object($data['recomendedTopics'])): ?>
 <!--Топ обсуждения главной страницы-->
 <div class="container px-4">
-  <h2 class="pb-2 border-bottom">Топ обсуждения</h2>
+  <h2 class="pb-2 border-bottom">Топ темы</h2>
   <div class="row align-items-md-stretch align-items-center">
+    <?php foreach ($data['recomendedTopics'] as $kay):?>
     <div class="col-md-6" style="padding: 20px;">
       <div class="h-100 p-5 text-bg-dark rounded-3">
-        <h2>Change the background</h2>
-        <p>Swap the background-color utility and add a `.text-*` color utility to mix up the jumbotron look. Then, mix and match with additional component themes and more.</p>
-        <button class="btn btn-outline-light" type="button">Example button</button>
+        <h2><?php echo $kay['topic_name']?></h2>
+        <p>Просмотров: <?php echo $kay['viewAllTime']?> | Находится в разделе "<?php echo $kay['name']?>"</p>
+        <a href="/f/<?php echo $kay['topicName']?>/<?php echo $kay['topic_id']?>"><button class="btn btn-outline-light" type="button">Посмотреть тему</button></a>
       </div>
     </div>
-    <div class="col-md-6" style="padding: 20px;">
-      <div class="h-100 p-5 bg-light border rounded-3">
-        <h2>Add borders</h2>
-        <p>Or, keep it light and add a border for some added definition to the boundaries of your content. Be sure to look under the hood at the source HTML here as we've adjusted the alignment and sizing of both column's content for equal-height.</p>
-        <button class="btn btn-outline-secondary" type="button">Example button</button>
-      </div>
-    </div>
+    <?php endforeach; ?>
   </div>
 </div>
+<?php endif; ?>
 <!--Главные темы-->
 <div class="container px-4 py-5" id="hanging-icons">
-  <h2 class="pb-2 border-bottom">Какая тема вас беспокоит?</h2>
+  <h2 class="pb-2 border-bottom">Какой раздел вас интересует?</h2>
   <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
     <?php foreach ($data['mainTop'] as $kay):?>
     <div class="col d-flex align-items-start" style= "padding-bottom: 20px;">
@@ -84,7 +81,7 @@
   </div>
   <a href="/f">
       <div class="d-grid gap-2">
-        <button class="btn btn-primary" type="button">Смотреть все темы</button>
+        <button class="btn btn-primary" type="button">Смотреть все разделы</button>
       </div>
     </a>
 </div>

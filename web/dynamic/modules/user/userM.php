@@ -206,9 +206,28 @@ class userM extends model{
         if(array_key_exists('login', $_COOKIE) && !$user && $login == decode($_COOKIE['login']))
             $this->exitAction();
         $mysqli->close();
+        $lastTopics = -1;
         if(!$user)
             $user = -1;
-        return $user;
+        else{
+            $lastTopics = $this->selectLastTopics($user['user_id'], 4);
+            if($lastTopics->num_rows == 0)
+                $lastTopics = -1;
+        }
+        $dataOutput = array(
+            "allAboutUser" => $user,
+            "lastTopics" => $lastTopics,
+        );
+        return $dataOutput;
+    }
+
+    // Последние топики пользователя + главный топик
+    public function selectLastTopics($id, $count = 4){
+        $mysqli = openmysqli();
+        $id = $mysqli->real_escape_string($id);
+        $count = $mysqli->real_escape_string($count);
+        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN maintopic ON topic.idMainTopic = maintopic.id WHERE topic.idUserCreator = ".$id." ORDER BY topic.topic_id DESC LIMIT ".$count.";");
+        return $topics;
     }
 
     // Проверка блокировки пользователя

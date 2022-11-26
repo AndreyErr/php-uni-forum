@@ -7,69 +7,29 @@
     <h2>Немного о @<?php echo $data['user']['login']?></h2>
   <?php endif;?>
   <hr>
+  <?php if(!is_object($data['lastTopics'])):?>
+  <h4>Здесь пусто, но скоро появятся последние темы!</h4>
+  <?php else:?>
   <h4>Последние темы:</h4>
   <div class="row row-cols-1 row-cols-md-2 g-4">
+  <?php foreach ($data['lastTopics'] as $kay):?>
     <div class="col">
       <div class="card">
         <div class="card-header">
-          Featured
+          <?php echo $kay['name']?>
         </div>
         <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+          <h5 class="card-title"><?php echo $kay['topic_name']?></h5>
+          <a href="/f/<?php echo $kay['topicName']?>/<?php echo $kay['topic_id']?>" class="btn btn-primary">Посмотреть</a>
         </div>
         <div class="card-footer text-muted">
-          2 days ago
+          <?php echo $kay['createDate']?>
         </div>
       </div>
     </div>
-    <div class="col">
-      <div class="card">
-        <div class="card-header">
-          Featured
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-        <div class="card-footer text-muted">
-          2 days ago
-        </div>
-      </div>
+  <?php endforeach;?>
     </div>
-    <div class="col">
-      <div class="card">
-        <div class="card-header">
-          Featured
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-        <div class="card-footer text-muted">
-          2 days ago
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="card">
-        <div class="card-header">
-          Featured
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-        <div class="card-footer text-muted">
-          2 days ago
-        </div>
-      </div>
-    </div>
+    <?php endif;?>
   </div>
   <br><hr>
-  <h4>Последние комментарии:</h4>
 <?php endif;?>
