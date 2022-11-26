@@ -10,9 +10,9 @@ class admM extends model{
     public function selectFromUsers(){
         $mysqli = openmysqli();
         $users = $mysqli->query("
-        (SELECT * FROM users LEFT OUTER JOIN banSite ON banSite.loginUser = users.login)
+        (SELECT * FROM users LEFT OUTER JOIN usersBanOnSite ON usersBanOnSite.loginUser = users.login)
         UNION
-        (SELECT * FROM users RIGHT OUTER JOIN banSite ON banSite.loginUser = users.login);
+        (SELECT * FROM users RIGHT OUTER JOIN usersBanOnSite ON usersBanOnSite.loginUser = users.login);
         ");
         $mysqli->close();
         return $users;
@@ -21,7 +21,7 @@ class admM extends model{
     // Подсчёт пользователей
     public function selectCountUsers(){
         $mysqli = openmysqli();
-        $count = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(user_id) FROM users"));
+        $count = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(userId) FROM users"));
         return $count;
     }
 
@@ -30,14 +30,13 @@ class admM extends model{
         $mysqli = openmysqli();
         $login = $mysqli->real_escape_string($login);
         $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
-        $userBanAlready = $mysqli->query("SELECT * FROM banSite WHERE loginUser = '".$login."';");
+        $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
         $user = mysqli_fetch_assoc($user1);
         if($user1->num_rows == 0 || $userBanAlready->num_rows > 0 || $user['status'] == 2){
             $mysqli->close();
             relocate('/adm/users', 3, 'Ошибка бана!');
         }
-        $date = date("Y-m-d");
-        $mysqli->query("INSERT INTO banSite VALUES (NULL, '".$login."', '".$date."');");
+        $mysqli->query("INSERT INTO usersBanOnSite VALUES (NULL, '".$login."');");
         $mysqli->close();
         relocate('/adm/users', 2, 'Пользователь заблокирован!');
     }
@@ -47,14 +46,14 @@ class admM extends model{
         $mysqli = openmysqli();
         $login = $mysqli->real_escape_string($login);
         $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
-        $userBanAlready = $mysqli->query("SELECT * FROM banSite WHERE loginUser = '".$login."';");
+        $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
         $user = mysqli_fetch_assoc($user1);
         if($user1->num_rows == 0 || $userBanAlready->num_rows == 0){
             $mysqli->close();
             relocate('/adm/users', 3, 'Ошибка разбана!');
         }
         $date = date("Y-m-d");
-        $mysqli->query("DELETE FROM banSite WHERE loginUser = '".$login."';");
+        $mysqli->query("DELETE FROM usersBanOnSite WHERE loginUser = '".$login."';");
         $mysqli->close();
         relocate('/adm/users', 2, 'Пользователь разблокирован!');
     }

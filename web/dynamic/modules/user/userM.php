@@ -17,7 +17,7 @@ class userM extends model{
                 $login = $mysqli->real_escape_string($_POST['login']);
                 $photo = rand(1, 9); // Включительно
                 $photo = 1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
-                $testLogin = $mysqli->query("SELECT user_id FROM users WHERE login = '".$login."';");
+                $testLogin = $mysqli->query("SELECT userId FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
                     relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
                     $mysqli->close();
@@ -25,12 +25,12 @@ class userM extends model{
                     $pass = hashPass($mysqli->real_escape_string($_POST['pass']));
                     $email = $mysqli->real_escape_string($_POST['email']);
                     $date = date("Y-m-d");
-                    $mysqli->query("INSERT INTO users VALUES (NULL, '".$login."', 0, '".$name."', '".$email."', '".$pass."', ".$photo.", '".$date."', '', 0);");
+                    $mysqli->query("INSERT INTO users VALUES (NULL, '".$login."', 0, '".$name."', '".$email."', '".$pass."', ".$photo.", '".$date."', 0);");
                 }
-                $id = mysqli_fetch_assoc($mysqli->query("SELECT user_id FROM users WHERE login = '".$login."';"));
+                $id = mysqli_fetch_assoc($mysqli->query("SELECT userId FROM users WHERE login = '".$login."';"));
                 $mysqli->close();
                 $cookTime = time()+(3600);
-                setcookie("id", $id['user_id'], $cookTime, "/");
+                setcookie("id", $id['userId'], $cookTime, "/");
                 setcookie("login", encode($_POST['login']), $cookTime, "/");
                 setcookie("status", encode('0'), $cookTime, "/");
                 setcookie("photo", $photo, $cookTime, "/");
@@ -50,7 +50,7 @@ class userM extends model{
                 $login = $mysqli->real_escape_string($_POST['login']);
                 $pass = $mysqli->real_escape_string($_POST['pass']);
                 $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
-                $userban = $mysqli->query("SELECT * FROM banSite WHERE loginUser = '".$login."';");
+                $userban = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
                 $user = mysqli_fetch_assoc($user1);
                 $mysqli->close();
                 if($user1->num_rows == 0 || !password_verify($pass, $user['pass']))
@@ -64,10 +64,10 @@ class userM extends model{
                     else
                         $cookTime = time()+(3600);
                     if($user['photo'] == 0)
-                        $photo = $user['user_id'];
+                        $photo = $user['userId'];
                     else 
                         $photo = $user['photo'];
-                    setcookie("id", $user['user_id'], $cookTime, "/");
+                    setcookie("id", $user['userId'], $cookTime, "/");
                     setcookie("login", encode($user['login']), $cookTime, "/");
                     setcookie("status", encode($user['status']), $cookTime, "/");
                     setcookie("photo", $photo, $cookTime, "/");
@@ -210,7 +210,7 @@ class userM extends model{
         if(!$user)
             $user = -1;
         else{
-            $lastTopics = $this->selectLastTopics($user['user_id'], 4);
+            $lastTopics = $this->selectLastTopics($user['userId'], 4);
             if($lastTopics->num_rows == 0)
                 $lastTopics = -1;
         }
@@ -226,7 +226,7 @@ class userM extends model{
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
         $count = $mysqli->real_escape_string($count);
-        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN maintopic ON topic.idMainTopic = maintopic.id WHERE topic.idUserCreator = ".$id." ORDER BY topic.topic_id DESC LIMIT ".$count.";");
+        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN unit ON topic.idUnit = unit.unitId WHERE topic.idUserCreator = ".$id." ORDER BY topic.topicId DESC LIMIT ".$count.";");
         return $topics;
     }
 
@@ -234,7 +234,7 @@ class userM extends model{
     public function userBanStat($login){
         $mysqli = openmysqli();
         $login = $mysqli->real_escape_string($login);
-        $user = $mysqli->query("SELECT * FROM banSite WHERE loginUser = '".$login."';");
+        $user = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
         if(array_key_exists('login', $_COOKIE) && $login == decode($_COOKIE['login']) && $user->num_rows != 0)
             $this->exitAction();
         $mysqli->close();
@@ -247,12 +247,12 @@ class userM extends model{
     public function deleteAccAction(){
         //krik("УДАЛЕНИЕ АККАУНТА");
         $mysqli = openmysqli();
-        $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE user_id = ".$_COOKIE['id'].";"));
+        $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE userId = ".$_COOKIE['id'].";"));
         if($deletFoto['photo'] == 0){
             $dir = $_SERVER['DOCUMENT_ROOT']."/files/img/avatar/".$_COOKIE['id'].".png";
             unlink($dir);
         }
-        $mysqli->query("DELETE FROM users WHERE user_id = ".$_COOKIE['id'].";");
+        $mysqli->query("DELETE FROM users WHERE userId = ".$_COOKIE['id'].";");
         $mysqli->close();
         setcookie('id', '', time() - 3600, '/');
         setcookie('login', '', time() - 3600, '/');

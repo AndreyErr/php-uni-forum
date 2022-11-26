@@ -6,16 +6,16 @@ class model{
 
     // Подключение файла со стандартными функциями
     protected function specialDataConnect(){
-        return require 'config/config_data.php'; // Некоторые стандартные функции
+        return require 'settings/config_data.php'; // Некоторые стандартные функции
     }
 
     // Взятие главных тем (исп в 2 моделях)
-    protected function selectMainTopics($quantity = -1){
+    protected function selectUnits($quantity = -1){
         $mysqli = openmysqli();
         if($quantity == -1)
-            $resultArr = $mysqli->query("SELECT * FROM maintopic ORDER BY id DESC;");
+            $resultArr = $mysqli->query("SELECT * FROM unit ORDER BY unitId DESC;");
         else
-            $resultArr = $mysqli->query("SELECT * FROM maintopic ORDER BY id DESC LIMIT ".$quantity.";");
+            $resultArr = $mysqli->query("SELECT * FROM unit ORDER BY unitId DESC LIMIT ".$quantity.";");
         $mysqli->close();
         return $resultArr;
     }

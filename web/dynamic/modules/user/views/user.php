@@ -19,8 +19,8 @@
           <?php echo $kay['name']?>
         </div>
         <div class="card-body">
-          <h5 class="card-title"><?php echo $kay['topic_name']?></h5>
-          <a href="/f/<?php echo $kay['topicName']?>/<?php echo $kay['topic_id']?>" class="btn btn-primary">Посмотреть</a>
+          <h5 class="card-title"><?php echo $kay['topicName']?></h5>
+          <a href="/f/<?php echo $kay['unitUrl']?>/<?php echo $kay['topicId']?>" class="btn btn-primary">Посмотреть</a>
         </div>
         <div class="card-footer text-muted">
           <?php echo $kay['createDate']?>

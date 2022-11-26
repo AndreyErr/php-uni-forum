@@ -53,9 +53,9 @@
     <?php foreach ($data['recomendedTopics'] as $kay):?>
     <div class="col-md-6" style="padding: 20px;">
       <div class="h-100 p-5 text-bg-dark rounded-3">
-        <h2><?php echo $kay['topic_name']?></h2>
+        <h2><?php echo $kay['topicName']?></h2>
         <p>Просмотров: <?php echo $kay['viewAllTime']?> | Находится в разделе "<?php echo $kay['name']?>"</p>
-        <a href="/f/<?php echo $kay['topicName']?>/<?php echo $kay['topic_id']?>"><button class="btn btn-outline-light" type="button">Посмотреть тему</button></a>
+        <a href="/f/<?php echo $kay['unitUrl']?>/<?php echo $kay['topicId']?>"><button class="btn btn-outline-light" type="button">Посмотреть тему</button></a>
       </div>
     </div>
     <?php endforeach; ?>
@@ -74,7 +74,7 @@
       <div>
         <h3 class="fs-2"><?php echo $kay['name']?></h3>
         <p><?php echo $kay['descr']?>.</p>
-        <a href="/f/<?php echo $kay['topicName']?>" class="btn btn-primary">Посмотреть про <?php echo $kay['name']?></a>
+        <a href="/f/<?php echo $kay['unitUrl']?>" class="btn btn-primary">Посмотреть про <?php echo $kay['name']?></a>
       </div>
     </div>
     <?php endforeach;?>

@@ -12,10 +12,10 @@ class mainC extends controller{
 
     // Формирование данных для представления
     private function dataCollect(){
-        $mainTopics = $this->model->selectMainTopics(6);
+        $units = $this->model->selectUnits(6);
         $recomendedTopics = $this->model->selectRecomendedTopics(2);
         $data = array(
-            "mainTop" => $mainTopics,
+            "mainTop" => $units,
             "recomendedTopics" => $recomendedTopics
         );
         $this->view->rander('main/views/'.$this->path[0], $data);

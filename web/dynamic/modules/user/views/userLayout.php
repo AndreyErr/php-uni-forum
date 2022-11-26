@@ -6,7 +6,7 @@
           <img src="/files/img/avatar/<?php // Отображение фото
 
             if($data['userstatusdig'] == -1) echo "nonUser";
-            else if($data['user']['photo'] == 0) echo $data['user']['user_id'];
+            else if($data['user']['photo'] == 0) echo $data['user']['userId'];
             else echo $data['user']['photo'];
           
           ?>.png" class="img-responsive rounded mx-auto d-block" alt="" >
@@ -208,7 +208,7 @@
         <div class="portlet light">
         <div class="row list-separated profile-stat">
           <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="uppercase profile-stat-title"><?php echo $data['user']['user_rating']?></div>
+            <div class="uppercase profile-stat-title"><?php echo $data['user']['userRating']?></div>
             <div class="uppercase profile-stat-text">Рейтинг</div>
           </div>
           <div class="col-md-4 col-sm-4 col-xs-6">

@@ -6,24 +6,24 @@ require_once 'lib/formCheck.php'; // Проверка форм
 
 class forumM extends model{
     // Взятие главных тем
-    public function selectMainTopics($quantity = -1){
-        return parent::selectMainTopics($quantity);
+    public function selectUnits($quantity = -1){
+        return parent::selectUnits($quantity);
     }
 
     // Создание главной темы
     public function addMainAction(){
         if (!empty($_POST) && array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2) {
-            if(!$_POST['name'] || !mainTopicNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
+            if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
                 relocate('/f', 3, 'Неверное заполнение некоторых полей!');
-            elseif(!mainTopicIconCheck($_POST['icon']))
+            elseif(!unitIconCheck($_POST['icon']))
                 relocate('/f', 3, 'Неправильно заполнено поле иконки!');
-            elseif(!mainTopicDescrCheck($_POST['descr']))
+            elseif(!unitDescrCheck($_POST['descr']))
                 relocate('/f', 3, 'Неправильно заполнено поле описания!');
             else{
             $mysqli = openmysqli();
             $name = $mysqli->real_escape_string($_POST['name']);
             $topUrl = $mysqli->real_escape_string(translitToUrl($_POST['name']));
-            $chechUrl = $mysqli->query("SELECT 'id' FROM maintopic WHERE topicName = '".$topUrl."';");
+            $chechUrl = $mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$topUrl."';");
             if($chechUrl->num_rows != 0){
                 $mysqli->close();
                 relocate('/f', 3, 'Топик с таким преобразованным URL ('.$name.' -> '.$topUrl.') уже существует: <a href="/f/'.$topUrl.'">'.$topUrl.'</a>!');
@@ -31,7 +31,7 @@ class forumM extends model{
             $date = date("Y-m-d");
             $icon = $mysqli->real_escape_string($_POST['icon']);
             $descr = $mysqli->real_escape_string($_POST['descr']);
-            $mysqli->query("INSERT INTO maintopic VALUES (NULL, '".$topUrl."', '".$name."', '".$descr."', '".$date."', '".$icon."');");
+            $mysqli->query("INSERT INTO unit VALUES (NULL, '".$topUrl."', '".$name."', '".$descr."', '".$date."', '".$icon."');");
             $mysqli->close();
             mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$topUrl);
             relocate('/f/'.$topUrl, 2, 'Добавлена тема <a href="/f/'.$topUrl.'">'.$name.'</a>!');
@@ -43,16 +43,16 @@ class forumM extends model{
     // Обновление главной темы
     public function changeMainAction(){
         if (!empty($_POST) && $_POST['url'] && array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2) {
-            if(!$_POST['name'] || !mainTopicNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
+            if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
                 relocate('/f/'.$_POST['url'], 3, 'Неверное заполнение некоторых полей!');
-            elseif(!mainTopicIconCheck($_POST['icon']))
+            elseif(!unitIconCheck($_POST['icon']))
                 relocate('/f/'.$_POST['url'], 3, 'Неправильно заполнено поле иконки!');
-            elseif(!mainTopicDescrCheck($_POST['descr']))
+            elseif(!unitDescrCheck($_POST['descr']))
                 relocate('/f/'.$_POST['url'], 3, 'Неправильно заполнено поле описания!');
             else{
             $mysqli = openmysqli();
             $url = $mysqli->real_escape_string($_POST['url']);
-            $chechUrl = $mysqli->query("SELECT 'id' FROM maintopic WHERE topicName = '".$url."';");
+            $chechUrl = $mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$url."';");
             if($chechUrl->num_rows == 0){
                 $mysqli->close();
                 relocate('/f/'.$url, 3, 'Топик с таким не найден');
@@ -60,7 +60,7 @@ class forumM extends model{
             $name = $mysqli->real_escape_string($_POST['name']);
             $icon = $mysqli->real_escape_string($_POST['icon']);
             $descr = $mysqli->real_escape_string($_POST['descr']);
-            $mysqli->query("UPDATE maintopic SET name = '".$name."', descr = '".$descr."', icon = '".$icon."' WHERE topicName = '".$url."';");
+            $mysqli->query("UPDATE unit SET name = '".$name."', descr = '".$descr."', icon = '".$icon."' WHERE unitUrl = '".$url."';");
             $mysqli->close();
             relocate('/f/'.$url, 2, 'Изменена тема '.$name.'!');
             }
@@ -69,10 +69,10 @@ class forumM extends model{
     }
 
     // Взятие темы
-    public function selectAllAboutMainTopic($urlName){
+    public function selectAllAboutUnit($urlName){
         $mysqli = openmysqli();
         $urlName = $mysqli->real_escape_string($urlName);
-        $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM maintopic WHERE topicName  = '".$urlName."';"));
+        $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM unit WHERE unitUrl  = '".$urlName."';"));
         $mysqli->close();
         if(!$topic)
             $topic = -1;
@@ -80,18 +80,18 @@ class forumM extends model{
     }
 
     // Создание подтемы
-    public function addTopicAction($mainTopic){
+    public function addTopicAction($unit){
         if (!empty($_POST) && array_key_exists('login', $_COOKIE)) {
             //debug($_FILES);
             if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['type'] || !$_POST['text'] || $_POST['type'] < 1 || $_POST['type'] > 2)
-                relocate('/f/'.$mainTopic, 3, 'Неверное заполнение некоторых полей!');
+                relocate('/f/'.$unit, 3, 'Неверное заполнение некоторых полей!');
             elseif(!topicTextCheck($_POST['text']))
-                relocate('/f/'.$mainTopic, 3, 'Неправильно заполнено поле сообщения!');
+                relocate('/f/'.$unit, 3, 'Неправильно заполнено поле сообщения!');
             else{
                 $fileStatus = 0;
                 //debug(count($_FILES['messageFiles']['name']));
                 if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
-                    relocate('/f/'.$mainTopic, 3, 'Слишком много файлов, можно загрузить не более 5!'); // 413 ошибка при большом запросе СДЕДАТЬ СТРАНИЦУ
+                    relocate('/f/'.$unit, 3, 'Слишком много файлов, можно загрузить не более 5!'); // 413 ошибка при большом запросе СДЕДАТЬ СТРАНИЦУ
                     exit;
                 }elseif($_FILES['messageFiles']["type"][0] != ""){
                     $files = array();
@@ -103,15 +103,15 @@ class forumM extends model{
                         $_FILES['messageFiles'] = $files;
                         $fileCheck = $this->messageFileCheck();
                         if($fileCheck != 0){
-                            relocate('/f/'.$mainTopic, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
+                            relocate('/f/'.$unit, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
                             exit;
                         }
                         $fileStatus = 1;
                         
                 }
                 $mysqli = openmysqli();
-                $chechUrl = mysqli_fetch_assoc($mysqli->query("SELECT id FROM maintopic WHERE topicName = '".$mainTopic."';"));
-                if(!$chechUrl['id']){
+                $chechUrl = mysqli_fetch_assoc($mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$unit."';"));
+                if(!$chechUrl['unitId']){
                     $mysqli->close();
                     relocate('/f', 3, 'Топик с таким преобразованным URL ('.$name.' -> '.$topUrl.') уже существует: <a href="/f/'.$topUrl.'">'.$topUrl.'</a>!');
                 }
@@ -120,53 +120,52 @@ class forumM extends model{
                 $date = date("Y-m-d");
                 $time = date("H:i:s");
                 $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
-                $mysqli->query("INSERT INTO topic VALUES (NULL, ".$_COOKIE['id'].", ".$chechUrl['id'].", '".$date."', '".$name."', ".$type.", 0, 0);");
-                $topicId = mysqli_fetch_assoc($mysqli->query("SELECT topic_id FROM topic WHERE idUserCreator = '".$_COOKIE['id']."' ORDER BY topic_id DESC;"));
+                $mysqli->query("INSERT INTO topic VALUES (NULL, ".$_COOKIE['id'].", ".$chechUrl['unitId'].", '".$date."', '".$name."', ".$type.", 0);");
+                $topicId = mysqli_fetch_assoc($mysqli->query("SELECT topicId FROM topic WHERE idUserCreator = '".$_COOKIE['id']."' ORDER BY topicId DESC;"));
                 
                 $mysqli->query("
-                CREATE TABLE messagesForTopicId".$topicId['topic_id']." (
-                    id int(11) NOT NULL AUTO_INCREMENT,
-                    idUser int(11) NOT NULL,
-                    idUserRef int(11) NOT NULL,
+                CREATE TABLE messagesForTopicId".$topicId['topicId']." (
+                    messageId int(11) NOT NULL AUTO_INCREMENT,
+                    idUser int(11) NOT NULL COMMENT 'id пользователя написавшего сообщение',
                     message text NOT NULL,
                     date date NOT NULL,
                     time time NOT NULL,
-                    rating int(11) NOT NULL,
-                    atribute int(11) NOT NULL,
-                    photo int(11) NOT NULL,
-                    PRIMARY KEY (id)
+                    rating int(11) NOT NULL COMMENT 'Рейтинг сообщения',
+                    atribute int(11) NOT NULL COMMENT 'Атрибуты (используется как индикатор ответа на вопрос)',
+                    files int(11) NOT NULL COMMENT 'Флаг наличия файлов',
+                    PRIMARY KEY (messageId)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
 
-                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topic_id']." VALUES (NULL, ".$_COOKIE['id'].", 0, '".$text."', '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
+                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topicId']." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
                 
                 $mysqli->query("
-                CREATE TABLE filesForTopicId".$topicId['topic_id']." (
-                    id int(11) NOT NULL AUTO_INCREMENT,
-                    idMessage int(11) NOT NULL,
-                    type varchar(80) NOT NULL,
-                    ext varchar(80) NOT NULL,
-                    PRIMARY KEY (id)
+                CREATE TABLE filesForTopicId".$topicId['topicId']." (
+                    fileId int(11) NOT NULL AUTO_INCREMENT,
+                    idMessage int(11) NOT NULL COMMENT 'К какому сообщению принадлежат файлы',
+                    type varchar(80) NOT NULL COMMENT 'Mime-тип файла',
+                    ext varchar(80) NOT NULL COMMENT 'Присланное расширение файла',
+                    PRIMARY KEY (fileId)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
 
-                mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId['topic_id']);
+                mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId['topicId']);
 
                 if($fileStatus == 1){
-                    $this->messageFileUpload($mainTopic, $topicId['topic_id'], 1);
+                    $this->messageFileUpload($unit, $topicId['topicId'], 1);
                 }
 
                 $mysqli->query("
-                CREATE TABLE raitingForTopicId".$topicId['topic_id']." (
-                  idRait int(11) NOT NULL AUTO_INCREMENT,
+                CREATE TABLE raitingForTopicId".$topicId['topicId']." (
+                  raitId int(11) NOT NULL AUTO_INCREMENT,
                   idMes int(11) NOT NULL,
                   idUser int(11) NOT NULL,
                   rait int(11) NOT NULL,
-                  PRIMARY KEY (idRait)
+                  PRIMARY KEY (raitId)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
                 $mysqli->close();
-                relocate('/f/'.$mainTopic.'/'.$topicId['topic_id'], 2, 'Добавлена тема <a href="/f/'.$mainTopic.'/'.$topicId['topic_id'].'">'.$name.'</a>!');
+                relocate('/f/'.$unit.'/'.$topicId['topicId'], 2, 'Добавлена тема <a href="/f/'.$unit.'/'.$topicId['topicId'].'">'.$name.'</a>!');
             }
         }else
             relocate('/f');
@@ -199,22 +198,22 @@ class forumM extends model{
     }
 
     // Загрузка файлов для сообщений
-    public function messageFileUpload($mainTopic, $topicId, $messageId){// тема, топик, id сообщения
+    public function messageFileUpload($unit, $topicId, $messageId){// тема, топик, id сообщения
         $mysqli = openmysqli();
-        $uploaddir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId."/";
+        $uploaddir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId."/";
         foreach($_FILES['messageFiles'] as $k) {
             $fileType = $k['type'];
             $fileName = $k['name'];
             $fileFormat = explode('/',$fileType)[1];
-            $mainTopic = $mysqli->real_escape_string($mainTopic);
+            $unit = $mysqli->real_escape_string($unit);
             $topicId = $mysqli->real_escape_string($topicId);
             $messageId = $mysqli->real_escape_string($messageId);
             $fileExt = explode('.',$fileName);
             $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
             $mysqli->query("INSERT INTO filesForTopicId".$topicId." VALUES (NULL, ".$messageId.", '".$fileFormat."', '".$fileExt."');");
-            $fileId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM filesForTopicId".$topicId." WHERE idMessage = ".$messageId." ORDER BY id DESC LIMIT 1;"));
+            $fileId = mysqli_fetch_assoc($mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = ".$messageId." ORDER BY fileId DESC LIMIT 1;"));
             $fileTmp = $k['tmp_name'];
-            $filename = $fileId['id'].'.'.$fileExt;
+            $filename = $fileId['fileId'].'.'.$fileExt;
             move_uploaded_file($fileTmp, $uploaddir.$filename);
         }
         $mysqli->close();
@@ -224,17 +223,17 @@ class forumM extends model{
     if (!empty($_POST) && array_key_exists('login', $_COOKIE)) {
         $mysqli = openmysqli();
         $topicId = $mysqli->real_escape_string($topicId);
-        $mainTopicSrc = mysqli_fetch_assoc($mysqli->query("SELECT idMainTopic  FROM topic WHERE topic_id  = '".$topicId."';"));
-        $mainTopicSrc = mysqli_fetch_assoc($mysqli->query("SELECT topicName FROM maintopic WHERE id = '".$mainTopicSrc['idMainTopic']."';"));
+        $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT idUnit  FROM topic WHERE topicId  = '".$topicId."';"));
+        $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$unitSrc['idUnit']."';"));
         $mysqli->close();
         if(!$_POST['text'])
-        relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Неверное заполнение некоторых полей!');
+        relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неверное заполнение некоторых полей!');
         elseif(!topicTextCheck($_POST['text']))
-            relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Неправильно заполнено поле сообщения!');
+            relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неправильно заполнено поле сообщения!');
         else{
             $fileStatus = 0;
             if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
-                relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Слишком много файлов, можно загрузить не более 5!');
+                relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Слишком много файлов, можно загрузить не более 5!');
                 exit;
             }elseif($_FILES['messageFiles']["type"][0] != ""){
                 $files = array();
@@ -246,7 +245,7 @@ class forumM extends model{
                     $_FILES['messageFiles'] = $files;
                     $fileCheck = $this->messageFileCheck();
                     if($fileCheck != 0){
-                        relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
+                        relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
                         exit;
                     }
                     $fileStatus = 1;
@@ -255,13 +254,13 @@ class forumM extends model{
             $date = date("Y-m-d");
             $time = date("H:i:s");
             $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
-            $mysqli->query("INSERT INTO messagesForTopicId".$topicId." VALUES (NULL, ".$_COOKIE['id'].", 0, '".$text."', '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
-            $messageId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM messagesForTopicId".$topicId." WHERE idUser = '".$_COOKIE['id']."' ORDER BY id DESC LIMIT 1;"));
+            $mysqli->query("INSERT INTO messagesForTopicId".$topicId." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
+            $messageId = mysqli_fetch_assoc($mysqli->query("SELECT messageId FROM messagesForTopicId".$topicId." WHERE idUser = '".$_COOKIE['id']."' ORDER BY messageId DESC LIMIT 1;"));
             if($fileStatus == 1){
-                $this->messageFileUpload($mainTopicSrc['topicName'], $topicId, $messageId['id']);
+                $this->messageFileUpload($unitSrc['unitUrl'], $topicId, $messageId['messageId']);
             }
             $mysqli->close();
-            relocate('/f/'.$mainTopicSrc['topicName'].'/'.$topicId, 2, 'Сообщение добавлено!');
+            relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 2, 'Сообщение добавлено!');
         }
     }else
         relocate('/f');
@@ -272,7 +271,7 @@ class forumM extends model{
         if(is_numeric($topicId)){
             $mysqli = openmysqli();
             $topicId = $mysqli->real_escape_string($topicId);
-            $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.user_id WHERE  topic.topic_id = '".$topicId."';"));
+            $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId WHERE  topic.topicId = '".$topicId."';"));
             $mysqli->close();
             if(!$topic)
                 $topic = -1;
@@ -283,34 +282,34 @@ class forumM extends model{
 
     // Обновление топика
     public function changeTopicAction($id){
-        if (!empty($_POST) && $_POST['name'] && $_POST['mainTopicSrc']) {
-            if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['mainTopicSrc'])
-                relocate('/f/'.$_POST['mainTopicSrc'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
+        if (!empty($_POST) && $_POST['name'] && $_POST['unitSrc']) {
+            if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['unitSrc'])
+                relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
             else{
             $mysqli = openmysqli();
             $id = $mysqli->real_escape_string($id);
-            $chechUrl = $mysqli->query("SELECT 'topic_id' FROM topic WHERE topic_id = '".$id."';");
+            $chechUrl = $mysqli->query("SELECT 'topicId' FROM topic WHERE topicId = '".$id."';");
             if($chechUrl->num_rows == 0){
                 $mysqli->close();
-                relocate('/f/'.$_POST['mainTopicSrc'].'/'.$id, 3, 'Топик с не найден!');
+                relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Топик с не найден!');
             }
             $name = $mysqli->real_escape_string($_POST['name']);
-            $mysqli->query("UPDATE topic SET topic_name = '".$name."' WHERE topic_id = '".$id."';");
+            $mysqli->query("UPDATE topic SET topicName = '".$name."' WHERE topicId = '".$id."';");
             $mysqli->close();
-            relocate('/f/'.$_POST['mainTopicSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
+            relocate('/f/'.$_POST['unitSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
             }
         }else
             relocate('/f');
     }
 
-    public function ratingChAction($movement, $mainTopic, $topicId, $message){
+    public function ratingChAction($movement, $unit, $topicId, $message){
         if (array_key_exists('id', $_COOKIE)) {
             if($movement > 1 || $movement < -1 || $movement == 0){
-                relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Ошибка оценки!');
+                relocate('/f/'.$unit.'/'.$topicId, 2, 'Ошибка оценки!');
             }else{
                 $mysqli = openmysqli();
                 $movement = $mysqli->real_escape_string($movement);
-                $mainTopic = $mysqli->real_escape_string($mainTopic);
+                $unit = $mysqli->real_escape_string($unit);
                 $topicId = $mysqli->real_escape_string($topicId);
                 $message = $mysqli->real_escape_string($message);
 
@@ -321,18 +320,18 @@ class forumM extends model{
                 //debug($checkExist);
                 if($checkExist->num_rows != 0){
                     $mysqli->close();
-                    relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Оценка уже есть, не хитри!');
+                    relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка уже есть, не хитри!');
                 }else{
-                    $mesRait = mysqli_fetch_assoc($mysqli->query("SELECT rating FROM messagesForTopicId".$topicId." WHERE id = '".$message."';"));
-                    $mysqli->query("UPDATE messagesForTopicId".$topicId." SET rating = '".$mesRait['rating'] + $movement."' WHERE id = '".$message."';");
-                    $mesUswrCreator = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE id = '".$message."';"));
-                    $userRait = mysqli_fetch_assoc($mysqli->query("SELECT user_rating FROM users WHERE user_id = '".$mesUswrCreator['idUser']."';"));
+                    $mesRait = mysqli_fetch_assoc($mysqli->query("SELECT rating FROM messagesForTopicId".$topicId." WHERE messageId = '".$message."';"));
+                    $mysqli->query("UPDATE messagesForTopicId".$topicId." SET rating = '".$mesRait['rating'] + $movement."' WHERE messageId = '".$message."';");
+                    $mesUswrCreator = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE messageId = '".$message."';"));
+                    $userRait = mysqli_fetch_assoc($mysqli->query("SELECT userRating FROM users WHERE userId = '".$mesUswrCreator['idUser']."';"));
                     if($userRait)
-                        $mysqli->query("UPDATE users SET user_rating = '".$userRait['user_rating'] + $movement."' WHERE user_id = '".$mesUswrCreator['idUser']."';");
+                        $mysqli->query("UPDATE users SET userRating = '".$userRait['userRating'] + $movement."' WHERE userId = '".$mesUswrCreator['idUser']."';");
                     $mysqli->query("INSERT INTO raitingForTopicId".$topicId." VALUES (NULL, ".$message.", ".$_COOKIE['id'].", ".$movement.");");
                 }
                 $mysqli->close();
-                relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Оценка поставлена!');
+                relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка поставлена!');
             }
         }else
             relocate('/f');
@@ -342,8 +341,8 @@ class forumM extends model{
     public function selectAllTopics($urlName){
         $mysqli = openmysqli();
         $urlName = $mysqli->real_escape_string($urlName);
-        $topic = mysqli_fetch_assoc($mysqli->query("SELECT id FROM maintopic WHERE topicName = '".$urlName."';"));
-        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.user_id WHERE topic.idMainTopic = '".$topic['id']."';");
+        $topic = mysqli_fetch_assoc($mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$urlName."';"));
+        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId WHERE topic.idUnit = '".$topic['unitId']."';");
         $mysqli->close();
         return $topics;
     }
@@ -354,17 +353,17 @@ class forumM extends model{
         $topType = -1;
         $all;
         if($type == 2){
-            $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id WHERE messagesForTopicId".$id.".atribute = 1;");
+            $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId WHERE messagesForTopicId".$id.".atribute = 1;");
             if($topMessage->num_rows == 0){
-                $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id WHERE messagesForTopicId".$id.".rating = (SELECT max(rating) FROM messagesForTopicId".$id.");");
+                $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId WHERE messagesForTopicId".$id.".rating = (SELECT max(rating) FROM messagesForTopicId".$id.");");
                 $topType = 2;
             }else{
                 $topType = 1;
             }
             $topMessage = mysqli_fetch_assoc($topMessage);
-            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id WHERE messagesForTopicId".$id.".id != ".$topMessage['id']." ORDER BY messagesForTopicId".$id.".id DESC;");
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId WHERE messagesForTopicId".$id.".messageId != ".$topMessage['messageId']." ORDER BY messagesForTopicId".$id.".messageId DESC;");
         }else{
-            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id ORDER BY messagesForTopicId".$id.".id DESC;");
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId ORDER BY messagesForTopicId".$id.".messageId DESC;");
         }
 
         $raiting = array();
@@ -376,21 +375,27 @@ class forumM extends model{
 
         $files = array();
         //array_push($files, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
-        $filesSelect = $mysqli->query("SELECT id FROM messagesForTopicId".$id." WHERE photo = 1;");
-        $allFiles = mysqli_fetch_assoc($mysqli->query("SELECT id FROM messagesForTopicId".$id." WHERE photo = 1 ORDER BY ID DESC LIMIT 1;"));
+        $filesSelect = $mysqli->query("SELECT messageId FROM messagesForTopicId".$id." WHERE files = 1;");
+        $allFiles = mysqli_fetch_assoc($mysqli->query("SELECT messageId FROM messagesForTopicId".$id." WHERE files = 1 ORDER BY messageId DESC LIMIT 1;"));
         $i = 0;
-        while ($i < $allFiles['id']){
+        while ($i < $allFiles['messageId']){
             array_push($files, "0");
             $i++;
         }
         foreach ($filesSelect as $kay){
-            $fulesForMessage = $mysqli->query("SELECT * FROM filesForTopicId".$id." WHERE idMessage = ".$kay['id'].";");
+            $fulesForMessage = $mysqli->query("SELECT * FROM filesForTopicId".$id." WHERE idMessage = ".$kay['messageId'].";");
             $fulesForMessageArr = array();
             foreach ($fulesForMessage as $kay2){
-                $arr = array('id' => $kay2['id'], 'type' => $kay2['type'], 'ext' => $kay2['ext']);
+                $arr = array('fileId' => $kay2['fileId'], 'type' => $kay2['type'], 'ext' => $kay2['ext']);
                 array_push($fulesForMessageArr,$arr);
             }
-            $files[$kay['id']] = $fulesForMessageArr;
+            $files[$kay['messageId']] = $fulesForMessageArr;
+        }
+        $i = 0;
+        while ($i < $allFiles['messageId']){
+            if($files[$i] == "0")
+                unset($files[$i]);
+            $i++;
         }
         //debug($fulesForMessageArr);
         //debug($files);
@@ -410,59 +415,59 @@ class forumM extends model{
     public function upperTopicView($id){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
-        $topicViews = mysqli_fetch_assoc($mysqli->query("SELECT viewAllTime, viewLastTime FROM topic WHERE topic_id = '".$id."';"));
-        $mysqli->query("UPDATE topic SET viewAllTime = '".++$topicViews['viewAllTime']."', viewLastTime = '".++$topicViews['viewLastTime']."' WHERE topic_id = '".$id."';");
+        $topicViews = mysqli_fetch_assoc($mysqli->query("SELECT viewAllTime FROM topic WHERE topicId = '".$id."';"));
+        $mysqli->query("UPDATE topic SET viewAllTime = '".++$topicViews['viewAllTime']."' WHERE topicId = '".$id."';");
         $mysqli->close();
     }
 
     public function countTopicMessages($id){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
-        $topicCountMessages = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(id) FROM messagesForTopicId".$id.";"));
+        $topicCountMessages = mysqli_fetch_assoc($mysqli->query("SELECT COUNT(messageId) FROM messagesForTopicId".$id.";"));
         $mysqli->close();
-        return $topicCountMessages['COUNT(id)'];
+        return $topicCountMessages['COUNT(messageId)'];
     }
 
-    public function topMesAction($mainTopic, $topicId, $message){
+    public function topMesAction($unit, $topicId, $message){
         if($message == 1){
-            relocate('/f/'.$mainTopic.'/'.$topicId, 3, 'Первое сообщение сделать ответом нельзя!');
+            relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение сделать ответом нельзя!');
         }else{
             $mysqli = openmysqli();
             $message = $mysqli->real_escape_string($message);
             $topicId = $mysqli->real_escape_string($topicId);
-            $deletedRaitAttr = $mysqli->query("SELECT id FROM messagesForTopicId".$topicId." WHERE atribute = 1;");
+            $deletedRaitAttr = $mysqli->query("SELECT messageId FROM messagesForTopicId".$topicId." WHERE atribute = 1;");
             if($deletedRaitAttr->num_rows != 0){
                 $deletedRaitAttr = mysqli_fetch_assoc($deletedRaitAttr);
-                $mysqli->query("UPDATE messagesForTopicId".$topicId." SET atribute = 0 WHERE id = ".$deletedRaitAttr['id'].";");
+                $mysqli->query("UPDATE messagesForTopicId".$topicId." SET atribute = 0 WHERE messageId = ".$deletedRaitAttr['messageId'].";");
             }
-            $mysqli->query("UPDATE messagesForTopicId".$topicId." SET atribute = 1 WHERE id = ".$message.";");
+            $mysqli->query("UPDATE messagesForTopicId".$topicId." SET atribute = 1 WHERE messageId = ".$message.";");
             $mysqli->close();
-            relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Ответ помечен, как лучший!');
+            relocate('/f/'.$unit.'/'.$topicId, 2, 'Ответ помечен, как лучший!');
         }
     }
 
 
-    public function deleteMesAction($mainTopic, $topicId, $message){
+    public function deleteMesAction($unit, $topicId, $message){
         if($message == 1){
-            relocate('/f/'.$mainTopic.'/'.$topicId, 3, 'Первое сообщение удалить нельзя!');
+            relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение удалить нельзя!');
         }else{
             $mysqli = openmysqli();
             $message = $mysqli->real_escape_string($message);
             $topicId = $mysqli->real_escape_string($topicId);
-            $deletedFiles = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM messagesForTopicId".$topicId." WHERE id  = '".$message."';"));
-            if($deletedFiles['photo'] == 1){
-                $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId."/";
-                $deletedFiles = $mysqli->query("SELECT id FROM filesForTopicId".$topicId." WHERE idMessage = '".$message."';");
+            $deletedFiles = mysqli_fetch_assoc($mysqli->query("SELECT files FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
+            if($deletedFiles['files'] == 1){
+                $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId."/";
+                $deletedFiles = $mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = '".$message."';");
                 foreach ($deletedFiles as $kay){
-                    $file = glob($dir.$kay['id'].".*");
+                    $file = glob($dir.$kay['fileId'].".*");
                     unlink($file[0]);
                 }
                 $mysqli->query("DELETE FROM filesForTopicId".$topicId." WHERE idMes = '".$message."';");
             }
             $mysqli->query("DELETE FROM raitingForTopicId".$topicId." WHERE idMessage = '".$message."';");
-            $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE id  = '".$message."';");
+            $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';");
             $mysqli->close();
-            relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Сообщение удалено!');
+            relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
         }
     } 
 
@@ -470,32 +475,32 @@ class forumM extends model{
     public function deleteTopicAction($id){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
-        $deletedTopic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE topic_id  = '".$id."';"));
-        $mainTopic = mysqli_fetch_assoc($mysqli->query("SELECT topicName FROM maintopic WHERE id = '".$deletedTopic['idMainTopic']."';"));
-        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic['topicName']."/".$id;
+        $deletedTopic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE topicId  = '".$id."';"));
+        $unit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$deletedTopic['idUnit']."';"));
+        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit['unitUrl']."/".$id;
         $this->deleteFolder($dir);
         $mysqli->query("DROP TABLE filesForTopicId".$id.";");
         $mysqli->query("DROP TABLE messagesForTopicId".$id.";");
         $mysqli->query("DROP TABLE raitingForTopicId".$id.";");
-        $mysqli->query("DELETE FROM topic WHERE topic_id  = '".$id."';");
+        $mysqli->query("DELETE FROM topic WHERE topicId  = '".$id."';");
         $mysqli->close();
-        relocate('/f/'.$mainTopic['topicName'], 2, 'Удалён топик '.$deletedTopic['topic_name'].'!');
+        relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
     }
 
     // Удаление главной темы
     public function deleteMainAction($id){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
-        $deletedSubTopics = $mysqli->query("SELECT topic_id FROM topic WHERE idMainTopic  = '".$id."';");
-        $deletedMainTopic = mysqli_fetch_assoc($mysqli->query("SELECT topicName FROM maintopic WHERE id  = '".$id."';"));
+        $deletedSubTopics = $mysqli->query("SELECT topicId FROM topic WHERE idUnit  = '".$id."';");
+        $deletedUnit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId  = '".$id."';"));
         foreach ($deletedSubTopics as $kay){
-            $this->deleteTopicAction($kay['topic_id']);
+            $this->deleteTopicAction($kay['topicId']);
         }
-        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$deletedMainTopic['topicName'];
+        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$deletedUnit['unitUrl'];
         $this->deleteFolder($dir);
-        $mysqli->query("DELETE FROM maintopic WHERE id  = '".$id."';");
+        $mysqli->query("DELETE FROM unit WHERE unitId  = '".$id."';");
         $mysqli->close();
-        relocate('/f', 2, 'Удалена тема '.$deletedMainTopic['topicName'].' со всеми подтемами!');
+        relocate('/f', 2, 'Удалена тема '.$deletedUnit['unitUrl'].' со всеми подтемами!');
     }
 
     // Удаление папки со всем содержимым

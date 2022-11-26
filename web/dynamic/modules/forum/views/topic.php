@@ -2,7 +2,7 @@
   <article>
   <div class="p-4 p-md-5 mb-4 rounded text-bg-dark">
     <div class=" px-0">
-      <h1 class="display-4"><?php echo $data["topicData"]["topic_name"]?></h1>
+      <h1 class="display-4"><?php echo $data["topicData"]["topicName"]?></h1>
       <hr>
       <p class="lead mb-0"><?php echo $data["typeTopic"][$data["topicData"]["type"]]?> от 
         <?php if($data["topicData"]["login"] != NULL): ?>
@@ -13,27 +13,27 @@
       </p>
     </div>
   </div>
-<?php if(array_key_exists('login', $_COOKIE) && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['user_id'])):?>
+<?php if(array_key_exists('login', $_COOKIE) && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['userId'])):?>
   <div class="px-1 py-1 my-1 text-center">
     <button type="button" class="btn btn-primary btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChMain">Изменить</button>
     <div class="modal fade" tabindex="-1" id="ModalChMain" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Изменить тему "<?php echo $data["topicData"]["topic_name"]?>"</h5>
+            <h5 class="modal-title">Изменить тему "<?php echo $data["topicData"]["topicName"]?>"</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/f/a/changeTopic/<?php echo $data["topicData"]["topic_id"]?>" method="post">
+            <form action="/f/a/changeTopic/<?php echo $data["topicData"]["topicId"]?>" method="post">
               <fieldset>
                 <label for="name">Главная тема (только для чтения):</label>
                 <div class="form-group"> 
-                  <input class="form-control" type="text" name="mainTopicSrc" value="<?php echo $data["mainTopicSrc"]?>" readonly/>
+                  <input class="form-control" type="text" name="unitSrc" value="<?php echo $data["unitSrc"]?>" readonly/>
                   <div id="passwordHelpBlock" class="form-text">Изменить её нельзя, для изменения пересоздайте топик в нужной теме!</div>  
                 </div> 
                 <label for="name">Название:</label>
                 <div class="form-group"> 
-                  <input class="form-control" type="text" name="name" maxlength="30" value="<?php echo $data["topicData"]["topic_name"]?>" required/>  
+                  <input class="form-control" type="text" name="name" maxlength="30" value="<?php echo $data["topicData"]["topicName"]?>" required/>  
                   <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 70. Можно использовать: a-z A-Z а-я А-Я 1-9 пробел !?-</div>
                 </div> 
                 <button type="submit" class="btn btn-primary mb-3 mt-3">Сохранить</button>
@@ -52,12 +52,12 @@
       <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Вы уверены, что хотите безвозвратно удалить тему "<?php echo $data["topicData"]["topic_name"]?>"</h5>
+            <h5 class="modal-title">Вы уверены, что хотите безвозвратно удалить тему "<?php echo $data["topicData"]["topicName"]?>"</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <p>Будет удалена эта тема и все подтемы!</p>
-            <form method="post" action="/f/a/deleteTopic/<?php echo $data["topicData"]["topic_id"]?>"><button type="submit" class="btn btn-outline-secondary btn-lg px-4 btn-danger text-light">Удалить</button></form>
+            <form method="post" action="/f/a/deleteTopic/<?php echo $data["topicData"]["topicId"]?>"><button type="submit" class="btn btn-outline-secondary btn-lg px-4 btn-danger text-light">Удалить</button></form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -73,8 +73,8 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/f">Форум</a></li>
-            <li class="breadcrumb-item"><a href="/f/<?php echo $data["mainTopicSrc"]?>"><?php echo $data["mainTopic"]?></a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?php echo $data["topicData"]["topic_name"]?></li>
+            <li class="breadcrumb-item"><a href="/f/<?php echo $data["unitSrc"]?>"><?php echo $data["unit"]?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?php echo $data["topicData"]["topicName"]?></li>
           </ol>
         </nav>
       </h5>
@@ -118,7 +118,7 @@
                       <img class="profile-photo__img" src="/files/img/avatar/<?php // Отображение фото
                         
                         if($data['messages']['topMessage']['login'] == NULL) echo "nonUser";
-                        elseif($data['messages']['topMessage']['photo'] == 0) echo $data['messages']['topMessage']['user_id'];
+                        elseif($data['messages']['topMessage']['photo'] == 0) echo $data['messages']['topMessage']['userId'];
                         else echo "1";
 
                         ?>.png"/>
@@ -131,23 +131,23 @@
                     <?php endif;?>
                       <span class="profile-info__username"><?php echo $data['messages']['topMessage']['date']?></span></a></div>
                   <div class="card-message">
-                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['id']?>"></p>
+                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['messageId']?>"></p>
                   <div class="card-message-stamp">
                     <span class="time">
-                      <?php if(array_key_exists('login', $_COOKIE) && $data['messages']['topMessage']['id'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['user_id'] || ($_COOKIE['id'] == $data['messages']['topMessage']['idUser'] && $data["nowDate"] == $data['messages']['topMessage']['date']))):?>
-                        <a href="/f/a/deleteMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $data['messages']['topMessage']['id']?>">Удалить</a>
+                      <?php if(array_key_exists('login', $_COOKIE) && $data['messages']['topMessage']['messageId'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['userId'] || ($_COOKIE['id'] == $data['messages']['topMessage']['idUser'] && $data["nowDate"] == $data['messages']['topMessage']['date']))):?>
+                        <a href="/f/a/deleteMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>">Удалить</a>
                       <?php endif;?>
-                      <?php if(array_key_exists('login', $_COOKIE) && $data['messages']['topMessage']['id'] != 1 && $data['messages']['topType'] == 2 && ($_COOKIE['id'] == $data['topicData']['user_id'])):?>
-                        <a href="/f/a/topMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $data['messages']['topMessage']['id']?>">Лучний ответ</a>
+                      <?php if(array_key_exists('login', $_COOKIE) && $data['messages']['topMessage']['messageId'] != 1 && $data['messages']['topType'] == 2 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
+                        <a href="/f/a/topMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>">Лучший ответ</a>
                       <?php endif;?>
                     </span>
 
                     <div class="row">
-                    <?php if(array_key_exists($data['messages']['topMessage']['id'], $data['messages']['files'])): foreach ($data['messages']['files'][$data['messages']['topMessage']['id']] as $kay):?>
+                    <?php if(array_key_exists($data['messages']['topMessage']['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$data['messages']['topMessage']['messageId']] as $kay):?>
                       <?php if($kay['type'] == "jpeg" || $kay['type'] == "jpg" || $kay['type'] == "png"):?>
                     <div class="col-sm-6">
                     <div class="card">
-                      <img src="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id'].".".$kay['ext']?>" class="card-img-top">
+                      <img src="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['fileId'].".".$kay['ext']?>" class="card-img-top">
                     </div>
                     </div>
                       <?php endif;?>
@@ -155,22 +155,22 @@
                     </div>
                     <ul class="list-group">
                     
-                    <?php if(array_key_exists($data['messages']['topMessage']['id'], $data['messages']['files'])): foreach ($data['messages']['files'][$data['messages']['topMessage']['id']] as $kay):?>
-                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id'].".".$kay['ext']?>"><?php echo "Файл ".$kay['ext']?></a></li>
+                    <?php if(array_key_exists($data['messages']['topMessage']['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$data['messages']['topMessage']['messageId']] as $kay):?>
+                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['fileId'].".".$kay['ext']?>"><?php echo "Файл ".$kay['ext']?></a></li>
                     <?php endforeach; endif;?>
                     </ul>
 
-                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($data['messages']['topMessage']['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
-                      <a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a>
+                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($data['messages']['topMessage']['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>" class="upvo">&#5169;</a>
                     <?php endif;?>
                     <b><?php echo $data['messages']['topMessage']['rating']?></b>
-                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($data['messages']['topMessage']['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
-                      <a href="/f/a/ratingCh/-1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="dowvo">&#5167;</a>
+                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($data['messages']['topMessage']['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>" class="dowvo">&#5167;</a>
                     <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
-                          el: '#mes<?php echo $data['messages']['topMessage']['id']?>',
+                          el: '#mes<?php echo $data['messages']['topMessage']['messageId']?>',
                           data(){
                             return{
                               markdown: "<?php echo $data['messages']['topMessage']['message']?>",
@@ -200,7 +200,7 @@
                       <img class="profile-photo__img" src="/files/img/avatar/<?php // Отображение фото
                         
                         if($kay['login'] == NULL) echo "nonUser";
-                        elseif($kay['photo'] == 0) echo $kay['user_id'];
+                        elseif($kay['photo'] == 0) echo $kay['userId'];
                         else echo "1";
 
                         ?>.png"/>
@@ -215,23 +215,23 @@
                     </a>
                   </div>
                   <div class="card-message">
-                  <p v-html="markdownToHtml" id="mes<?php echo $kay['id']?>"></p>
+                  <p v-html="markdownToHtml" id="mes<?php echo $kay['messageId']?>"></p>
                   <div class="card-message-stamp">
                     <span class="time">
-                      <?php if(array_key_exists('login', $_COOKIE) && $kay['id'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['user_id'] || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
-                        <a href="/f/a/deleteMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>">Удалить</a>
+                      <?php if(array_key_exists('login', $_COOKIE) && $kay['messageId'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['userId'] || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
+                        <a href="/f/a/deleteMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Удалить</a>
                       <?php endif;?>
-                      <?php if(array_key_exists('login', $_COOKIE) && $kay['id'] != 1 && ($_COOKIE['id'] == $data['topicData']['user_id'])):?>
-                        <a href="/f/a/topMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>">Лучний ответ</a>
+                      <?php if(array_key_exists('login', $_COOKIE) && $kay['messageId'] != 1 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
+                        <a href="/f/a/topMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Лучший ответ</a>
                       <?php endif;?>
                     </span>
 
                     <div class="row">
-                    <?php if(array_key_exists($kay['id'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['id']] as $kay2):?>
+                    <?php if(array_key_exists($kay['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['messageId']] as $kay2):?>
                       <?php if($kay2['type'] == "jpeg" || $kay2['type'] == "jpg" || $kay2['type'] == "png"):?>
                     <div class="col-sm-6">
                     <div class="card">
-                      <img src="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay2['id'].".".$kay2['ext']?>" class="card-img-top" style="max-height: 500px;">
+                      <img src="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>" class="card-img-top" style="max-height: 500px;">
                     </div>
                     </div>
                       <?php endif;?>
@@ -239,23 +239,23 @@
                     </div>
                     <ul class="list-group">
                     
-                    <?php if(array_key_exists($kay['id'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['id']] as $kay2):?>
-                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay2['id'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
+                    <?php if(array_key_exists($kay['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['messageId']] as $kay2):?>
+                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
                     <?php endforeach; endif;?>
                     </ul>
 
 
-                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
-                      <a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a>
+                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>" class="upvo">&#5169;</a>
                     <?php endif;?>
                     <b><?php echo $kay['rating']?></b>
-                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
-                      <a href="/f/a/ratingCh/-1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="dowvo">&#5167;</a>
+                    <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>" class="dowvo">&#5167;</a>
                     <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
-                          el: '#mes<?php echo $kay['id']?>',
+                          el: '#mes<?php echo $kay['messageId']?>',
                           data(){
                             return{
                               markdown: "<?php echo $kay['message']?>",
@@ -275,7 +275,7 @@
 
                 <?php if(array_key_exists('login', $_COOKIE)):?>
               <hr><h5 style="margin-top: 35px;">Добавть свой ответ:</h5>
-              <form action="/f/a/addMessage/<?php echo $data["topicData"]["topic_id"]?>" method="post" id="app" enctype="multipart/form-data">
+              <form action="/f/a/addMessage/<?php echo $data["topicData"]["topicId"]?>" method="post" id="app" enctype="multipart/form-data">
                 <div class="form-group"> 
                   <div class="mb-3">
                     <label for="exampleFormControlTextarea1" class="form-label">Первое сообщение:</label>
@@ -346,7 +346,7 @@
                 <div class="position-sticky" style="top: 6rem;">
                   <div class="p-4 mb-3 bg-light rounded">
                     <h4 class="fst-italic"><?php echo $data["typeTopic"][$data["topicData"]["type"]]?></h4>
-                    <p class="mb-0"><?php echo $data["topicData"]["topic_name"]?></p>
+                    <p class="mb-0"><?php echo $data["topicData"]["topicName"]?></p>
                   </div>
                   
                   <div class="my-3 p-3 bg-body rounded shadow-sm">
@@ -355,14 +355,14 @@
                     <img src="/files/img/avatar/<?php // Отображение фото
                         
                         if($data["topicData"]['login'] == NULL) echo "nonUser";
-                        elseif($data["topicData"]['photo'] == 0) echo $data["topicData"]['user_id'];
+                        elseif($data["topicData"]['photo'] == 0) echo $data["topicData"]['userId'];
                         else echo "1";
 
                         ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
                       <?php if($data['topicData']['login'] != NULL): ?>
                           <strong class="d-block text-gray-dark">@<?php echo $data['topicData']['login']?></strong>
-                          <?php echo $data['topicData']["user_rating"]?>
+                          <?php echo $data['topicData']["userRating"]?>
                         <?php else:?>
                           <strong class="d-block text-gray-dark"><i>Пользователь удалён</i></strong>
                         <?php endif;?>
@@ -375,14 +375,14 @@
                         <img src="/files/img/avatar/<?php // Отображение фото
                         
                         if($data['messages']['topMessage']['login'] == NULL) echo "nonUser";
-                        elseif($data['messages']['topMessage']['photo'] == 0) echo $data['messages']['topMessage']['user_id'];
+                        elseif($data['messages']['topMessage']['photo'] == 0) echo $data['messages']['topMessage']['userId'];
                         else echo "1";
 
                         ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                         <p class="pb-3 mb-0 small lh-sm border-bottom">
                           <?php if($data['messages']['topMessage']['login'] != NULL): ?>
                             <strong class="d-block text-gray-dark">@<?php echo $data['messages']['topMessage']['login']?></strong>
-                            <?php echo $data['messages']['topMessage']["user_rating"]?>
+                            <?php echo $data['messages']['topMessage']["userRating"]?>
                           <?php else:?>
                             <strong class="d-block text-gray-dark"><i>Пользователь удалён</i></strong>
                           <?php endif;?>
@@ -392,7 +392,7 @@
                     <?php endif;?>
                     <hr>
                     <a class="h4 pt-2" href="/">На главную</a><br>
-                    <a class="h4 pt-2" href="/f/<?php echo $data["mainTopicSrc"]?>"><?php echo $data["mainTopic"]?></a><br>
+                    <a class="h4 pt-2" href="/f/<?php echo $data["unitSrc"]?>"><?php echo $data["unit"]?></a><br>
                     <a class="h4 pt-2" href="/f">К списку тем</a><br>
                     <a class="h4 pt-2" href="/u">В профиль</a>
                   </div>

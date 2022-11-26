@@ -33,22 +33,22 @@ class forumC extends controller{
 
     // Страница списка главных тем
     private function mainTopListForming(){
-        $mainTopics = $this->model->selectMainTopics();
+        $units = $this->model->selectUnits();
         $data = array(
-            "mainTop" => $mainTopics
+            "mainTop" => $units
         );
         $this->view->rander('forum/views/mainTopList', $data);
     }
 
     // Страница списка топиков под главнной темой
     private function topicsListForming(){
-        $allAboutTopic = $this->model->selectAllAboutMainTopic($this->path[1]);
+        $allAboutTopic = $this->model->selectAllAboutUnit($this->path[1]);
         if($allAboutTopic != -1){
             $allTopics = $this->model->selectAllTopics($this->path[1]);
             $date = date("Y-m-d");
             $data = array(
                 "nowDate" => $date,
-                "aboutMainTopic" => $allAboutTopic,
+                "aboutUnit" => $allAboutTopic,
                 "allTopics" => $allTopics,
                 "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),
             );
@@ -63,19 +63,19 @@ class forumC extends controller{
         $allAboutTopic = $this->model->selectAllAboutTopic($this->path[2]); // Получаем всё о топике
         if($allAboutTopic != -1){
             $typeTopic = require($_SERVER['DOCUMENT_ROOT'].'/settings/topic_type.php');
-            $this->model->upperTopicView($allAboutTopic["topic_id"]); // Обновление счётчика просмотров
-            $topicViews = $this->model->countTopicMessages($allAboutTopic["topic_id"]); // Подсчёт сообщений в топике
+            $this->model->upperTopicView($allAboutTopic["topicId"]); // Обновление счётчика просмотров
+            $topicViews = $this->model->countTopicMessages($allAboutTopic["topicId"]); // Подсчёт сообщений в топике
             $selectedMessages = $this->model->selectMessages($allAboutTopic['type'], $this->path[2]); // Берём сообщения
             //debug($selectedMessages);
-            $allAboutMainTopic = $this->model->selectAllAboutMainTopic($this->path[1]);
+            $allAboutUnit = $this->model->selectAllAboutUnit($this->path[1]);
 
 
             $data = array(
                 "typeTopic" => $typeTopic,
                 'topicViews' => $topicViews,
                 "messages" => $selectedMessages,
-                "mainTopic" => $allAboutMainTopic['name'],
-                "mainTopicSrc" => $this->path[1],
+                "unit" => $allAboutUnit['name'],
+                "unitSrc" => $this->path[1],
                 "topicData" => $allAboutTopic,
                 "nowDate" => date("Y-m-d"),
 

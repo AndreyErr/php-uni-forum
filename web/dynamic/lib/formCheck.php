@@ -37,21 +37,21 @@ function emailCheck($email){
 // Для главной темы
 
 // Название
-function mainTopicNameCheck($name){
+function unitNameCheck($name){
     if(!preg_match('/^[a-zA-Zа-яА-ЯёЁ1-9\s]{2,25}$/u', $name))
         return false;
     return true;
 }
 
 // Иконка
-function mainTopicIconCheck($icon){
+function unitIconCheck($icon){
     if(!preg_match('/(<i\sclass="fa-.*\sfa-.*"><\/i>)$/u', $icon) || strlen($icon) < 10 || strlen($icon) > 70)
         return false;
     return true;
 }
 
 // Описание
-function mainTopicDescrCheck($descr){
+function unitDescrCheck($descr){
     if(!preg_match('/^[a-zA-Zа-яА-ЯёЁ1-9\s.\-\+\_\=\/\&\^\:\;\"\#\!\%\@\&\,\.\(\)]+$/u', $descr) || strlen($descr) < 10 || strlen($descr) > 400)
         return false;
     return true;
