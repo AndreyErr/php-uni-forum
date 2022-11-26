@@ -69,6 +69,7 @@ class forumC extends controller{
             //debug($selectedMessages);
             $allAboutMainTopic = $this->model->selectAllAboutMainTopic($this->path[1]);
 
+
             $data = array(
                 "typeTopic" => $typeTopic,
                 'topicViews' => $topicViews,

@@ -180,7 +180,7 @@
           <span class="badge rounded-pill text-bg-secondary"><?php echo $typeTopics[$kay['type']]?></span>
           <?php endif;?>
           <h6 class="mb-0"><?php echo $kay["topic_name"]?></h6>
-          <p class="mb-0 opacity-75">@<?php echo $kay["login"]?> - <i class="fa-solid fa-calendar-plus"></i> <?php echo $kay["createDate"]?> - <i class="fa-solid fa-eye"></i> <?php echo $kay["viewAllTime"]?></p>
+          <p class="mb-0 opacity-75"><?php echo ($kay["login"] != NULL) ? "@".$kay["login"] : "<i>Пользователь, создавший эту тему, удалён</i>" ?> - <i class="fa-solid fa-calendar-plus"></i> <?php echo $kay["createDate"]?> - <i class="fa-solid fa-eye"></i> <?php echo $kay["viewAllTime"]?></p>
         </div>
         <?php if($data['nowDate'] == $kay["createDate"]):?>
         <small class="opacity-50 text-nowrap"><span class="badge rounded-pill text-bg-danger">Новое</span></small>

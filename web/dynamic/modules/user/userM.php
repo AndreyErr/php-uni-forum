@@ -226,8 +226,20 @@ class userM extends model{
 
     // Удаление аккаунта
     public function deleteAccAction(){
-        krik("УДАЛЕНИЕ АККАУНТА");
-        //Изменение всех связанных с акк тем и постов на удалённый id
+        //krik("УДАЛЕНИЕ АККАУНТА");
+        $mysqli = openmysqli();
+        $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE user_id = ".$_COOKIE['id'].";"));
+        if($deletFoto['photo'] == 0){
+            $dir = $_SERVER['DOCUMENT_ROOT']."/files/img/avatar/".$_COOKIE['id'].".png";
+            unlink($dir);
+        }
+        $mysqli->query("DELETE FROM users WHERE user_id = ".$_COOKIE['id'].";");
+        $mysqli->close();
+        setcookie('id', '', time() - 3600, '/');
+        setcookie('login', '', time() - 3600, '/');
+        setcookie('status', '', time() - 3600, '/');
+        setcookie('photo', '', time() - 3600, '/');
+        relocate('/', 2, 'Аккаунт удалён! До новых встреч!');
         //Удаление фото юзера
         //Удаление из таблицы юзеров
         //Уничтожение сеесий

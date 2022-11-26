@@ -272,7 +272,7 @@ class forumM extends model{
         if(is_numeric($topicId)){
             $mysqli = openmysqli();
             $topicId = $mysqli->real_escape_string($topicId);
-            $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic INNER JOIN users ON topic.idUserCreator = users.user_id AND topic.topic_id = '".$topicId."';"));///////////////////////////////////////////////////////
+            $topic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.user_id WHERE  topic.topic_id = '".$topicId."';"));
             $mysqli->close();
             if(!$topic)
                 $topic = -1;
@@ -327,7 +327,8 @@ class forumM extends model{
                     $mysqli->query("UPDATE messagesForTopicId".$topicId." SET rating = '".$mesRait['rating'] + $movement."' WHERE id = '".$message."';");
                     $mesUswrCreator = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE id = '".$message."';"));
                     $userRait = mysqli_fetch_assoc($mysqli->query("SELECT user_rating FROM users WHERE user_id = '".$mesUswrCreator['idUser']."';"));
-                    $mysqli->query("UPDATE users SET user_rating = '".$userRait['user_rating'] + $movement."' WHERE user_id = '".$mesUswrCreator['idUser']."';");
+                    if($userRait)
+                        $mysqli->query("UPDATE users SET user_rating = '".$userRait['user_rating'] + $movement."' WHERE user_id = '".$mesUswrCreator['idUser']."';");
                     $mysqli->query("INSERT INTO raitingForTopicId".$topicId." VALUES (NULL, ".$message.", ".$_COOKIE['id'].", ".$movement.");");
                 }
                 $mysqli->close();
@@ -337,16 +338,12 @@ class forumM extends model{
             relocate('/f');
     }
 
-    public function selectRating(){
-
-    }
-
     // Взятие всех топиков по теме
     public function selectAllTopics($urlName){
         $mysqli = openmysqli();
         $urlName = $mysqli->real_escape_string($urlName);
         $topic = mysqli_fetch_assoc($mysqli->query("SELECT id FROM maintopic WHERE topicName = '".$urlName."';"));
-        $topics = $mysqli->query("SELECT * FROM topic INNER JOIN users ON topic.idUserCreator = users.user_id AND topic.idMainTopic = '".$topic['id']."';");
+        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.user_id WHERE topic.idMainTopic = '".$topic['id']."';");
         $mysqli->close();
         return $topics;
     }
@@ -357,17 +354,17 @@ class forumM extends model{
         $topType = -1;
         $all;
         if($type == 2){
-            $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".atribute = 1;");
+            $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id WHERE messagesForTopicId".$id.".atribute = 1;");
             if($topMessage->num_rows == 0){
-                $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".rating = (SELECT max(rating) FROM messagesForTopicId".$id.");");
+                $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id WHERE messagesForTopicId".$id.".rating = (SELECT max(rating) FROM messagesForTopicId".$id.");");
                 $topType = 2;
             }else{
                 $topType = 1;
             }
             $topMessage = mysqli_fetch_assoc($topMessage);
-            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".id != ".$topMessage['id']." ORDER BY messagesForTopicId".$id.".id DESC;");
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id WHERE messagesForTopicId".$id.".id != ".$topMessage['id']." ORDER BY messagesForTopicId".$id.".id DESC;");
         }else{
-            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id ORDER BY messagesForTopicId".$id.".id DESC;");
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.user_id ORDER BY messagesForTopicId".$id.".id DESC;");
         }
 
         $raiting = array();
