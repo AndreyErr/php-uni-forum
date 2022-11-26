@@ -14,6 +14,8 @@ class forumC extends controller{
         //debug($action);
         if($action != NULL && array_key_exists(2,$this->path) && $this->path[2] == "ratingCh"){
             $this->model->$action($this->path[3], $this->path[4], $this->path[5], $this->path[6]);
+        }elseif($action != NULL && array_key_exists(2,$this->path) && ($this->path[2] == "deleteMes" || $this->path[2] == "topMes")){
+            $this->model->$action($this->path[3], $this->path[4], $this->path[5]);
         }elseif($action != NULL && array_key_exists(3,$this->path)){
             $this->model->$action($this->path[3]);
         }elseif($action != NULL){
@@ -74,6 +76,7 @@ class forumC extends controller{
                 "mainTopic" => $allAboutMainTopic['name'],
                 "mainTopicSrc" => $this->path[1],
                 "topicData" => $allAboutTopic,
+                "nowDate" => date("Y-m-d"),
 
                 "css" => array("topic"),
                 "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),

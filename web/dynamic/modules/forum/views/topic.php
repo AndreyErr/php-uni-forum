@@ -104,9 +104,36 @@
               <p class="display-6"><strong>Ответ, помеченный автором:</strong></p>
               <?php endif;?>
                 <div class="card">
-                  <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">@<?php echo $data['messages']['topMessage']['login']?></span><span class="profile-info__username"><?php echo $data['messages']['topMessage']['datatime']?></span></a></div>
+                  <div class="card-profile">
+                    <a class="card-profile__photo" href="/u/<?php echo $data['messages']['topMessage']['login']?>">
+                      <img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/>
+                    </a>
+                    <a class="card-profile__info" href="#">
+                      <span class="profile-info__name">@<?php echo $data['messages']['topMessage']['login']?></span>
+                      <span class="profile-info__username"><?php echo $data['messages']['topMessage']['date']?></span></a></div>
                   <div class="card-message">
-                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span><a href="#" class="upvo">&#5169;</a> <?php echo $data['messages']['topMessage']['rating']?> <a href="#" class="dowvo">&#5167;</a></div>
+                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['id']?>"></p>
+                  <div class="card-message-stamp">
+                    <span class="time">
+                      <?php if($data['messages']['topMessage']['id'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['user_id'] || ($_COOKIE['id'] == $data['messages']['topMessage']['idUser'] && $data["nowDate"] == $data['messages']['topMessage']['date']))):?>
+                        <a href="/f/a/deleteMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $data['messages']['topMessage']['id']?>">Удалить</a>
+                      <?php endif;?>
+                      <?php if($data['messages']['topMessage']['id'] != 1 && $data['messages']['topType'] == 2 && ($_COOKIE['id'] == $data['topicData']['user_id'])):?>
+                        <a href="/f/a/topMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $data['messages']['topMessage']['id']?>">Лучний ответ</a>
+                      <?php endif;?>
+                    </span>
+
+
+
+                    
+                    <?php if(!array_search($data['messages']['topMessage']['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a>
+                    <?php endif;?>
+                    <b><?php echo $data['messages']['topMessage']['rating']?></b>
+                    <?php if(!array_search($data['messages']['topMessage']['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/-1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="dowvo">&#5167;</a>
+                    <?php endif;?>
+                  </div>
                     <script type="application/javascript">
                       var vm = new Vue({
                           el: '#mes<?php echo $data['messages']['topMessage']['id']?>',
@@ -125,18 +152,46 @@
                   </div>
                 </div><hr>
                 <?php endif;?>
+
+
+
                 <?php if($data['messages']['all']->num_rows == 0):?>
                 <hr><p class="display-6">Это всё ~' '~</p>
                 <?php else:?>
                 <p class="display-6">Сообщения:</p>
                 <?php foreach ($data['messages']['all'] as $kay):?>
                 <div class="card">
-                  <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">@<?php echo $kay['login']?></span><span class="profile-info__username"><?php echo $kay['datatime']?></span></a></div>
+                  <div class="card-profile">
+                    <a class="card-profile__photo" href="/u/<?php echo $kay['login']?>">
+                      <img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/>
+                    </a>
+                    <a class="card-profile__info" href="#">
+                      <span class="profile-info__name">@<?php echo $kay['login']?></span>
+                      <span class="profile-info__username"><?php echo $kay['date']?></span>
+                    </a>
+                  </div>
                   <div class="card-message">
-                  <p v-html="markdownToHtml" id="mes<?php echo $kay['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span>
-                  <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?><a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a><?php endif;?>
-                  <b><?php echo $kay['rating']?></b>
-                  <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?><a href="/f/a/ratingCh/-1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="dowvo">&#5167;</a><?php endif;?>
+                  <p v-html="markdownToHtml" id="mes<?php echo $kay['id']?>"></p>
+                  <div class="card-message-stamp">
+                    <span class="time">
+                      <?php if($kay['id'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['user_id'] || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
+                        <a href="/f/a/deleteMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>">Удалить</a>
+                      <?php endif;?>
+                      <?php if($kay['id'] != 1 && ($_COOKIE['id'] == $data['topicData']['user_id'])):?>
+                        <a href="/f/a/topMes/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>">Лучний ответ</a>
+                      <?php endif;?>
+                    </span>
+
+
+
+
+                    <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a>
+                    <?php endif;?>
+                    <b><?php echo $kay['rating']?></b>
+                    <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
+                      <a href="/f/a/ratingCh/-1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="dowvo">&#5167;</a>
+                    <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
@@ -242,13 +297,12 @@
                       </p>
                     </div></a>
                     <?php endif;?>
-                    <h6 class="border-bottom pb-2 mb-0 my-3">Топ пользователей в обсуждении</h6>
+                    <h6 class="border-bottom pb-2 mb-0 my-3">Можете посмотреть ещё:</h6>
                     <div class="d-flex text-muted pt-3">
-                      <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"/><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
                 
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
-                        <strong class="d-block text-gray-dark">@username</strong>
-                        Some more representative placeholder content, related to this other user. Another status update, perhaps.
+                        <strong class="d-block text-gray-dark">Some more representative placeholder content, related to this other user. Another status update, perhaps.</strong>
+                        @username
                       </p>
                     </div>
                     <div class="d-flex text-muted pt-3">
