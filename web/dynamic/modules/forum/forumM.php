@@ -145,6 +145,7 @@ class forumM extends model{
                     id int(11) NOT NULL AUTO_INCREMENT,
                     idMessage int(11) NOT NULL,
                     type varchar(80) NOT NULL,
+                    ext varchar(80) NOT NULL,
                     PRIMARY KEY (id)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
@@ -203,16 +204,16 @@ class forumM extends model{
         $uploaddir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic."/".$topicId."/";
         foreach($_FILES['messageFiles'] as $k) {
             $fileType = $k['type'];
+            $fileName = $k['name'];
             $fileFormat = explode('/',$fileType)[1];
             $mainTopic = $mysqli->real_escape_string($mainTopic);
             $topicId = $mysqli->real_escape_string($topicId);
             $messageId = $mysqli->real_escape_string($messageId);
-            $mysqli->query("INSERT INTO filesForTopicId".$topicId." VALUES (NULL, ".$messageId.", '".$fileFormat."');");
-            $fileId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM filesForTopicId".$topicId." WHERE idMessage = ".$messageId." ORDER BY id DESC LIMIT 1;"));
-            $fileName = $k['name'];
-            $fileTmp = $k['tmp_name'];
             $fileExt = explode('.',$fileName);
             $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
+            $mysqli->query("INSERT INTO filesForTopicId".$topicId." VALUES (NULL, ".$messageId.", '".$fileFormat."', '".$fileExt."');");
+            $fileId = mysqli_fetch_assoc($mysqli->query("SELECT id FROM filesForTopicId".$topicId." WHERE idMessage = ".$messageId." ORDER BY id DESC LIMIT 1;"));
+            $fileTmp = $k['tmp_name'];
             $filename = $fileId['id'].'.'.$fileExt;
             move_uploaded_file($fileTmp, $uploaddir.$filename);
         }
@@ -355,8 +356,6 @@ class forumM extends model{
         $topMessage = -1;
         $topType = -1;
         $all;
-        $raiting = array();
-        array_push($raiting, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
         if($type == 2){
             $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".atribute = 1;");
             if($topMessage->num_rows == 0){
@@ -370,16 +369,42 @@ class forumM extends model{
         }else{
             $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id ORDER BY messagesForTopicId".$id.".id DESC;");
         }
+
+        $raiting = array();
+        array_push($raiting, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
         $raitingCount = $mysqli->query("SELECT * FROM raitingForTopicId".$id.";");
         foreach ($raitingCount as $kay){
             array_push($raiting, $kay['idMes'].$kay['idUser']);
         }
+
+        $files = array();
+        //array_push($files, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
+        $filesSelect = $mysqli->query("SELECT id FROM messagesForTopicId".$id." WHERE photo = 1;");
+        $allFiles = mysqli_fetch_assoc($mysqli->query("SELECT id FROM messagesForTopicId".$id." WHERE photo = 1 ORDER BY ID DESC LIMIT 1;"));
+        $i = 0;
+        while ($i < $allFiles['id']){
+            array_push($files, "0");
+            $i++;
+        }
+        foreach ($filesSelect as $kay){
+            $fulesForMessage = $mysqli->query("SELECT * FROM filesForTopicId".$id." WHERE idMessage = ".$kay['id'].";");
+            $fulesForMessageArr = array();
+            foreach ($fulesForMessage as $kay2){
+                $arr = array('id' => $kay2['id'], 'type' => $kay2['type'], 'ext' => $kay2['ext']);
+                array_push($fulesForMessageArr,$arr);
+            }
+            $files[$kay['id']] = $fulesForMessageArr;
+        }
+        //debug($fulesForMessageArr);
+        //debug($files);
+
         //debug($raiting);
         $mysqli->close();
         $data = array(
             'topMessage' => $topMessage,
             'topType' => $topType,
             'raiting' => $raiting,
+            'files' => $files,
             'all' => $all
         );
         return $data;
@@ -452,7 +477,6 @@ class forumM extends model{
         $mainTopic = mysqli_fetch_assoc($mysqli->query("SELECT topicName FROM maintopic WHERE id = '".$deletedTopic['idMainTopic']."';"));
         $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$mainTopic['topicName']."/".$id;
         $this->deleteFolder($dir);
-        $mysqli->query("DROP TABLE banForTopicId".$id.";");
         $mysqli->query("DROP TABLE filesForTopicId".$id.";");
         $mysqli->query("DROP TABLE messagesForTopicId".$id.";");
         $mysqli->query("DROP TABLE raitingForTopicId".$id.";");

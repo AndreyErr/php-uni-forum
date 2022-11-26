@@ -123,9 +123,24 @@
                       <?php endif;?>
                     </span>
 
-
-
+                    <div class="row">
+                    <?php foreach ($data['messages']['files'][$data['messages']['topMessage']['id']] as $kay):?>
+                      <?php if($kay['type'] == "jpeg" || $kay['type'] == "jpg" || $kay['type'] == "png"):?>
+                    <div class="col-sm-6">
+                    <div class="card">
+                      <img src="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id'].".".$kay['ext']?>" class="card-img-top">
+                    </div>
+                    </div>
+                      <?php endif;?>
+                    <?php endforeach;?>
+                    </div>
+                    <ul class="list-group">
                     
+                    <?php foreach ($data['messages']['files'][$data['messages']['topMessage']['id']] as $kay):?>
+                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id'].".".$kay['ext']?>"><?php echo "Файл ".$kay['ext']?></a></li>
+                    <?php endforeach;?>
+                    </ul>
+
                     <?php if(!array_search($data['messages']['topMessage']['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
                       <a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a>
                     <?php endif;?>
@@ -182,7 +197,23 @@
                       <?php endif;?>
                     </span>
 
-
+                    <div class="row">
+                    <?php foreach ($data['messages']['files'][$kay['id']] as $kay2):?>
+                      <?php if($kay2['type'] == "jpeg" || $kay2['type'] == "jpg" || $kay2['type'] == "png"):?>
+                    <div class="col-sm-6">
+                    <div class="card">
+                      <img src="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay2['id'].".".$kay2['ext']?>" class="card-img-top">
+                    </div>
+                    </div>
+                      <?php endif;?>
+                    <?php endforeach;?>
+                    </div>
+                    <ul class="list-group">
+                    
+                    <?php foreach ($data['messages']['files'][$kay['id']] as $kay2):?>
+                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay2['id'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
+                    <?php endforeach;?>
+                    </ul>
 
 
                     <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?>
@@ -275,7 +306,7 @@
                   
                   <div class="my-3 p-3 bg-body rounded shadow-sm">
                     <h6 class="border-bottom pb-2 mb-0">Автор</h6>
-                    <a href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
+                    <a target="_blank" href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
                     <img src="/files/img/avatar/<?php // Отображение фото
                         //if($data['userstatusdig'] == -1) echo "nonUser";
                         if($data['topicData']['photo'] == 0) echo $data['topicData']['user_id'];
@@ -289,7 +320,7 @@
                     </div></a>
                     <?php if($data['messages']['topType'] == 1):?>
                     <h6 class="border-bottom pb-2 mb-0 my-3">Дал ответ</h6>
-                    <a href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
+                    <a target="_blank" href='/u/<?php echo $data["topicData"]["login"]?>' style="text-decoration: none;"><div class="d-flex text-muted pt-3">
                     <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
                         <strong class="d-block text-gray-dark">@<?php echo $data["topicData"]["login"]?></strong>
