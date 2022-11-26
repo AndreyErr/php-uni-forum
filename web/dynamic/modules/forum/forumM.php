@@ -162,6 +162,16 @@ class forumM extends model{
                     PRIMARY KEY (id)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
+
+                $mysqli->query("
+                CREATE TABLE raitingForTopicId".$topicId['topic_id']." (
+                  idRait int(11) NOT NULL AUTO_INCREMENT,
+                  idMes int(11) NOT NULL,
+                  idUser int(11) NOT NULL,
+                  rait int(11) NOT NULL,
+                  PRIMARY KEY (idRait)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                ");
                 $mysqli->close();
                 relocate('/f/'.$mainTopic.'/'.$topicId['topic_id'], 2, 'Добавлена тема <a href="/f/'.$mainTopic.'/'.$topicId['topic_id'].'">'.$name.'</a>!');
             }
@@ -299,6 +309,44 @@ class forumM extends model{
             relocate('/f');
     }
 
+    public function ratingChAction($movement, $mainTopic, $topicId, $message){
+        if (array_key_exists('id', $_COOKIE)) {
+            if($movement > 1 || $movement < -1 || $movement == 0){
+                relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Ошибка оценки!');
+            }else{
+                $mysqli = openmysqli();
+                $movement = $mysqli->real_escape_string($movement);
+                $mainTopic = $mysqli->real_escape_string($mainTopic);
+                $topicId = $mysqli->real_escape_string($topicId);
+                $message = $mysqli->real_escape_string($message);
+
+                // Дополнить добавлением в рейтинг юзера (возможно убрать рейтинг сообщения)
+                // Разделить модель на 3 файла
+
+                $checkExist = $mysqli->query("SELECT * FROM raitingForTopicId".$topicId." WHERE idUser = ".$_COOKIE['id']." AND idMes = '".$message."';");
+                //debug($checkExist);
+                if($checkExist->num_rows != 0){
+                    $mysqli->close();
+                    relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Оценка уже есть, не хитри!');
+                }else{
+                    $mesRait = mysqli_fetch_assoc($mysqli->query("SELECT rating FROM messagesForTopicId".$topicId." WHERE id = '".$message."';"));
+                    $mysqli->query("UPDATE messagesForTopicId".$topicId." SET rating = '".$mesRait['rating'] + $movement."' WHERE id = '".$message."';");
+                    $mesUswrCreator = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE id = '".$message."';"));
+                    $userRait = mysqli_fetch_assoc($mysqli->query("SELECT user_rating FROM users WHERE user_id = '".$mesUswrCreator['idUser']."';"));
+                    $mysqli->query("UPDATE users SET user_rating = '".$userRait['user_rating'] + $movement."' WHERE user_id = '".$mesUswrCreator['idUser']."';");
+                    $mysqli->query("INSERT INTO raitingForTopicId".$topicId." VALUES (NULL, ".$message.", ".$_COOKIE['id'].", ".$movement.");");
+                }
+                $mysqli->close();
+                relocate('/f/'.$mainTopic.'/'.$topicId, 2, 'Оценка поставлена!');
+            }
+        }else
+            relocate('/f');
+    }
+
+    public function selectRating(){
+
+    }
+
     // Взятие всех топиков по теме
     public function selectAllTopics($urlName){
         $mysqli = openmysqli();
@@ -314,6 +362,8 @@ class forumM extends model{
         $topMessage = -1;
         $topType = -1;
         $all;
+        $raiting = array();
+        array_push($raiting, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
         if($type == 2){
             $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".atribute = 1;");
             if($topMessage->num_rows == 0){
@@ -323,14 +373,20 @@ class forumM extends model{
                 $topType = 1;
             }
             $topMessage = mysqli_fetch_assoc($topMessage);
-            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".id != ".$topMessage['id'].";");
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id AND messagesForTopicId".$id.".id != ".$topMessage['id']." ORDER BY messagesForTopicId".$id.".rating DESC;");
         }else{
-            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id;");
+            $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." INNER JOIN users ON messagesForTopicId".$id.".idUser = users.user_id ORDER BY messagesForTopicId".$id.".id DESC;");
         }
+        $raitingCount = $mysqli->query("SELECT * FROM raitingForTopicId".$id.";");
+        foreach ($raitingCount as $kay){
+            array_push($raiting, $kay['idMes'].$kay['idUser']);
+        }
+        //debug($raiting);
         $mysqli->close();
         $data = array(
             'topMessage' => $topMessage,
             'topType' => $topType,
+            'raiting' => $raiting,
             'all' => $all
         );
         return $data;
@@ -363,6 +419,7 @@ class forumM extends model{
         $mysqli->query("DROP TABLE banForTopicId".$id.";");
         $mysqli->query("DROP TABLE filesForTopicId".$id.";");
         $mysqli->query("DROP TABLE messagesForTopicId".$id.";");
+        $mysqli->query("DROP TABLE raitingForTopicId".$id.";");
         $mysqli->query("DELETE FROM topic WHERE topic_id  = '".$id."';");
         $mysqli->close();
         relocate('/f/'.$mainTopic['topicName'], 2, 'Удалён топик '.$deletedTopic['topic_name'].'!');

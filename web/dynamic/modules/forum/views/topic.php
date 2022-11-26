@@ -106,7 +106,7 @@
                 <div class="card">
                   <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">@<?php echo $data['messages']['topMessage']['login']?></span><span class="profile-info__username"><?php echo $data['messages']['topMessage']['datatime']?></span></a></div>
                   <div class="card-message">
-                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span><a href="#" class="upvo">&#5169;</a> <?php echo $data['messages']['topMessage']['user_rating']?> <a href="#" class="dowvo">&#5167;</a></div>
+                  <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span><a href="#" class="upvo">&#5169;</a> <?php echo $data['messages']['topMessage']['rating']?> <a href="#" class="dowvo">&#5167;</a></div>
                     <script type="application/javascript">
                       var vm = new Vue({
                           el: '#mes<?php echo $data['messages']['topMessage']['id']?>',
@@ -133,7 +133,11 @@
                 <div class="card">
                   <div class="card-profile"><a class="card-profile__photo" href="#"><img class="profile-photo__img" src="https://s1.1zoom.ru/big7/984/Canada_Parks_Lake_Mountains_Forests_Scenery_Rocky_567540_2560x1600.jpg"/></a><a class="card-profile__info" href="#"><span class="profile-info__name">@<?php echo $kay['login']?></span><span class="profile-info__username"><?php echo $kay['datatime']?></span></a></div>
                   <div class="card-message">
-                  <p v-html="markdownToHtml" id="mes<?php echo $kay['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span><a href="#" class="upvo">&#5169;</a> <?php echo $kay['user_rating']?> <a href="#" class="dowvo">&#5167;</a></div>
+                  <p v-html="markdownToHtml" id="mes<?php echo $kay['id']?>"></p><div class="card-message-stamp"><span class="time">Действие</span>
+                  <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?><a href="/f/a/ratingCh/1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="upvo">&#5169;</a><?php endif;?>
+                  <b><?php echo $kay['rating']?></b>
+                  <?php if(!array_search($kay['id'].$_COOKIE['id'], $data['messages']["raiting"])):?><a href="/f/a/ratingCh/-1/<?php echo $data["mainTopicSrc"]?>/<?php echo $data["topicData"]["topic_id"]?>/<?php echo $kay['id']?>" class="dowvo">&#5167;</a><?php endif;?>
+                  </div>
                     <script type="application/javascript">
                       var vm = new Vue({
                           el: '#mes<?php echo $kay['id']?>',
@@ -193,6 +197,15 @@
                     this.focus = true;
                     document.getElementById('input').focus();
                   }
+                }
+              });
+              $(window).scroll(function() {
+                sessionStorage.scrollTop = $(this).scrollTop();
+              });
+
+              $(document).ready(function() {
+                if (sessionStorage.scrollTop != "undefined") {
+                  $(window).scrollTop(sessionStorage.scrollTop);
                 }
               });
               </script>

@@ -12,7 +12,9 @@ class forumC extends controller{
     
     private function dataCollect($page,$action){
         //debug($action);
-        if($action != NULL && array_key_exists(3,$this->path)){
+        if($action != NULL && array_key_exists(2,$this->path) && $this->path[2] == "ratingCh"){
+            $this->model->$action($this->path[3], $this->path[4], $this->path[5], $this->path[6]);
+        }elseif($action != NULL && array_key_exists(3,$this->path)){
             $this->model->$action($this->path[3]);
         }elseif($action != NULL){
             $this->model->$action();

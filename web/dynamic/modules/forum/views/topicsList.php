@@ -190,5 +190,9 @@
     <?php endforeach;?>
     <?php endif;?>
   </div>
-
+  <script>
+    $(document).ready(function() {
+      sessionStorage.clear();
+              });
+  </script>
 </main>
