@@ -368,6 +368,18 @@ class forumM extends model{
         return $topics;
     }
 
+    // Взятие всех топиков по по форме поиска
+    public function findTopicsAction(){
+        if($_POST['find']){
+            $mysqli = openmysqli();
+            $find = $mysqli->real_escape_string($_POST['find']);
+            $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId LEFT JOIN unit ON topic.idUnit = unit.unitId WHERE topic.topicName LIKE '%".$find."%';");
+            $mysqli->close();
+            return $topics;
+        }else
+            return -1;
+    }
+
     public function selectMessages($type, $id){
         $mysqli = openmysqli();
         $topMessage = -1;

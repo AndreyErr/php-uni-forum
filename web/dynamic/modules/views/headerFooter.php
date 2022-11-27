@@ -48,6 +48,9 @@
                   </li>
                 </ul>
               </div>
+              <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="/f/find" method="POST">
+                <input type="search" class="form-control" placeholder="Search..." name="find" aria-label="Search">
+              </form>
 <?php if(array_key_exists('login', $_COOKIE)): // Шапка для авторизированных ?>
               <div class="collapse navbar-collapse justify-content-end" id="navbarScroll">
                 <ul class="navbar-nav navbar-nav-scroll" style="--bs-scroll-height: 100px;">

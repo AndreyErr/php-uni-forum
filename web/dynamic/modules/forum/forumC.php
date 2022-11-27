@@ -12,7 +12,9 @@ class forumC extends controller{
     
     private function dataCollect($page,$action){
         //debug($action);
-        if($action != NULL && array_key_exists(2,$this->path) && $this->path[2] == "ratingCh"){
+        if(array_key_exists(1,$this->path) && $this->path[1] == "find"){
+            $this->findTopListForming();
+        }elseif($action != NULL && array_key_exists(2,$this->path) && $this->path[2] == "ratingCh"){
             $this->model->$action($this->path[3], $this->path[4], $this->path[5], $this->path[6]);
         }elseif($action != NULL && array_key_exists(2,$this->path) && ($this->path[2] == "deleteMes" || $this->path[2] == "topMes")){
             $this->model->$action($this->path[3], $this->path[4], $this->path[5]);
@@ -38,6 +40,17 @@ class forumC extends controller{
             "mainTop" => $units
         );
         $this->view->rander('forum/views/mainTopList', $data);
+    }
+
+    // Страница поиска тем
+    private function findTopListForming(){
+        $allTopics = $this->model->findTopicsAction();
+        $date = date("Y-m-d");
+        $data = array(
+            "nowDate" => $date,
+            "allTopics" => $allTopics,
+        );
+        $this->view->rander('forum/views/topicsFindList', $data);
     }
 
     // Страница списка топиков под главнной темой
