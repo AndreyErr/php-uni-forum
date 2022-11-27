@@ -111,9 +111,9 @@ class forumM extends model{
                 }
                 $mysqli = openmysqli();
                 $chechUrl = mysqli_fetch_assoc($mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$unit."';"));
-                if(!$chechUrl['unitId']){
+                if($chechUrl == NULL){
                     $mysqli->close();
-                    relocate('/f', 3, 'Топик с таким преобразованным URL ('.$name.' -> '.$topUrl.') уже существует: <a href="/f/'.$topUrl.'">'.$topUrl.'</a>!');
+                    relocate('/f', 3, 'Темы не существует!');
                 }
                 $name = $mysqli->real_escape_string($_POST['name']);
                 $type = $mysqli->real_escape_string($_POST['type']);
@@ -351,7 +351,7 @@ class forumM extends model{
         $mysqli = openmysqli();
         $topMessage = -1;
         $topType = -1;
-        $all;
+        $all = -1;
         if($type == 2){
             $topMessage = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId WHERE messagesForTopicId".$id.".atribute = 1;");
             if($topMessage->num_rows == 0){
@@ -378,25 +378,28 @@ class forumM extends model{
         $filesSelect = $mysqli->query("SELECT messageId FROM messagesForTopicId".$id." WHERE files = 1;");
         $allFiles = mysqli_fetch_assoc($mysqli->query("SELECT messageId FROM messagesForTopicId".$id." WHERE files = 1 ORDER BY messageId DESC LIMIT 1;"));
         $i = 0;
-        while ($i < $allFiles['messageId']){
-            array_push($files, "0");
-            $i++;
-        }
-        foreach ($filesSelect as $kay){
-            $fulesForMessage = $mysqli->query("SELECT * FROM filesForTopicId".$id." WHERE idMessage = ".$kay['messageId'].";");
-            $fulesForMessageArr = array();
-            foreach ($fulesForMessage as $kay2){
-                $arr = array('fileId' => $kay2['fileId'], 'type' => $kay2['type'], 'ext' => $kay2['ext']);
-                array_push($fulesForMessageArr,$arr);
+        if($allFiles != NULL)
+            while ($i < $allFiles['messageId']){
+                array_push($files, "0");
+                $i++;
             }
-            $files[$kay['messageId']] = $fulesForMessageArr;
-        }
+        if($allFiles != NULL)
+            foreach ($filesSelect as $kay){
+                $fulesForMessage = $mysqli->query("SELECT * FROM filesForTopicId".$id." WHERE idMessage = ".$kay['messageId'].";");
+                $fulesForMessageArr = array();
+                foreach ($fulesForMessage as $kay2){
+                    $arr = array('fileId' => $kay2['fileId'], 'type' => $kay2['type'], 'ext' => $kay2['ext']);
+                    array_push($fulesForMessageArr,$arr);
+                }
+                $files[$kay['messageId']] = $fulesForMessageArr;
+            }
         $i = 0;
-        while ($i < $allFiles['messageId']){
-            if($files[$i] == "0")
-                unset($files[$i]);
-            $i++;
-        }
+        if($allFiles != NULL)
+            while ($i < $allFiles['messageId']){
+                if($files[$i] == "0")
+                    unset($files[$i]);
+                $i++;
+            }
         //debug($fulesForMessageArr);
         //debug($files);
 

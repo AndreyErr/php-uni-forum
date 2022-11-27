@@ -28,7 +28,7 @@
 
       <?php if($data['userstatusdig'] != -1): // Запрет отображения для несуществующего пользователя?>
 
-        <?php if($data['user']['name'] == $data['decodedMyLogin'] || (array_key_exists('status',$_COOKIE) && decode($_COOKIE['status']) == 2)): // Отображение кнопок под фото?>
+        <?php if($data['user']['login'] == $data['decodedMyLogin'] || (array_key_exists('status',$_COOKIE) && decode($_COOKIE['status']) == 2)): // Отображение кнопок под фото?>
 
           <div class="profile-userbuttons">
 

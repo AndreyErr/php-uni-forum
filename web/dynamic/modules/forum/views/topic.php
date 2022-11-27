@@ -115,11 +115,11 @@
                 <div class="card">
                   <div class="card-profile">
                     <a class="card-profile__photo" href="<?php echo ($data['messages']['topMessage']['login'] != NULL) ? "/u/".$data['messages']['topMessage']['login'] : "#" ?>">
-                      <img class="profile-photo__img" src="/files/img/avatar/<?php // Отображение фото
+                      <img class="profile-photo__img img-top" src="/files/img/avatar/<?php // Отображение фото
                         
                         if($data['messages']['topMessage']['login'] == NULL) echo "nonUser";
                         elseif($data['messages']['topMessage']['photo'] == 0) echo $data['messages']['topMessage']['userId'];
-                        else echo "1";
+                        else echo $data['messages']['topMessage']['photo'];
 
                         ?>.png"/>
                     </a>
@@ -197,11 +197,11 @@
                 <div class="card">
                   <div class="card-profile">
                     <a class="card-profile__photo" href="<?php echo ($kay['login'] != NULL) ? "/u/".$kay['login'] : "#" ?>">
-                      <img class="profile-photo__img" src="/files/img/avatar/<?php // Отображение фото
+                      <img class="profile-photo__img img-top" src="/files/img/avatar/<?php // Отображение фото
                         
                         if($kay['login'] == NULL) echo "nonUser";
                         elseif($kay['photo'] == 0) echo $kay['userId'];
-                        else echo "1";
+                        else echo $kay['photo'];
 
                         ?>.png"/>
                     </a>
@@ -356,7 +356,7 @@
                         
                         if($data["topicData"]['login'] == NULL) echo "nonUser";
                         elseif($data["topicData"]['photo'] == 0) echo $data["topicData"]['userId'];
-                        else echo "1";
+                        else echo $data["topicData"]['photo'];
 
                         ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
@@ -376,7 +376,7 @@
                         
                         if($data['messages']['topMessage']['login'] == NULL) echo "nonUser";
                         elseif($data['messages']['topMessage']['photo'] == 0) echo $data['messages']['topMessage']['userId'];
-                        else echo "1";
+                        else echo $data['messages']['topMessage']['photo'];
 
                         ?>.png" alt="X" width="72" height="72" class="img-responsive rounded-circle img-top" style="margin-right: 10px;">
                         <p class="pb-3 mb-0 small lh-sm border-bottom">

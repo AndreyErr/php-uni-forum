@@ -9,7 +9,7 @@ services:
       - ./web/dynamic:/var/www/app
       - ./server-config/apache/ports.conf:/etc/apache2/ports.conf
       - ./server-config/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
-      - ./server-config/apache/php.ini:/usr/local/etc/php.ini
+      - ./server-config/apache/php.ini:/usr/local/etc/php/php.ini
 
   nginx:
     image: nginx
@@ -35,3 +35,10 @@ services:
       - 8082:80
     environment:
       - PMA_ARBITRARY=1
+
+  redis:
+    container_name: redis
+    image: redis:alpine3.16
+    restart: always
+    ports:
+      - "6379:6379"

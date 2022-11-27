@@ -15,8 +15,8 @@ class userM extends model{
                 $mysqli = openmysqli();
                 $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
                 $login = $mysqli->real_escape_string($_POST['login']);
-                $photo = rand(1, 9); // Включительно
-                $photo = 1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
+                $photo = rand(-1, -9); // Включительно
+                $photo = -1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
                 $testLogin = $mysqli->query("SELECT userId FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
                     relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
@@ -172,8 +172,8 @@ class userM extends model{
         $uploaddir = '/files/img/avatar/';
         if ($_COOKIE['photo'] != 0) {
             if ($_COOKIE['photo'] >= 0) {
-                $photo = rand(1, 9); // Вулючительно
-                $photo = 1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
+                $photo = rand(-1, -9); // Вулючительно
+                $photo = -1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
                 $mysqli = openmysqli();
                 $mysqli->query("UPDATE users SET photo = ".$photo." WHERE login = '".decode($_COOKIE['login'])."';");
                 $mysqli->close();
