@@ -3,14 +3,14 @@
 <div class="container col-xxl-9 px-4 py-5">
 <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
     <div class="col-10 col-sm-8 col-lg-6">
-      <img src="https://fullhdpictures.com/wp-content/uploads/2016/12/Peregrine-falcon-Wallpapers-HD.jpg" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
+      <img src="/src/img/mainTop<?php echo $data['upImage']?>.png" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
     </div>
     <div class="col-lg-6">
-      <h1 class="display-5 fw-bold lh-1 mb-3">Responsive left-aligned hero with image</h1>
-      <p class="lead">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</p>
+      <h1 class="display-5 fw-bold lh-1 mb-3">Добро пожаловать на IT forum</h1>
+      <p class="lead">Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p>
       <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-        <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Primary</button>
-        <button type="button" class="btn btn-outline-secondary btn-lg px-4">Default</button>
+        <a href="/f"><button type="button" class="btn btn-primary btn-lg px-4 me-md-2">На форум</button></a>
+        <a href="/u"><button type="button" class="btn btn-outline-secondary btn-lg px-4">В аккаунт</button></a>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@
   <div class="row align-items-center g-lg-5 py-5">
     <div class="col-lg-7 text-center text-lg-start">
       <h1 class="display-4 fw-bold lh-1 mb-3">Войти qwerty123#</h1>
-      <p class="col-lg-10 fs-4">Войдите в свой аккаунт для полного доступа к IT forum.</p>
+      <p class="col-lg-10 fs-4">Войдите в свой аккаунт для полного доступа к IT forum. Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p>
     </div>
     <div class="col-md-10 mx-auto col-lg-5">
       <form class="p-4 p-md-5 border rounded-3 bg-light text-center" action="/user/a/authorize" method="post">
@@ -36,7 +36,7 @@
           <input type="checkbox" class="form-check-input" id="rememb" name="rememb" value="yes">
           <label class="form-check-label" for="rememb">Запомнить меня в этом браузере</label>
         </div>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Войти</button>
         <hr class="my-4">
         <small class="text-muted">Нет аккаутна? <a href="/u/reg">Создайте!</a></small>
       </form>
@@ -45,7 +45,7 @@
 </div>
 <?php endif; ?>
 
-<?php if(is_object($data['recomendedTopics'])): ?>
+<?php if(is_object($data['recomendedTopics'])): // Рекомендации, если они есть ?>
 <!--Топ обсуждения главной страницы-->
 <div class="container px-4">
   <h2 class="pb-2 border-bottom">Топ темы</h2>

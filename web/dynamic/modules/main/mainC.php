@@ -16,6 +16,7 @@ class mainC extends controller{
         $recomendedTopics = $this->model->selectRecomendedTopics(2);
         $data = array(
             "mainTop" => $units,
+            "upImage" => rand(1, 5),
             "recomendedTopics" => $recomendedTopics
         );
         $this->view->rander('main/views/'.$this->path[0], $data);

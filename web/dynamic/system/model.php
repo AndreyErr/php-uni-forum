@@ -19,4 +19,10 @@ class model{
         $mysqli->close();
         return $resultArr;
     }
+
+    public function relocate($page, $status = -1, $message = ''){
+        if($status != -1)
+            $_SESSION['message'] = [$status, $message];
+        header('Location: '.$page);
+    }
 }

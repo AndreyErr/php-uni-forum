@@ -1,5 +1,5 @@
 <?php
-// Small bug fix
+
 namespace controllers;
 
 use system\controller;
@@ -54,7 +54,7 @@ class forumC extends controller{
             );
             $this->view->rander('forum/views/topicsList', $data);
         }else{
-            relocate('/f', 3, 'Тема не найдена!');
+            parent::relocate('/f', 3, 'Тема не найдена!');
         }
     }
 
@@ -85,7 +85,7 @@ class forumC extends controller{
             );
             $this->view->rander('forum/views/topic', $data);
         }else{
-            relocate('/f', 3, 'Топик не найден!');
+            parent::relocate('/f', 3, 'Топик не найден!');
         }
     }
 }

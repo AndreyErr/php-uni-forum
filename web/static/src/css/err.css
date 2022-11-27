@@ -1,4 +1,4 @@
-/*Скролбар стили*/
+/* Скролбар стили */
 body::-webkit-scrollbar {
   width: 12px;
 }
@@ -10,7 +10,8 @@ body::-webkit-scrollbar-thumb {
   border-radius: 0;
   border: 0;
 }
-/*Стили ошибки*/
+
+/* Стили ошибки */
 .containerError {
   display: -webkit-box;
   display: -ms-flexbox;

@@ -14,6 +14,7 @@ class route{
     // Выбор контроллера (по первому параметру ссылки)
     public function router($path){
         $page = $path[0] = $this->selectControllerByPage($path[0]);
+        $this->chAccess($page);
         $controller = $this->checkController($path);
         $model = $this->checkModel($path);
         if($controller != "-1" && $model != "-1"){
@@ -22,12 +23,12 @@ class route{
             $controllerClass = new $controller($page, $action);
         }    
         else
-            krik("//////////Ошибка контроллер или модель не найдена");
+            header('Location: /err/404.html');
     }
 
     // Преобразование страницы
     public function selectControllerByPage($page){
-        if ($page == "" || $page == "about")
+        if ($page == "" || $page == "main" || $page == "error")
             $page = "main";
         if ($page == "f" || $page == "forum")
             $page = "forum";
@@ -70,5 +71,13 @@ class route{
                 return $act;
         }
         return NULL;
+    }
+
+    // Проверка на доступ к модулю
+    public function chAccess($module){
+        $access = (require_once 'settings/access.php')['modules']; // Массив доступа к модулям
+        if(array_key_exists($module, $access))
+            if(!array_key_exists('id', $_COOKIE) || array_search(decode($_COOKIE['status']), $access[$module]) === false)
+                header('Location: /err/404.html');
     }
 }

@@ -5,6 +5,7 @@ use system\model;
 require_once 'lib/formCheck.php'; // Проверка форм
 
 class forumM extends model{
+    
     // Взятие главных тем
     public function selectUnits($quantity = -1){
         return parent::selectUnits($quantity);
@@ -14,19 +15,19 @@ class forumM extends model{
     public function addMainAction(){
         if (!empty($_POST) && array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2) {
             if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
-                relocate('/f', 3, 'Неверное заполнение некоторых полей!');
+                parent::relocate('/f', 3, 'Неверное заполнение некоторых полей!');
             elseif(!unitIconCheck($_POST['icon']))
-                relocate('/f', 3, 'Неправильно заполнено поле иконки!');
+                parent::relocate('/f', 3, 'Неправильно заполнено поле иконки!');
             elseif(!unitDescrCheck($_POST['descr']))
-                relocate('/f', 3, 'Неправильно заполнено поле описания!');
+                parent::relocate('/f', 3, 'Неправильно заполнено поле описания!');
             else{
             $mysqli = openmysqli();
             $name = $mysqli->real_escape_string($_POST['name']);
-            $topUrl = $mysqli->real_escape_string(translitToUrl($_POST['name']));
+            $topUrl = $mysqli->real_escape_string($this->translitToUrl($_POST['name']));
             $chechUrl = $mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$topUrl."';");
             if($chechUrl->num_rows != 0){
                 $mysqli->close();
-                relocate('/f', 3, 'Топик с таким преобразованным URL ('.$name.' -> '.$topUrl.') уже существует: <a href="/f/'.$topUrl.'">'.$topUrl.'</a>!');
+                parent::relocate('/f', 3, 'Топик с таким преобразованным URL ('.$name.' -> '.$topUrl.') уже существует: <a href="/f/'.$topUrl.'">'.$topUrl.'</a>!');
             }
             $date = date("Y-m-d");
             $icon = $mysqli->real_escape_string($_POST['icon']);
@@ -34,38 +35,58 @@ class forumM extends model{
             $mysqli->query("INSERT INTO unit VALUES (NULL, '".$topUrl."', '".$name."', '".$descr."', '".$date."', '".$icon."');");
             $mysqli->close();
             mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$topUrl);
-            relocate('/f/'.$topUrl, 2, 'Добавлена тема <a href="/f/'.$topUrl.'">'.$name.'</a>!');
+            parent::relocate('/f/'.$topUrl, 2, 'Добавлена тема <a href="/f/'.$topUrl.'">'.$name.'</a>!');
             }
         }else
-            relocate('/f');
+        parent::relocate('/f');
+    }
+
+    public function translitToUrl($value){
+        $converter = array(
+            'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
+            'е' => 'e',    'ё' => 'e',    'ж' => 'zh',   'з' => 'z',    'и' => 'i',
+            'й' => 'i',    'к' => 'k',    'л' => 'l',    'м' => 'm',    'н' => 'n',
+            'о' => 'o',    'п' => 'p',    'р' => 'r',    'с' => 's',    'т' => 't',
+            'у' => 'u',    'ф' => 'f',    'х' => 'h',    'ц' => 'c',    'ч' => 'ch',
+            'ш' => 'sh',   'щ' => 'sch',  'ь' => '',     'ы' => 'y',    'ъ' => '',
+            'э' => 'e',    'ю' => 'yu',   'я' => 'ya',
+        );
+     
+        $value = mb_strtolower($value);
+        $value = strtr($value, $converter);
+        $value = mb_ereg_replace('[^-0-9a-z]', '-', $value);
+        $value = mb_ereg_replace('[-]+', '-', $value);
+        $value = trim($value, '-');	
+     
+        return $value;
     }
 
     // Обновление главной темы
     public function changeMainAction(){
         if (!empty($_POST) && $_POST['url'] && array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2) {
             if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
-                relocate('/f/'.$_POST['url'], 3, 'Неверное заполнение некоторых полей!');
+                parent::relocate('/f/'.$_POST['url'], 3, 'Неверное заполнение некоторых полей!');
             elseif(!unitIconCheck($_POST['icon']))
-                relocate('/f/'.$_POST['url'], 3, 'Неправильно заполнено поле иконки!');
+                parent::relocate('/f/'.$_POST['url'], 3, 'Неправильно заполнено поле иконки!');
             elseif(!unitDescrCheck($_POST['descr']))
-                relocate('/f/'.$_POST['url'], 3, 'Неправильно заполнено поле описания!');
+                parent::relocate('/f/'.$_POST['url'], 3, 'Неправильно заполнено поле описания!');
             else{
             $mysqli = openmysqli();
             $url = $mysqli->real_escape_string($_POST['url']);
             $chechUrl = $mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$url."';");
             if($chechUrl->num_rows == 0){
                 $mysqli->close();
-                relocate('/f/'.$url, 3, 'Топик с таким не найден');
+                parent::relocate('/f/'.$url, 3, 'Топик с таким не найден');
             }
             $name = $mysqli->real_escape_string($_POST['name']);
             $icon = $mysqli->real_escape_string($_POST['icon']);
             $descr = $mysqli->real_escape_string($_POST['descr']);
             $mysqli->query("UPDATE unit SET name = '".$name."', descr = '".$descr."', icon = '".$icon."' WHERE unitUrl = '".$url."';");
             $mysqli->close();
-            relocate('/f/'.$url, 2, 'Изменена тема '.$name.'!');
+            parent::relocate('/f/'.$url, 2, 'Изменена тема '.$name.'!');
             }
         }else
-            relocate('/f');
+            parent::relocate('/f');
     }
 
     // Взятие темы
@@ -84,14 +105,14 @@ class forumM extends model{
         if (!empty($_POST) && array_key_exists('login', $_COOKIE)) {
             //debug($_FILES);
             if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['type'] || !$_POST['text'] || $_POST['type'] < 1 || $_POST['type'] > 2)
-                relocate('/f/'.$unit, 3, 'Неверное заполнение некоторых полей!');
+                parent::relocate('/f/'.$unit, 3, 'Неверное заполнение некоторых полей!');
             elseif(!topicTextCheck($_POST['text']))
-                relocate('/f/'.$unit, 3, 'Неправильно заполнено поле сообщения!');
+                parent::relocate('/f/'.$unit, 3, 'Неправильно заполнено поле сообщения!');
             else{
                 $fileStatus = 0;
                 //debug(count($_FILES['messageFiles']['name']));
                 if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
-                    relocate('/f/'.$unit, 3, 'Слишком много файлов, можно загрузить не более 5!'); // 413 ошибка при большом запросе СДЕДАТЬ СТРАНИЦУ
+                    parent::relocate('/f/'.$unit, 3, 'Слишком много файлов, можно загрузить не более 5!'); // 413 ошибка при большом запросе СДЕДАТЬ СТРАНИЦУ
                     exit;
                 }elseif($_FILES['messageFiles']["type"][0] != ""){
                     $files = array();
@@ -103,7 +124,7 @@ class forumM extends model{
                         $_FILES['messageFiles'] = $files;
                         $fileCheck = $this->messageFileCheck();
                         if($fileCheck != 0){
-                            relocate('/f/'.$unit, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
+                            parent::relocate('/f/'.$unit, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
                             exit;
                         }
                         $fileStatus = 1;
@@ -113,7 +134,7 @@ class forumM extends model{
                 $chechUrl = mysqli_fetch_assoc($mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$unit."';"));
                 if($chechUrl == NULL){
                     $mysqli->close();
-                    relocate('/f', 3, 'Темы не существует!');
+                    parent::relocate('/f', 3, 'Темы не существует!');
                 }
                 $name = $mysqli->real_escape_string($_POST['name']);
                 $type = $mysqli->real_escape_string($_POST['type']);
@@ -165,10 +186,10 @@ class forumM extends model{
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
                 $mysqli->close();
-                relocate('/f/'.$unit.'/'.$topicId['topicId'], 2, 'Добавлена тема <a href="/f/'.$unit.'/'.$topicId['topicId'].'">'.$name.'</a>!');
+                parent::relocate('/f/'.$unit.'/'.$topicId['topicId'], 2, 'Добавлена тема <a href="/f/'.$unit.'/'.$topicId['topicId'].'">'.$name.'</a>!');
             }
         }else
-            relocate('/f');
+            parent::relocate('/f');
     }
 
     // Проверка файлов для сообщений
@@ -227,13 +248,13 @@ class forumM extends model{
         $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$unitSrc['idUnit']."';"));
         $mysqli->close();
         if(!$_POST['text'])
-        relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неверное заполнение некоторых полей!');
+        parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неверное заполнение некоторых полей!');
         elseif(!topicTextCheck($_POST['text']))
-            relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неправильно заполнено поле сообщения!');
+            parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неправильно заполнено поле сообщения!');
         else{
             $fileStatus = 0;
             if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
-                relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Слишком много файлов, можно загрузить не более 5!');
+                parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Слишком много файлов, можно загрузить не более 5!');
                 exit;
             }elseif($_FILES['messageFiles']["type"][0] != ""){
                 $files = array();
@@ -245,7 +266,7 @@ class forumM extends model{
                     $_FILES['messageFiles'] = $files;
                     $fileCheck = $this->messageFileCheck();
                     if($fileCheck != 0){
-                        relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
+                        parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
                         exit;
                     }
                     $fileStatus = 1;
@@ -260,10 +281,10 @@ class forumM extends model{
                 $this->messageFileUpload($unitSrc['unitUrl'], $topicId, $messageId['messageId']);
             }
             $mysqli->close();
-            relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 2, 'Сообщение добавлено!');
+            parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 2, 'Сообщение добавлено!');
         }
     }else
-        relocate('/f');
+        parent::relocate('/f');
     }
 
     // Взятие всего о топике
@@ -284,28 +305,28 @@ class forumM extends model{
     public function changeTopicAction($id){
         if (!empty($_POST) && $_POST['name'] && $_POST['unitSrc']) {
             if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['unitSrc'])
-                relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
+                parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
             else{
             $mysqli = openmysqli();
             $id = $mysqli->real_escape_string($id);
             $chechUrl = $mysqli->query("SELECT 'topicId' FROM topic WHERE topicId = '".$id."';");
             if($chechUrl->num_rows == 0){
                 $mysqli->close();
-                relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Топик с не найден!');
+                parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Топик с не найден!');
             }
             $name = $mysqli->real_escape_string($_POST['name']);
             $mysqli->query("UPDATE topic SET topicName = '".$name."' WHERE topicId = '".$id."';");
             $mysqli->close();
-            relocate('/f/'.$_POST['unitSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
+            parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
             }
         }else
-            relocate('/f');
+            parent::relocate('/f');
     }
 
     public function ratingChAction($movement, $unit, $topicId, $message){
         if (array_key_exists('id', $_COOKIE)) {
             if($movement > 1 || $movement < -1 || $movement == 0){
-                relocate('/f/'.$unit.'/'.$topicId, 2, 'Ошибка оценки!');
+                parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Ошибка оценки!');
             }else{
                 $mysqli = openmysqli();
                 $movement = $mysqli->real_escape_string($movement);
@@ -320,7 +341,7 @@ class forumM extends model{
                 //debug($checkExist);
                 if($checkExist->num_rows != 0){
                     $mysqli->close();
-                    relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка уже есть, не хитри!');
+                    parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка уже есть, не хитри!');
                 }else{
                     $mesRait = mysqli_fetch_assoc($mysqli->query("SELECT rating FROM messagesForTopicId".$topicId." WHERE messageId = '".$message."';"));
                     $mysqli->query("UPDATE messagesForTopicId".$topicId." SET rating = '".$mesRait['rating'] + $movement."' WHERE messageId = '".$message."';");
@@ -331,10 +352,10 @@ class forumM extends model{
                     $mysqli->query("INSERT INTO raitingForTopicId".$topicId." VALUES (NULL, ".$message.", ".$_COOKIE['id'].", ".$movement.");");
                 }
                 $mysqli->close();
-                relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка поставлена!');
+                parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка поставлена!');
             }
         }else
-            relocate('/f');
+            parent::relocate('/f');
     }
 
     // Взятие всех топиков по теме
@@ -433,7 +454,7 @@ class forumM extends model{
 
     public function topMesAction($unit, $topicId, $message){
         if($message == 1){
-            relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение сделать ответом нельзя!');
+            parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение сделать ответом нельзя!');
         }else{
             $mysqli = openmysqli();
             $message = $mysqli->real_escape_string($message);
@@ -445,14 +466,14 @@ class forumM extends model{
             }
             $mysqli->query("UPDATE messagesForTopicId".$topicId." SET atribute = 1 WHERE messageId = ".$message.";");
             $mysqli->close();
-            relocate('/f/'.$unit.'/'.$topicId, 2, 'Ответ помечен, как лучший!');
+            parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Ответ помечен, как лучший!');
         }
     }
 
 
     public function deleteMesAction($unit, $topicId, $message){
         if($message == 1){
-            relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение удалить нельзя!');
+            parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение удалить нельзя!');
         }else{
             $mysqli = openmysqli();
             $message = $mysqli->real_escape_string($message);
@@ -470,7 +491,7 @@ class forumM extends model{
             $mysqli->query("DELETE FROM raitingForTopicId".$topicId." WHERE idMessage = '".$message."';");
             $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';");
             $mysqli->close();
-            relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
+            parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
         }
     } 
 
@@ -487,7 +508,7 @@ class forumM extends model{
         $mysqli->query("DROP TABLE raitingForTopicId".$id.";");
         $mysqli->query("DELETE FROM topic WHERE topicId  = '".$id."';");
         $mysqli->close();
-        relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
+        parent::relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
     }
 
     // Удаление главной темы
@@ -503,7 +524,7 @@ class forumM extends model{
         $this->deleteFolder($dir);
         $mysqli->query("DELETE FROM unit WHERE unitId  = '".$id."';");
         $mysqli->close();
-        relocate('/f', 2, 'Удалена тема '.$deletedUnit['unitUrl'].' со всеми подтемами!');
+        parent::relocate('/f', 2, 'Удалена тема '.$deletedUnit['unitUrl'].' со всеми подтемами!');
     }
 
     // Удаление папки со всем содержимым

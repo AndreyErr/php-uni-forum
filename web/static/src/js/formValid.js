@@ -1,10 +1,11 @@
+// Валидация формы регистрации
 const form = document.getElementById('form');
 const fname = document.getElementById('name');
 const login = document.getElementById('login');
 const email = document.getElementById('email');
 const password = document.getElementById('pass');
 const password2 = document.getElementById('pass2');
-che = 0;
+che = 0; // Статус проверки
 
 form.addEventListener('submit', e => {
 	e.preventDefault();
@@ -31,6 +32,7 @@ function checkInputs() {
             setSuccessFor(fname);
         }
     }
+
     if(login){
         const loginValue = login.value.trim();
         if(loginValue === '') {
@@ -43,6 +45,7 @@ function checkInputs() {
             setSuccessFor(login);
         }
     }
+
     if(email){
         const emailValue = email.value.trim();
         if(emailValue === '') {
@@ -58,6 +61,7 @@ function checkInputs() {
             setSuccessFor(email);
         }
     }
+
     if(password){
         const passwordValue = password.value.trim();
         if(passwordValue === '') {
@@ -70,6 +74,7 @@ function checkInputs() {
             setSuccessFor(password);
         }
     }
+
     if(password2){
         const passwordValue = password.value.trim();
         const password2Value = password2.value.trim();

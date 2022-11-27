@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-6">
             <form action="/user/a/reg" method="post" id="formReg">
-            <fieldset><legend class="text-center">Valid information is required to register. <span class="req"><small> required *</small></span></legend>
+            <fieldset><legend class="text-center">Регистрация</legend>
             <label for="name"><span class="req">* </span> Имя: </label>
             <div class="form-group">
                 <input type="text" name="name" id="name" maxlength="25" class="form-control" placeholder="Андрей"/> 
@@ -49,7 +49,7 @@
         </div><!-- ends col-6 -->
         <div class="col-md-6">
             <h1 class="page-header">Регистрация на форум</h1>
-            <p>Вы в одном шаге от обсуждения мира IT qwerty123#</p>                           
+            <p>Вы в одном шаге от обсуждения мира IT qwerty123# Зарегестрируйтесь и получите полноый доступ к IT forum. Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p>                           
         </div>           
     </div>
 </main>

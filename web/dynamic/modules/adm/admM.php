@@ -34,11 +34,11 @@ class admM extends model{
         $user = mysqli_fetch_assoc($user1);
         if($user1->num_rows == 0 || $userBanAlready->num_rows > 0 || $user['status'] == 2){
             $mysqli->close();
-            relocate('/adm/users', 3, 'Ошибка бана!');
+            parent::relocate('/adm/users', 3, 'Ошибка бана!');
         }
         $mysqli->query("INSERT INTO usersBanOnSite VALUES (NULL, '".$login."');");
         $mysqli->close();
-        relocate('/adm/users', 2, 'Пользователь заблокирован!');
+        parent::relocate('/adm/users', 2, 'Пользователь заблокирован!');
     }
 
     // Разблокировка пользователя на сайте
@@ -50,12 +50,12 @@ class admM extends model{
         $user = mysqli_fetch_assoc($user1);
         if($user1->num_rows == 0 || $userBanAlready->num_rows == 0){
             $mysqli->close();
-            relocate('/adm/users', 3, 'Ошибка разбана!');
+            parent::relocate('/adm/users', 3, 'Ошибка разбана!');
         }
         $date = date("Y-m-d");
         $mysqli->query("DELETE FROM usersBanOnSite WHERE loginUser = '".$login."';");
         $mysqli->close();
-        relocate('/adm/users', 2, 'Пользователь разблокирован!');
+        parent::relocate('/adm/users', 2, 'Пользователь разблокирован!');
     }
 
     // Изменение статуса пользователя
@@ -63,21 +63,21 @@ class admM extends model{
         if (!empty($_POST)) {
             $specdata = model::specialDataConnect(); // Для получения логина главного админа
             if(!$_POST['login'] || $_POST['stat'] < 0 || $_POST['stat'] > 3 || $_POST['login'] == $specdata['UNBAN_LOGIN'])
-                relocate('/adm', 3, 'Что-то не так!');
+                parent::relocate('/adm', 3, 'Что-то не так!');
             else{
                 $mysqli = openmysqli();
                 $login = $mysqli->real_escape_string($_POST['login']);
                 $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
                 if($user1->num_rows == 0){
                     $mysqli->close();  
-                    relocate('/', 3, 'Такого логина не существует!');
+                    parent::relocate('/', 3, 'Такого логина не существует!');
                 }else{
                     $mysqli->query("UPDATE users SET status = '".$_POST['stat']."' WHERE login = '".$login."';");
                     $mysqli->close();
-                    relocate('/adm', 2, 'Статус пользователя изменён!');
+                    parent::relocate('/adm', 2, 'Статус пользователя изменён!');
                 }
             }
         }else
-            relocate('/');
+            parent::relocate('/');
     }
 }

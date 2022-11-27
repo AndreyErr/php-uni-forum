@@ -5,10 +5,10 @@ body{
   min-height: 100%;
   background-color: #dcdcdc00;
 }
-.noneBlock{ /*Пустой блок за шапкой*/
+.noneBlock{ /* Пустой блок за шапкой */
   height: 70px;
 }
-.img-top{
+.img-top{ /* Отображение аватарки */
   float: none;
   object-fit: cover;
 }
@@ -16,7 +16,7 @@ footer{
   width: 100%;
 }
 
-/*Скролбар стили*/
+/* Скролбар стили */
 body::-webkit-scrollbar {
   width: 12px;
 }

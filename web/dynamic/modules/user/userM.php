@@ -10,7 +10,7 @@ class userM extends model{
     public function regAction(){
         if (!empty($_POST)) {
             if(!passCheck($_POST['pass']) || $_POST['pass'] != $_POST['pass2'] || !nameCheck($_POST['name']) || !loginCheck($_POST['login']) || !emailCheck($_POST['email']))
-                relocate('/u/reg', 3, 'Ошибка регистрации: неправильный формат некоторых полей!');
+                parent::relocate('/u/reg', 3, 'Ошибка регистрации: неправильный формат некоторых полей!');
             else{
                 $mysqli = openmysqli();
                 $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
@@ -19,7 +19,7 @@ class userM extends model{
                 $photo = -1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
                 $testLogin = $mysqli->query("SELECT userId FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
-                    relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
+                    parent::relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
                     $mysqli->close();
                 }else{
                     $pass = hashPass($mysqli->real_escape_string($_POST['pass']));
@@ -34,17 +34,17 @@ class userM extends model{
                 setcookie("login", encode($_POST['login']), $cookTime, "/");
                 setcookie("status", encode('0'), $cookTime, "/");
                 setcookie("photo", $photo, $cookTime, "/");
-                relocate('/u', 2, 'Добро пожаловать на форум, '.$name);
+                parent::relocate('/u', 2, 'Добро пожаловать на форум, '.$name);
             }
         }else
-            relocate('/u/reg');
+            parent::relocate('/u/reg');
     }
 
     // Авторизация пользователя
     public function authorizeAction(){
         if (!empty($_POST)) {
             if(!$_POST['pass'] || !loginCheck($_POST['login']))
-                relocate('/', 3, 'Неверные логин или пароль!');
+                parent::relocate('/', 3, 'Неверные логин или пароль!');
             else{
                 $mysqli = openmysqli();
                 $login = $mysqli->real_escape_string($_POST['login']);
@@ -54,9 +54,9 @@ class userM extends model{
                 $user = mysqli_fetch_assoc($user1);
                 $mysqli->close();
                 if($user1->num_rows == 0 || !password_verify($pass, $user['pass']))
-                    relocate('/', 3, 'Неверные логин или пароль или пользователя не существует!');
+                    parent::relocate('/', 3, 'Неверные логин или пароль или пользователя не существует!');
                 elseif($userban->num_rows != 0){
-                    relocate('/', 3, 'Данный аккаунт заблокирован на сайте!');
+                    parent::relocate('/', 3, 'Данный аккаунт заблокирован на сайте!');
                 }else{
                     $cookTime = 0;
                     if(array_key_exists('rememb', $_POST) && $_POST['rememb'] == "yes")
@@ -71,34 +71,34 @@ class userM extends model{
                     setcookie("login", encode($user['login']), $cookTime, "/");
                     setcookie("status", encode($user['status']), $cookTime, "/");
                     setcookie("photo", $photo, $cookTime, "/");
-                    relocate('/u');
+                    parent::relocate('/u');
                 }
             }
         }else
-            relocate('/');
+            parent::relocate('/');
     }
 
     // Смена имени
     public function changeNameAction(){
         if (!empty($_POST) || $_COOKIE['login']) {
             if(!nameCheck($_POST['name']))
-                relocate('/u', 3, 'Неправильный формат имени!');
+                parent::relocate('/u', 3, 'Неправильный формат имени!');
             else{
                 $mysqli = openmysqli();
                 $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
                 $mysqli->query("UPDATE users SET name = '".$name."' WHERE login = '".decode($_COOKIE['login'])."';");
                 $mysqli->close();
-                relocate('/u', 2, 'Имя изменено на '.$name);
+                parent::relocate('/u', 2, 'Имя изменено на '.$name);
             }
         }else
-            relocate('/u');
+            parent::relocate('/u');
     }
 
     // Смена пароля
     public function changePassAction(){
         if (!empty($_POST)) {
             if(!$_POST['oldPass'] || !passCheck($_POST['pass']) || $_POST['pass'] != $_POST['pass2'])
-                relocate('/u', 3, 'Неправильный формат нового пароля или проверка повторения пароля не прошла!');
+                parent::relocate('/u', 3, 'Неправильный формат нового пароля или проверка повторения пароля не прошла!');
             else{
                 $mysqli = openmysqli();
                 $oldPass = $mysqli->real_escape_string($_POST['oldPass']);
@@ -106,30 +106,30 @@ class userM extends model{
                 $testPass = mysqli_fetch_assoc($mysqli->query("SELECT pass FROM users WHERE login = '".decode($_COOKIE['login'])."';"));
                 if(!$testPass['pass'] || !password_verify($oldPass, $testPass['pass'])){
                     $mysqli->close();
-                    relocate('/u', 3, 'Неверный старый пароль! Вспомните его для смены или создайте новый аккаунт!');
+                    parent::relocate('/u', 3, 'Неверный старый пароль! Вспомните его для смены или создайте новый аккаунт!');
                 }else
                     $mysqli->query("UPDATE users SET pass = '".$pass."' WHERE login = '".decode($_COOKIE['login'])."';");
                 $mysqli->close();
-                relocate('/u', 2, 'Пароль был изменён!');
+                parent::relocate('/u', 2, 'Пароль был изменён!');
             }
         }else
-            relocate('/u');
+            parent::relocate('/u');
     }
 
     // Смена email
     public function changeEmailAction(){
         if (!empty($_POST)) {
             if(!emailCheck($_POST['email']))
-                relocate('/u', 3, 'Неправильный формат email!');
+                parent::relocate('/u', 3, 'Неправильный формат email!');
             else{
                 $mysqli = openmysqli();
                 $email = $mysqli->real_escape_string($_POST['email']);
                 $mysqli->query("UPDATE users SET email = '".$email."' WHERE login = '".decode($_COOKIE['login'])."';");
                 $mysqli->close();
-                relocate('/u', 2, 'Email изменён на '.$email);
+                parent::relocate('/u', 2, 'Email изменён на '.$email);
             }
         }else
-            relocate('/u');
+            parent::relocate('/u');
     }
 
     // Изменение аватарки
@@ -159,12 +159,12 @@ class userM extends model{
                 $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
                 $mysqli->close();
                 setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
-                relocate('/u', 2, "Файл загружен!");
+                parent::relocate('/u', 2, "Файл загружен!");
             }else{
-                relocate('/u', 3, $error."!");
+                parent::relocate('/u', 3, $error."!");
             }
         }else
-            relocate('/u');
+            parent::relocate('/u');
     }
 
     // Удаление аватарки
@@ -179,11 +179,11 @@ class userM extends model{
                 $mysqli->close();
                 unlink($_SERVER['DOCUMENT_ROOT'].$uploaddir.$_COOKIE['photo'].".png");
                 setcookie("photo", $photo, time()+(3600), "/");
-                relocate('/u', 2, 'Аватар удалён!');
+                parent::relocate('/u', 2, 'Аватар удалён!');
             }else
-                relocate('/u', 3, 'Вы не загружали аватарку :(');
+                parent::relocate('/u', 3, 'Вы не загружали аватарку :(');
         }else
-            relocate('/u');
+            parent::relocate('/u');
     }
     
     // Выход из аккаунта
@@ -193,9 +193,9 @@ class userM extends model{
             setcookie('login', '', time() - 3600, '/');
             setcookie('status', '', time() - 3600, '/');
             setcookie('photo', '', time() - 3600, '/');
-            relocate('/');
+            parent::relocate('/');
         }else
-            relocate('/', 3, 'Вы не в аккаунте, чтоб из него выходить!');
+            parent::relocate('/', 3, 'Вы не в аккаунте, чтоб из него выходить!');
     }
 
     // Всё о пользователе
@@ -258,7 +258,7 @@ class userM extends model{
         setcookie('login', '', time() - 3600, '/');
         setcookie('status', '', time() - 3600, '/');
         setcookie('photo', '', time() - 3600, '/');
-        relocate('/', 2, 'Аккаунт удалён! До новых встреч!');
+        parent::relocate('/', 2, 'Аккаунт удалён! До новых встреч!');
         //Удаление фото юзера
         //Удаление из таблицы юзеров
         //Уничтожение сеесий
