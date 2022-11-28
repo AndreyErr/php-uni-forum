@@ -7,17 +7,18 @@ use system\controller;
 class userC extends controller{
     public function __construct($page, $action){ // $page - вызванный контроллер, $path[0] - требуемая страница
         parent::__construct($page, $action);
-        $this->dataCollect($page, $action);
+        $this->pageSelect($page, $action);
     }
 
-    // Формирование данных для представления
-    private function dataCollect($page,$action){
+    // Выбор страницы
+    private function pageSelect($page,$action){
         if(!array_key_exists(1,$this->path)) $this->path[1] = "";
 
+        // Действие
         if($action != NULL){
             $this->model->$action();
 
-        }else if($this->path[1] == "reg" || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
+        }else if(($this->path[1] == "reg" && !chAccess("reg")) || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
             $this->regForming();
             
         }else if($this->path[1] != "" ){
@@ -38,7 +39,7 @@ class userC extends controller{
             "js" => $js
         );
 
-        $this->view->rander('user/views/regisration', $dataToView);
+        $this->view->rander('user/views/regisration', $dataToView, '', 'Регистрация');
     }
 
     // Формирование страницы пользователя
@@ -74,6 +75,6 @@ class userC extends controller{
             "decodedMyLogin" => $myLogin
         );
 
-        $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout');
+        $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout', '@'.$allAboutActualUser['allAboutUser']['login']);
     }
 }

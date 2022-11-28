@@ -6,7 +6,9 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item"><a href="/adm" class="nav-link text-white" aria-current="page">Главная</a></li>
+      <?php if(chAccess("ban")): ?>
       <li><a href="/adm/users" class="nav-link text-white">Пользователи</a></li>
+      <?php endif; ?>
     </ul>
   </div>
   <div class="container">

@@ -6,7 +6,7 @@
       <p class="lead mb-4"><?php echo $data["aboutUnit"]["descr"]?></p>
       <?php if(array_key_exists('status', $_COOKIE)):?>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <?php if(decode($_COOKIE['status']) == 2):?>
+        <?php if(chAccess("unit")):?>
         <button type="button" class="btn btn-primary btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChMain">Изменить</button>
         <div class="modal fade" tabindex="-1" id="ModalChMain" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm-down">

@@ -7,16 +7,16 @@ use system\controller;
 class admC extends controller{
     public function __construct($page, $action){
         parent::__construct($page, $action);
-        $this->dataCollect($page, $action);
+        $this->pageSelect($page, $action);
     }
 
-    // Формирование данных для представления
-    private function dataCollect($page,$action){
+    // Выбор страницы
+    private function pageSelect($page,$action){
         if($action != NULL && array_key_exists(1,$this->path) && array_key_exists(2,$this->path) && array_key_exists(3,$this->path)){
             $this->model->$action($this->path[3]);
         }elseif($action != NULL){
             $this->model->$action();
-        }elseif(array_key_exists(1,$this->path) && $this->path[1] == "users")
+        }elseif(array_key_exists(1,$this->path) && $this->path[1] == "users" && chAccess("ban"))
             $this->usersPage();
         else
             $this->admPage();
@@ -30,7 +30,7 @@ class admC extends controller{
             "css" => $css, 
             "js" => $js
         );
-        $this->view->rander('adm/views/adm', $dataToView, 'adm/views/admLayout');
+        $this->view->rander('adm/views/adm', $dataToView, 'adm/views/admLayout', 'Админ панель');
     }
 
     // Формирование страницы с пользователями
@@ -45,6 +45,6 @@ class admC extends controller{
             "allUsers" => $allUsers,
             "users" => $users
         );
-        $this->view->rander('adm/views/users', $dataToView, 'adm/views/admLayout');
+        $this->view->rander('adm/views/users', $dataToView, 'adm/views/admLayout', 'Админ панель - пользователи');
     }
 }

@@ -13,7 +13,7 @@
       </p>
     </div>
   </div>
-<?php if(array_key_exists('login', $_COOKIE) && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['userId'])):?>
+<?php if(chAccess("controlTopic") || $_COOKIE['id'] == $data['topicData']['userId']):?>
   <div class="px-1 py-1 my-1 text-center">
     <button type="button" class="btn btn-primary btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChMain">Изменить</button>
     <div class="modal fade" tabindex="-1" id="ModalChMain" aria-hidden="true">
@@ -134,10 +134,10 @@
                   <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['messageId']?>"></p>
                   <div class="card-message-stamp">
                     <span class="time">
-                      <?php if(array_key_exists('login', $_COOKIE) && $data['messages']['topMessage']['messageId'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['userId'] || ($_COOKIE['id'] == $data['messages']['topMessage']['idUser'] && $data["nowDate"] == $data['messages']['topMessage']['date']))):?>
+                      <?php if(chAccess("topic") && $data['messages']['topMessage']['messageId'] != 1 && (chAccess("controlTopic") || ($_COOKIE['id'] == $data['messages']['topMessage']['idUser'] && $data["nowDate"] == $data['messages']['topMessage']['date']))):?>
                         <a href="/f/a/deleteMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>">Удалить</a>
                       <?php endif;?>
-                      <?php if(array_key_exists('login', $_COOKIE) && $data['messages']['topMessage']['messageId'] != 1 && $data['messages']['topType'] == 2 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
+                      <?php if(chAccess("topic") && $data['messages']['topMessage']['messageId'] != 1 && $data['messages']['topType'] == 2 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
                         <a href="/f/a/topMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>">Лучший ответ</a>
                       <?php endif;?>
                     </span>
@@ -218,10 +218,10 @@
                   <p v-html="markdownToHtml" id="mes<?php echo $kay['messageId']?>"></p>
                   <div class="card-message-stamp">
                     <span class="time">
-                      <?php if(array_key_exists('login', $_COOKIE) && $kay['messageId'] != 1 && (decode($_COOKIE['status']) >= 1 || $_COOKIE['id'] == $data['topicData']['userId'] || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
+                      <?php if(chAccess("topic") && $kay['messageId'] != 1 && (chAccess("controlTopic") || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
                         <a href="/f/a/deleteMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Удалить</a>
                       <?php endif;?>
-                      <?php if(array_key_exists('login', $_COOKIE) && $kay['messageId'] != 1 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
+                      <?php if(chAccess("topic") && $data['messages']['topType'] == 2 && $kay['messageId'] != 1 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
                         <a href="/f/a/topMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Лучший ответ</a>
                       <?php endif;?>
                     </span>

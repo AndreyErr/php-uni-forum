@@ -13,7 +13,7 @@ class forumM extends model{
 
     // Создание главной темы
     public function addMainAction(){
-        if (!empty($_POST) && array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2) {
+        if (chAccess("unit") && !empty($_POST)) {
             if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
                 parent::relocate('/f', 3, 'Неверное заполнение некоторых полей!');
             elseif(!unitIconCheck($_POST['icon']))
@@ -63,7 +63,7 @@ class forumM extends model{
 
     // Обновление главной темы
     public function changeMainAction(){
-        if (!empty($_POST) && $_POST['url'] && array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2) {
+        if (chAccess("unit") && !empty($_POST) && $_POST['url']) {
             if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
                 parent::relocate('/f/'.$_POST['url'], 3, 'Неверное заполнение некоторых полей!');
             elseif(!unitIconCheck($_POST['icon']))
@@ -102,7 +102,7 @@ class forumM extends model{
 
     // Создание подтемы
     public function addTopicAction($unit){
-        if (!empty($_POST) && array_key_exists('login', $_COOKIE)) {
+        if (!empty($_POST) && chAccess("topic")) {
             //debug($_FILES);
             if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['type'] || !$_POST['text'] || $_POST['type'] < 1 || $_POST['type'] > 2)
                 parent::relocate('/f/'.$unit, 3, 'Неверное заполнение некоторых полей!');
@@ -240,8 +240,9 @@ class forumM extends model{
         $mysqli->close();
     }
 
+    // Создание сообщения
     public function addMessageAction($topicId){
-    if (!empty($_POST) && array_key_exists('login', $_COOKIE)) {
+    if (chAccess("topic") && !empty($_POST) && array_key_exists('login', $_COOKIE)) {
         $mysqli = openmysqli();
         $topicId = $mysqli->real_escape_string($topicId);
         $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT idUnit  FROM topic WHERE topicId  = '".$topicId."';"));
@@ -303,21 +304,25 @@ class forumM extends model{
 
     // Обновление топика
     public function changeTopicAction($id){
-        if (!empty($_POST) && $_POST['name'] && $_POST['unitSrc']) {
+        if (!empty($_POST) && $_POST['name'] && $_POST['unitSrc'] && chAccess("topic")) {
             if(!$_POST['name'] || !topicNameCheck($_POST['name']) || !$_POST['unitSrc'])
                 parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Неверное заполнение некоторых полей!');
             else{
-            $mysqli = openmysqli();
-            $id = $mysqli->real_escape_string($id);
-            $chechUrl = $mysqli->query("SELECT 'topicId' FROM topic WHERE topicId = '".$id."';");
-            if($chechUrl->num_rows == 0){
-                $mysqli->close();
-                parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Топик с не найден!');
-            }
-            $name = $mysqli->real_escape_string($_POST['name']);
-            $mysqli->query("UPDATE topic SET topicName = '".$name."' WHERE topicId = '".$id."';");
-            $mysqli->close();
-            parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
+                $mysqli = openmysqli();
+                $id = $mysqli->real_escape_string($id);
+                $chechUrl = $mysqli->query("SELECT * FROM topic WHERE topicId = '".$id."';");
+                if($chechUrl->num_rows == 0){
+                    $mysqli->close();
+                    parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'Топик с не найден!');
+                }
+                $chechUrl = mysqli_fetch_assoc($chechUrl);
+                if(chAccess("controlTopic") || $chechUrl['idUserCreator'] == $_COOKIE['id']){
+                    $name = $mysqli->real_escape_string($_POST['name']);
+                    $mysqli->query("UPDATE topic SET topicName = '".$name."' WHERE topicId = '".$id."';");
+                    $mysqli->close();
+                    parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 2, 'Изменена тема '.$name.'!');
+                }else
+                    parent::relocate('/f/'.$_POST['unitSrc'].'/'.$id, 3, 'У вас нет прав изменять топик!');
             }
         }else
             parent::relocate('/f');
@@ -333,12 +338,7 @@ class forumM extends model{
                 $unit = $mysqli->real_escape_string($unit);
                 $topicId = $mysqli->real_escape_string($topicId);
                 $message = $mysqli->real_escape_string($message);
-
-                // Дополнить добавлением в рейтинг юзера (возможно убрать рейтинг сообщения)
-                // Разделить модель на 3 файла
-
                 $checkExist = $mysqli->query("SELECT * FROM raitingForTopicId".$topicId." WHERE idUser = ".$_COOKIE['id']." AND idMes = '".$message."';");
-                //debug($checkExist);
                 if($checkExist->num_rows != 0){
                     $mysqli->close();
                     parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Оценка уже есть, не хитри!');
@@ -380,6 +380,7 @@ class forumM extends model{
             return -1;
     }
 
+    // Взятие сообщений из бд
     public function selectMessages($type, $id){
         $mysqli = openmysqli();
         $topMessage = -1;
@@ -399,15 +400,16 @@ class forumM extends model{
             $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId ORDER BY messagesForTopicId".$id.".messageId DESC;");
         }
 
+        // Выборка рейтинга для сообщений
         $raiting = array();
-        array_push($raiting, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
+        array_push($raiting, "0");
         $raitingCount = $mysqli->query("SELECT * FROM raitingForTopicId".$id.";");
         foreach ($raitingCount as $kay){
             array_push($raiting, $kay['idMes'].$kay['idUser']);
         }
 
+        // Выборка файлов для сообщений
         $files = array();
-        //array_push($files, "0"); // array_search почему-то не видит 1 элемент, поэтому заглушка
         $filesSelect = $mysqli->query("SELECT messageId FROM messagesForTopicId".$id." WHERE files = 1;");
         $allFiles = mysqli_fetch_assoc($mysqli->query("SELECT messageId FROM messagesForTopicId".$id." WHERE files = 1 ORDER BY messageId DESC LIMIT 1;"));
         $i = 0;
@@ -433,10 +435,7 @@ class forumM extends model{
                     unset($files[$i]);
                 $i++;
             }
-        //debug($fulesForMessageArr);
-        //debug($files);
 
-        //debug($raiting);
         $mysqli->close();
         $data = array(
             'topMessage' => $topMessage,
@@ -448,6 +447,7 @@ class forumM extends model{
         return $data;
     }
 
+    // Поднятие рейтинга
     public function upperTopicView($id){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
@@ -456,6 +456,7 @@ class forumM extends model{
         $mysqli->close();
     }
 
+    // Подсчёт кол-ва сообщений
     public function countTopicMessages($id){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
@@ -464,6 +465,7 @@ class forumM extends model{
         return $topicCountMessages['COUNT(messageId)'];
     }
 
+    // Пометить как ответ на вопрос или самы популярный ответ
     public function topMesAction($unit, $topicId, $message){
         if($message == 1){
             parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение сделать ответом нельзя!');
@@ -483,64 +485,82 @@ class forumM extends model{
     }
 
 
+    // Удаление сообщения
     public function deleteMesAction($unit, $topicId, $message){
         if($message == 1){
             parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение удалить нельзя!');
         }else{
-            $mysqli = openmysqli();
-            $message = $mysqli->real_escape_string($message);
-            $topicId = $mysqli->real_escape_string($topicId);
-            $deletedFiles = mysqli_fetch_assoc($mysqli->query("SELECT files FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
-            if($deletedFiles['files'] == 1){
-                $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId."/";
-                $deletedFiles = $mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = '".$message."';");
-                foreach ($deletedFiles as $kay){
-                    $file = glob($dir.$kay['fileId'].".*");
-                    unlink($file[0]);
-                }
-                $mysqli->query("DELETE FROM filesForTopicId".$topicId." WHERE idMes = '".$message."';");
+            if(chAccess("topic")){
+                $mysqli = openmysqli();
+                $message = $mysqli->real_escape_string($message);
+                $topicId = $mysqli->real_escape_string($topicId);
+                $messageDel = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
+                if(chAccess("controlTopic") || $messageDel['idUser'] == $_COOKIE['id']){
+                    $deletedFiles = mysqli_fetch_assoc($mysqli->query("SELECT files FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
+                    if($deletedFiles['files'] == 1){
+                        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId."/";
+                        $deletedFiles = $mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = '".$message."';");
+                        foreach ($deletedFiles as $kay){
+                            $file = glob($dir.$kay['fileId'].".*");
+                            unlink($file[0]);
+                        }
+                        $mysqli->query("DELETE FROM filesForTopicId".$topicId." WHERE idMes = '".$message."';");
+                    }
+                    $mysqli->query("DELETE FROM raitingForTopicId".$topicId." WHERE idMessage = '".$message."';");
+                    $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';");
+                    $mysqli->close();
+                    parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
+                }else
+                    parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'У вас нет прав для удаления сообщения!');
             }
-            $mysqli->query("DELETE FROM raitingForTopicId".$topicId." WHERE idMessage = '".$message."';");
-            $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';");
-            $mysqli->close();
-            parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
         }
     } 
 
     // Удаление топика
     public function deleteTopicAction($id){
-        $mysqli = openmysqli();
-        $id = $mysqli->real_escape_string($id);
-        $deletedTopic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE topicId  = '".$id."';"));
-        $unit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$deletedTopic['idUnit']."';"));
-        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit['unitUrl']."/".$id;
-        $this->deleteFolder($dir);
-        $mysqli->query("DROP TABLE filesForTopicId".$id.";");
-        $mysqli->query("DROP TABLE messagesForTopicId".$id.";");
-        $mysqli->query("DROP TABLE raitingForTopicId".$id.";");
-        $mysqli->query("DELETE FROM topic WHERE topicId  = '".$id."';");
-        $mysqli->close();
-        parent::relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
+        if(chAccess("topic")){
+            $mysqli = openmysqli();
+            $id = $mysqli->real_escape_string($id);
+            $deletedTopic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE topicId  = '".$id."';"));
+            $unit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$deletedTopic['idUnit']."';"));
+            if(chAccess("controlTopic") || $deletedTopic['idUserCreator'] == $_COOKIE['id']){
+                $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit['unitUrl']."/".$id;
+                $this->deleteFolder($dir);
+                $mysqli->query("DROP TABLE filesForTopicId".$id.";");
+                $mysqli->query("DROP TABLE messagesForTopicId".$id.";");
+                $mysqli->query("DROP TABLE raitingForTopicId".$id.";");
+                $mysqli->query("DELETE FROM topic WHERE topicId  = '".$id."';");
+                $mysqli->close();
+                parent::relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
+            }else{
+                $mysqli->close();
+                parent::relocate('/f/'.$unit['unitUrl'], 3, 'У вас нет прав на удаление топика '.$deletedTopic['topicName'].'!');
+            }
+        }else
+            parent::relocate('/f');
     }
 
     // Удаление главной темы
     public function deleteMainAction($id){
-        $mysqli = openmysqli();
-        $id = $mysqli->real_escape_string($id);
-        $deletedSubTopics = $mysqli->query("SELECT topicId FROM topic WHERE idUnit  = '".$id."';");
-        $deletedUnit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId  = '".$id."';"));
-        foreach ($deletedSubTopics as $kay){
-            $this->deleteTopicAction($kay['topicId']);
-        }
-        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$deletedUnit['unitUrl'];
-        $this->deleteFolder($dir);
-        $mysqli->query("DELETE FROM unit WHERE unitId  = '".$id."';");
-        $mysqli->close();
-        parent::relocate('/f', 2, 'Удалена тема '.$deletedUnit['unitUrl'].' со всеми подтемами!');
+        if(chAccess("unit")){
+            $mysqli = openmysqli();
+            $id = $mysqli->real_escape_string($id);
+            $deletedSubTopics = $mysqli->query("SELECT topicId FROM topic WHERE idUnit  = '".$id."';");
+            $deletedUnit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId  = '".$id."';"));
+            foreach ($deletedSubTopics as $kay){
+                $this->deleteTopicAction($kay['topicId']);
+            }
+            $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$deletedUnit['unitUrl'];
+            $this->deleteFolder($dir);
+            $mysqli->query("DELETE FROM unit WHERE unitId  = '".$id."';");
+            $mysqli->close();
+            parent::relocate('/f', 2, 'Удалена тема '.$deletedUnit['unitUrl'].' со всеми подтемами!');
+        }else
+            parent::relocate('/');
     }
 
     // Удаление папки со всем содержимым
-    public function deleteFolder($path){
+    private function deleteFolder($path){
         if (is_dir($path) === true){
             $files = array_diff(scandir($path), array('.', '..'));  
             foreach ($files as $file){

@@ -2,6 +2,7 @@
 
 <h2>Админ панель</h2>
 <hr>
+<?php if(chAccess("changeStatus")): ?>
 <h4>Изменить статус пользователя</h4>
 <form class="p-4 p-md-5 border rounded-3 bg-light text-center" action="/adm/a/changeStatus" method="post">
   <div class="form-floating mb-3">
@@ -19,3 +20,4 @@
   </select>
   <button class="w-100 btn btn-lg btn-primary" type="submit">Изменить</button>
 </form>
+<?php endif; ?>

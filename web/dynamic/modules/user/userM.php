@@ -8,20 +8,19 @@ class userM extends model{
     
     // Регистрация пользователя
     public function regAction(){
-        if (!empty($_POST)) {
+        if (!empty($_POST) && !chAccess("reg")) {
             if(!passCheck($_POST['pass']) || $_POST['pass'] != $_POST['pass2'] || !nameCheck($_POST['name']) || !loginCheck($_POST['login']) || !emailCheck($_POST['email']))
                 parent::relocate('/u/reg', 3, 'Ошибка регистрации: неправильный формат некоторых полей!');
             else{
                 $mysqli = openmysqli();
-                $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
                 $login = $mysqli->real_escape_string($_POST['login']);
-                $photo = rand(-1, -9); // Включительно
-                $photo = -1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
                 $testLogin = $mysqli->query("SELECT userId FROM users WHERE login = '".$login."';");
                 if($testLogin->num_rows >= 1){
                     parent::relocate('/u/reg', 3, 'Пользователь с логином '.$login .' уже существует!');
                     $mysqli->close();
                 }else{
+                    $name = mb_convert_case($mysqli->real_escape_string($_POST['name']), MB_CASE_TITLE, "UTF-8");
+                    $photo = rand(-1, -9); // Включительно
                     $pass = hashPass($mysqli->real_escape_string($_POST['pass']));
                     $email = $mysqli->real_escape_string($_POST['email']);
                     $date = date("Y-m-d");
@@ -37,23 +36,23 @@ class userM extends model{
                 parent::relocate('/u', 2, 'Добро пожаловать на форум, '.$name);
             }
         }else
-            parent::relocate('/u/reg');
+            parent::relocate('/');
     }
 
     // Авторизация пользователя
     public function authorizeAction(){
-        if (!empty($_POST)) {
+        if (!empty($_POST) && !chAccess("login")) {
             if(!$_POST['pass'] || !loginCheck($_POST['login']))
                 parent::relocate('/', 3, 'Неверные логин или пароль!');
             else{
                 $mysqli = openmysqli();
                 $login = $mysqli->real_escape_string($_POST['login']);
                 $pass = $mysqli->real_escape_string($_POST['pass']);
-                $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
+                $userCh = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
                 $userban = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
-                $user = mysqli_fetch_assoc($user1);
+                $user = mysqli_fetch_assoc($userCh);
                 $mysqli->close();
-                if($user1->num_rows == 0 || !password_verify($pass, $user['pass']))
+                if($userCh->num_rows == 0 || !password_verify($pass, $user['pass']))
                     parent::relocate('/', 3, 'Неверные логин или пароль или пользователя не существует!');
                 elseif($userban->num_rows != 0){
                     parent::relocate('/', 3, 'Данный аккаунт заблокирован на сайте!');
@@ -80,7 +79,7 @@ class userM extends model{
 
     // Смена имени
     public function changeNameAction(){
-        if (!empty($_POST) || $_COOKIE['login']) {
+        if (chAccess("сhInProfile") && (!empty($_POST) || $_COOKIE['login'])) {
             if(!nameCheck($_POST['name']))
                 parent::relocate('/u', 3, 'Неправильный формат имени!');
             else{
@@ -91,12 +90,12 @@ class userM extends model{
                 parent::relocate('/u', 2, 'Имя изменено на '.$name);
             }
         }else
-            parent::relocate('/u');
+            parent::relocate('/');
     }
 
     // Смена пароля
     public function changePassAction(){
-        if (!empty($_POST)) {
+        if (!empty($_POST) && chAccess("сhInProfile")) {
             if(!$_POST['oldPass'] || !passCheck($_POST['pass']) || $_POST['pass'] != $_POST['pass2'])
                 parent::relocate('/u', 3, 'Неправильный формат нового пароля или проверка повторения пароля не прошла!');
             else{
@@ -113,12 +112,12 @@ class userM extends model{
                 parent::relocate('/u', 2, 'Пароль был изменён!');
             }
         }else
-            parent::relocate('/u');
+            parent::relocate('/');
     }
 
     // Смена email
     public function changeEmailAction(){
-        if (!empty($_POST)) {
+        if (!empty($_POST) && chAccess("сhInProfile")) {
             if(!emailCheck($_POST['email']))
                 parent::relocate('/u', 3, 'Неправильный формат email!');
             else{
@@ -129,73 +128,77 @@ class userM extends model{
                 parent::relocate('/u', 2, 'Email изменён на '.$email);
             }
         }else
-            parent::relocate('/u');
+            parent::relocate('/');
     }
 
     // Изменение аватарки
     public function updatePhotoAction(){
-        $uploaddir = $_SERVER['DOCUMENT_ROOT'].'/files/img/avatar/';
-        if (!empty($_FILES)) {
-            $error = "";
-            $fileName = $_FILES['avatar']['name'];
-            $fileSize = $_FILES['avatar']['size'];
-            $fileTmp = $_FILES['avatar']['tmp_name'];
-            $fileType = $_FILES['avatar']['type'];
-            $fileFormat = explode('/',$fileType)[1];
-            $fileExt = explode('.',$fileName);
-            $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
-            $expensions = array("000","jpeg","jpg","png");
-            if(!array_search($fileFormat, $expensions)) {
-                $error = 'Неправильный формат файла'; 
-            }elseif ($fileSize == 0) {
-                $error = 'Файл пустой';
-            }elseif($fileSize > 2097152){ // Биты
-                $error = 'Файл > 2mb';  
-            }
-            if($error == ""){
-                $filename = $_COOKIE['id'].'.png';
-                move_uploaded_file($fileTmp, $uploaddir.$filename);
-                $mysqli = openmysqli();
-                $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
-                $mysqli->close();
-                setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
-                parent::relocate('/u', 2, "Файл загружен!");
-            }else{
-                parent::relocate('/u', 3, $error."!");
-            }
+        if(chAccess("сhInProfile")){
+            $uploaddir = $_SERVER['DOCUMENT_ROOT'].'/files/img/avatar/';
+            if (!empty($_FILES)) {
+                $error = "";
+                $fileName = $_FILES['avatar']['name'];
+                $fileSize = $_FILES['avatar']['size'];
+                $fileType = $_FILES['avatar']['type'];
+                $fileFormat = explode('/',$fileType)[1];
+                $fileExt = explode('.',$fileName);
+                $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
+                $expensions = array("000","jpeg","jpg","png");
+                if(!array_search($fileFormat, $expensions)) {
+                    $error = 'Неправильный формат файла'; 
+                }elseif ($fileSize == 0) {
+                    $error = 'Файл пустой';
+                }elseif($fileSize > 2097152){ // Биты
+                    $error = 'Файл > 2mb';  
+                }
+                if($error == ""){
+                    $fileTmp = $_FILES['avatar']['tmp_name'];
+                    $filename = $_COOKIE['id'].'.png';
+                    move_uploaded_file($fileTmp, $uploaddir.$filename);
+                    $mysqli = openmysqli();
+                    $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
+                    $mysqli->close();
+                    setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
+                    parent::relocate('/u', 2, "Файл загружен!");
+                }else{
+                    parent::relocate('/u', 3, $error."!");
+                }
+            }else
+                parent::relocate('/u');
         }else
-            parent::relocate('/u');
+            parent::relocate('/');
     }
 
     // Удаление аватарки
     public function deletePhotoAction(){
-        $uploaddir = '/files/img/avatar/';
-        if ($_COOKIE['photo'] != 0) {
-            if ($_COOKIE['photo'] >= 0) {
-                $photo = rand(-1, -9); // Вулючительно
-                $photo = -1; // ЗАГЛУШКА ////////////////////////////////////////////////////////////////
-                $mysqli = openmysqli();
-                $mysqli->query("UPDATE users SET photo = ".$photo." WHERE login = '".decode($_COOKIE['login'])."';");
-                $mysqli->close();
-                unlink($_SERVER['DOCUMENT_ROOT'].$uploaddir.$_COOKIE['photo'].".png");
-                setcookie("photo", $photo, time()+(3600), "/");
-                parent::relocate('/u', 2, 'Аватар удалён!');
+        if(chAccess("сhInProfile")){
+            $uploaddir = '/files/img/avatar/';
+            if ($_COOKIE['photo'] != 0) {
+                if ($_COOKIE['photo'] >= 0) {
+                    $photo = rand(-1, -9); // Вулючительно
+                    $mysqli = openmysqli();
+                    $mysqli->query("UPDATE users SET photo = ".$photo." WHERE login = '".decode($_COOKIE['login'])."';");
+                    $mysqli->close();
+                    unlink($_SERVER['DOCUMENT_ROOT'].$uploaddir.$_COOKIE['photo'].".png");
+                    setcookie("photo", $photo, time()+(3600), "/");
+                    parent::relocate('/u', 2, 'Аватар удалён!');
+                }else
+                    parent::relocate('/u', 3, 'Вы не загружали аватарку :(');
             }else
-                parent::relocate('/u', 3, 'Вы не загружали аватарку :(');
+                parent::relocate('/u');
         }else
-            parent::relocate('/u');
+            parent::relocate('/');
     }
     
     // Выход из аккаунта
     public function exitAction(){
-        if(array_key_exists('login', $_COOKIE)){
+        if(chAccess("сhInProfile")){
             setcookie('id', '', time() - 3600, '/');
             setcookie('login', '', time() - 3600, '/');
             setcookie('status', '', time() - 3600, '/');
             setcookie('photo', '', time() - 3600, '/');
-            parent::relocate('/');
-        }else
-            parent::relocate('/', 3, 'Вы не в аккаунте, чтоб из него выходить!');
+        }
+        parent::relocate('/');
     }
 
     // Всё о пользователе
@@ -245,22 +248,21 @@ class userM extends model{
 
     // Удаление аккаунта
     public function deleteAccAction(){
-        //krik("УДАЛЕНИЕ АККАУНТА");
-        $mysqli = openmysqli();
-        $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE userId = ".$_COOKIE['id'].";"));
-        if($deletFoto['photo'] == 0){
-            $dir = $_SERVER['DOCUMENT_ROOT']."/files/img/avatar/".$_COOKIE['id'].".png";
-            unlink($dir);
-        }
-        $mysqli->query("DELETE FROM users WHERE userId = ".$_COOKIE['id'].";");
-        $mysqli->close();
-        setcookie('id', '', time() - 3600, '/');
-        setcookie('login', '', time() - 3600, '/');
-        setcookie('status', '', time() - 3600, '/');
-        setcookie('photo', '', time() - 3600, '/');
-        parent::relocate('/', 2, 'Аккаунт удалён! До новых встреч!');
-        //Удаление фото юзера
-        //Удаление из таблицы юзеров
-        //Уничтожение сеесий
+        if(chAccess("deleteAkk")){
+            $mysqli = openmysqli();
+            $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE userId = ".$_COOKIE['id'].";"));
+            if($deletFoto['photo'] == 0){
+                $dir = $_SERVER['DOCUMENT_ROOT']."/files/img/avatar/".$_COOKIE['id'].".png";
+                unlink($dir);
+            }
+            $mysqli->query("DELETE FROM users WHERE userId = ".$_COOKIE['id'].";");
+            $mysqli->close();
+            setcookie('id', '', time() - 3600, '/');
+            setcookie('login', '', time() - 3600, '/');
+            setcookie('status', '', time() - 3600, '/');
+            setcookie('photo', '', time() - 3600, '/');
+            parent::relocate('/', 2, 'Аккаунт удалён! До новых встреч!');
+        }else
+            parent::relocate('/');
     }
 }

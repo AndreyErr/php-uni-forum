@@ -27,40 +27,44 @@ class admM extends model{
 
     // Блокировка пользователя на сайте
     public function banAction($login){
-        $mysqli = openmysqli();
-        $login = $mysqli->real_escape_string($login);
-        $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
-        $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
-        $user = mysqli_fetch_assoc($user1);
-        if($user1->num_rows == 0 || $userBanAlready->num_rows > 0 || $user['status'] == 2){
+        if(chAccess("ban")){
+            $mysqli = openmysqli();
+            $login = $mysqli->real_escape_string($login);
+            $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
+            $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
+            $user = mysqli_fetch_assoc($user1);
+            if($user1->num_rows == 0 || $userBanAlready->num_rows > 0 || $user['status'] == 2){
+                $mysqli->close();
+                parent::relocate('/adm/users', 3, 'Ошибка бана!');
+            }
+            $mysqli->query("INSERT INTO usersBanOnSite VALUES (NULL, '".$login."');");
             $mysqli->close();
-            parent::relocate('/adm/users', 3, 'Ошибка бана!');
-        }
-        $mysqli->query("INSERT INTO usersBanOnSite VALUES (NULL, '".$login."');");
-        $mysqli->close();
-        parent::relocate('/adm/users', 2, 'Пользователь заблокирован!');
+            parent::relocate('/adm/users', 2, 'Пользователь заблокирован!');
+        }else
+            parent::relocate('/');
     }
 
     // Разблокировка пользователя на сайте
     public function unbanAction($login){
-        $mysqli = openmysqli();
-        $login = $mysqli->real_escape_string($login);
-        $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
-        $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
-        $user = mysqli_fetch_assoc($user1);
-        if($user1->num_rows == 0 || $userBanAlready->num_rows == 0){
+        if(chAccess("ban")){
+            $mysqli = openmysqli();
+            $login = $mysqli->real_escape_string($login);
+            $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
+            $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
+            if($user1->num_rows == 0 || $userBanAlready->num_rows == 0){
+                $mysqli->close();
+                parent::relocate('/adm/users', 3, 'Ошибка разбана!');
+            }
+            $mysqli->query("DELETE FROM usersBanOnSite WHERE loginUser = '".$login."';");
             $mysqli->close();
-            parent::relocate('/adm/users', 3, 'Ошибка разбана!');
-        }
-        $date = date("Y-m-d");
-        $mysqli->query("DELETE FROM usersBanOnSite WHERE loginUser = '".$login."';");
-        $mysqli->close();
-        parent::relocate('/adm/users', 2, 'Пользователь разблокирован!');
+            parent::relocate('/adm/users', 2, 'Пользователь разблокирован!');
+        }else
+            parent::relocate('/');
     }
 
     // Изменение статуса пользователя
     public function changeStatusAction(){
-        if (!empty($_POST)) {
+        if (!empty($_POST) && chAccess("changeStatus")) {
             $specdata = model::specialDataConnect(); // Для получения логина главного админа
             if(!$_POST['login'] || $_POST['stat'] < 0 || $_POST['stat'] > 3 || $_POST['login'] == $specdata['UNBAN_LOGIN'])
                 parent::relocate('/adm', 3, 'Что-то не так!');

@@ -45,8 +45,8 @@
           
   <!--Главные темы-->
   <div class="container px-4 py-5" id="hanging-icons">
-    <h2 class="pb-2 border-bottom">Все главные темы <?php if(array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2):?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalAddMain">Добавить главную тему</button><?php endif;?></h2>
-    <?php if(array_key_exists('status', $_COOKIE) && decode($_COOKIE['status']) == 2):?>
+    <h2 class="pb-2 border-bottom">Все главные темы <?php if(chAccess("unit")):?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalAddMain">Добавить главную тему</button><?php endif;?></h2>
+    <?php if(chAccess("unit")):?>
     <div class="modal fade" tabindex="-1" id="ModalAddMain" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">

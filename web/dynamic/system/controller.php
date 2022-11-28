@@ -4,11 +4,11 @@ namespace system;
 
 class controller{
 
-    protected $path;
-    protected $model;
-    protected $view;
+    protected $path; // Путь, разбитый на массив
+    protected $model; // Объект модели
+    protected $view; // Объект представления
 
-    public function __construct($page, $action){
+    public function __construct($page, $action){ // Страница подключения и действие
         // Подключение модели и представления
         $path = explode('/', trim($_SERVER['REDIRECT_URL'], '/'));
         if ($path[0] == "")

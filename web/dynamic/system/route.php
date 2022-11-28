@@ -14,7 +14,10 @@ class route{
     // Выбор контроллера (по первому параметру ссылки)
     public function router($path){
         $page = $path[0] = $this->selectControllerByPage($path[0]);
-        $this->chAccess($page);
+        if(!$this->chAccess($page)){
+            header('Location: /err/404.html');
+            exit;
+        }
         $controller = $this->checkController($path);
         $model = $this->checkModel($path);
         if($controller != "-1" && $model != "-1"){
@@ -27,7 +30,7 @@ class route{
     }
 
     // Преобразование страницы
-    public function selectControllerByPage($page){
+    private function selectControllerByPage($page){
         if ($page == "" || $page == "main" || $page == "error")
             $page = "main";
         if ($page == "f" || $page == "forum")
@@ -38,7 +41,7 @@ class route{
     }
 
     // Проверка существования контроллера
-    public function checkController($path){
+    private function checkController($path){
         $controllerPath = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path[0].'/'.$path[0].'C.php'; // Задание пути к контроллеру
         $controllerClass = "controllers\\".$path[0].'C'; // Задание пути к классу контроллера
         if(file_exists($controllerPath)){
@@ -50,7 +53,7 @@ class route{
     }
 
     // Проверка существования модели
-    public function checkModel($path){
+    private function checkModel($path){
         if ($path[0] == "") 
             $path[0] = "main";
         $modelPath = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path[0].'/'.$path[0].'M.php'; // Задание пути к модели
@@ -64,7 +67,7 @@ class route{
     }
 
     // Проверка существования действия
-    public function checkAction($path){
+    private function checkAction($path){
         if (array_key_exists(1, $path) && array_key_exists(2, $path) && $path[1] == 'a'){
             $act = $path[2].'Action';
             if(method_exists($path[0].'M', $act))
@@ -74,10 +77,11 @@ class route{
     }
 
     // Проверка на доступ к модулю
-    public function chAccess($module){
-        $access = (require_once 'settings/access.php')['modules']; // Массив доступа к модулям
+    private function chAccess($module){
+        $access = (require 'settings/access.php')['modules']; // Массив доступа к модулям
         if(array_key_exists($module, $access))
             if(!array_key_exists('id', $_COOKIE) || array_search(decode($_COOKIE['status']), $access[$module]) === false)
-                header('Location: /err/404.html');
+                return false;
+        return true;
     }
 }

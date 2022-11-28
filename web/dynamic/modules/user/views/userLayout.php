@@ -28,17 +28,17 @@
 
       <?php if($data['userstatusdig'] != -1): // Запрет отображения для несуществующего пользователя?>
 
-        <?php if($data['user']['login'] == $data['decodedMyLogin'] || (array_key_exists('status',$_COOKIE) && decode($_COOKIE['status']) == 2)): // Отображение кнопок под фото?>
+        <?php if($data['user']['login'] == $data['decodedMyLogin'] || chAccess("adm")): // Отображение кнопок под фото?>
 
           <div class="profile-userbuttons">
 
-            <?php if($data['userstatusdig'] == 2): // Отображение если пользователь страницы - админ?>
+            <?php if(chAccess("adm")): // Отображение если пользователь страницы - админ?>
 
               <a href="/adm"><button type="button" class="btn btn-success btn-sm">Админ панель</button></a>
 
             <?php endif; // Отображение если пользователь страницы - админ?>
 
-            <?php if(decode($_COOKIE['status']) == 2 && $data['userstatusdig'] != 2): // Отображение кнопок управления?>
+            <?php if(chAccess("ban") && $data['userstatusdig'] != 2 && $data['user']['login'] != $data['decodedMyLogin']): // Отображение кнопок управления?>
                 
                 <?php // Подбор цвета иконки в зависимости от статуса
                 $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
@@ -57,6 +57,7 @@
 
         <div class="profile-usermenu">
           <ul class="list-group list-group-flush">
+            <?php if(chAccess("сhInProfile")):?>
             <h4 class="list-group-item">Настройки</h4>
             <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#ModalName">Сменить имя</a>
             <div class="modal fade" tabindex="-1" id="ModalName" aria-hidden="true">
@@ -176,6 +177,8 @@
                 </div>
               </div>
             </div>
+            <?php endif;?>
+            <?php if(chAccess("deleteAkk")):?>
             <a href="#" class="list-group-item list-group-item-action" style="color: red;" data-bs-toggle="modal" data-bs-target="#ModalDelete">Удалить аккаунт</a>
             <div class="modal fade" tabindex="-1" id="ModalDelete" aria-hidden="true">
               <div class="modal-dialog modal-fullscreen-sm-down">
@@ -199,6 +202,7 @@
                 </div>
               </div>
             </div>
+            <?php endif;?>
           </ul>
         </div>
         <hr>
@@ -207,18 +211,11 @@
         
         <div class="portlet light">
         <div class="row list-separated profile-stat">
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="uppercase profile-stat-title"><?php echo $data['user']['userRating']?></div>
-            <div class="uppercase profile-stat-text">Рейтинг</div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="uppercase profile-stat-title">51</div>
-            <div class="uppercase profile-stat-text">Сообщений</div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="uppercase profile-stat-title">61</div>
-            <div class="uppercase profile-stat-text">Тем</div>
-          </div>
+          <div class="uppercase profile-stat-title"><?php echo $data['user']['userRating']?></div>
+          <div class="uppercase profile-stat-text">Рейтинг</div>
+          <?php if(chAccess("adm")):?>
+          <div class="uppercase profile-stat-text">Дата регистрации: <?php echo $data['user']['regdate']?></div>
+          <?php endif;?>
         </div>
         </div>  
 
