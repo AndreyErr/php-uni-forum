@@ -27,19 +27,19 @@ class forumC extends controller{
         }elseif(array_key_exists(1,$this->path)){
             $this->topicsListForming();
         }else{
-            $this->mainTopListForming();
+            $this->unitsListForming();
         }
         //<input type="hidden" value="0" name="activate" />
 
     }
 
     // Страница списка главных тем
-    private function mainTopListForming(){
+    private function unitsListForming(){
         $units = $this->model->selectUnits();
         $data = array(
-            "mainTop" => $units
+            "units" => $units
         );
-        $this->view->rander('forum/views/mainTopList', $data);
+        $this->view->rander('forum/views/unitsList', $data);
     }
 
     // Страница поиска тем

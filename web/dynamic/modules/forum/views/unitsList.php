@@ -85,14 +85,14 @@
     </div>
     <?php endif;?>                
     <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-      <?php foreach ($data['mainTop'] as $kay):?>
+      <?php foreach ($data['units'] as $kay):?>
       <div class="col d-flex align-items-start" style="padding-bottom: 10px;">
         <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
           <?php echo $kay['icon']?>
         </div>
         <div>
           <h3 class="fs-2"><?php echo $kay['name']?></h3>
-          <p><?php echo $kay['descr']?>.</p>
+          <p><?php echo $kay['descr']?></p>
           <a href="/f/<?php echo $kay['unitUrl']?>" class="btn btn-primary">Посмотреть про <?php echo $kay['name']?></a>
         </div>
       </div>

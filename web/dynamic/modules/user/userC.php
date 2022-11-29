@@ -36,6 +36,7 @@ class userC extends controller{
 
         $dataToView = array(
             "css" => $css, 
+            "upImage" => rand(1, 5),
             "js" => $js
         );
 
@@ -75,6 +76,11 @@ class userC extends controller{
             "decodedMyLogin" => $myLogin
         );
 
-        $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout', '@'.$allAboutActualUser['allAboutUser']['login']);
+        if($allAboutActualUser['allAboutUser']['login'] == "")
+            $top = "press f";
+        else
+            $top = '@'.$allAboutActualUser['allAboutUser']['login'];
+
+        $this->view->rander('user/views/'.$page, $dataToView, 'user/views/userLayout', $top);
     }
 }

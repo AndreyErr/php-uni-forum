@@ -12,7 +12,7 @@ class forumM extends model{
     }
 
     // Создание главной темы
-    public function addMainAction(){
+    public function addUnitAction(){
         if (chAccess("unit") && !empty($_POST)) {
             if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
                 parent::relocate('/f', 3, 'Неверное заполнение некоторых полей!');
@@ -28,6 +28,7 @@ class forumM extends model{
             if($chechUrl->num_rows != 0){
                 $mysqli->close();
                 parent::relocate('/f', 3, 'Топик с таким преобразованным URL ('.$name.' -> '.$topUrl.') уже существует: <a href="/f/'.$topUrl.'">'.$topUrl.'</a>!');
+                exit;
             }
             $date = date("Y-m-d");
             $icon = $mysqli->real_escape_string($_POST['icon']);
@@ -62,7 +63,7 @@ class forumM extends model{
     }
 
     // Обновление главной темы
-    public function changeMainAction(){
+    public function changeUnitAction(){
         if (chAccess("unit") && !empty($_POST) && $_POST['url']) {
             if(!$_POST['name'] || !unitNameCheck($_POST['name']) || !$_POST['icon'] || !$_POST['descr'])
                 parent::relocate('/f/'.$_POST['url'], 3, 'Неверное заполнение некоторых полей!');
@@ -541,7 +542,7 @@ class forumM extends model{
     }
 
     // Удаление главной темы
-    public function deleteMainAction($id){
+    public function deleteUnitAction($id){
         if(chAccess("unit")){
             $mysqli = openmysqli();
             $id = $mysqli->real_escape_string($id);

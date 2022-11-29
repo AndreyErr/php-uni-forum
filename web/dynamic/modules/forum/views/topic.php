@@ -13,28 +13,28 @@
       </p>
     </div>
   </div>
-<?php if(chAccess("controlTopic") || $_COOKIE['id'] == $data['topicData']['userId']):?>
+<?php if(chAccess("controlTopic") || (array_key_exists('id', $_COOKIE) && $_COOKIE['id'] == $data['topicData']['userId'])):?>
   <div class="px-1 py-1 my-1 text-center">
-    <button type="button" class="btn btn-primary btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChMain">Изменить</button>
-    <div class="modal fade" tabindex="-1" id="ModalChMain" aria-hidden="true">
+    <button type="button" class="btn btn-primary btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalChTopic">Изменить топик</button>
+    <div class="modal fade" tabindex="-1" id="ModalChTopic" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Изменить тему "<?php echo $data["topicData"]["topicName"]?>"</h5>
+            <h5 class="modal-title">Изменить топик "<?php echo $data["topicData"]["topicName"]?>"</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form action="/f/a/changeTopic/<?php echo $data["topicData"]["topicId"]?>" method="post">
               <fieldset>
-                <label for="name">Главная тема (только для чтения):</label>
+                <label for="name">Раздел (только для чтения):</label>
                 <div class="form-group"> 
                   <input class="form-control" type="text" name="unitSrc" value="<?php echo $data["unitSrc"]?>" readonly/>
                   <div id="passwordHelpBlock" class="form-text">Изменить её нельзя, для изменения пересоздайте топик в нужной теме!</div>  
                 </div> 
-                <label for="name">Название:</label>
+                <label for="name">Название (обсуждение / вопрос):</label>
                 <div class="form-group"> 
                   <input class="form-control" type="text" name="name" maxlength="30" value="<?php echo $data["topicData"]["topicName"]?>" required/>  
-                  <div id="passwordHelpBlock" class="form-text">Название должно быть в длинну не меньше 3 и не больше 70. Можно использовать: a-z A-Z а-я А-Я 1-9 пробел !?-</div>
+                  <div id="passwordHelpBlock" class="form-text">Название/вопрос должны быть в длинну не меньше 3 и не больше 70. Можно использовать: a-z A-Z а-я А-Я 1-9 пробел !?-</div>
                 </div> 
                 <button type="submit" class="btn btn-primary mb-3 mt-3">Сохранить</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -47,16 +47,17 @@
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn-danger btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalDelMain">Удалить</button>
-    <div class="modal fade" tabindex="-1" id="ModalDelMain" aria-hidden="true">
+    <button type="button" class="btn btn-danger btn-sm px-4 gap-3" data-bs-toggle="modal" data-bs-target="#ModalDelTopic">Удалить</button>
+    <div class="modal fade" tabindex="-1" id="ModalDelTopic" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Вы уверены, что хотите безвозвратно удалить тему "<?php echo $data["topicData"]["topicName"]?>"</h5>
+            <h5 class="modal-title"><i class="fa-solid fa-triangle-exclamation text-danger"></i> Вы уверены, что хотите безвозвратно удалить тему "<?php echo $data["topicData"]["topicName"]?>"</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Будет удалена эта тема и все подтемы!</p>
+            <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i></h3>
+            <p>ВНИМАНИЕ! Это действие удалит этот топики со всеми сообщениями и файлами! ОТМЕНИТЬ ЭТО ДЕЙСТВИЕ БУДЕТ НЕВОЗМОЖНО!</p>
             <form method="post" action="/f/a/deleteTopic/<?php echo $data["topicData"]["topicId"]?>"><button type="submit" class="btn btn-outline-secondary btn-lg px-4 btn-danger text-light">Удалить</button></form>
           </div>
           <div class="modal-footer">
@@ -129,7 +130,7 @@
                     <?php else:?>
                       <span class="profile-info__name"><i>Пользователь удалён</i></span>
                     <?php endif;?>
-                      <span class="profile-info__username"><?php echo $data['messages']['topMessage']['date']?></span></a></div>
+                      <span class="profile-info__username"><?php echo $data['messages']['topMessage']['date']?> в <?php echo $data['messages']['topMessage']['time']?></span></a></div>
                   <div class="card-message">
                   <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['messageId']?>"></p>
                   <div class="card-message-stamp">
@@ -211,7 +212,7 @@
                     <?php else:?>
                       <span class="profile-info__name"><i>Пользователь удалён</i></span>
                     <?php endif;?>
-                      <span class="profile-info__username"><?php echo $kay['date']?></span>
+                      <span class="profile-info__username"><?php echo $kay['date']?> в <?php echo $kay['time']?> | <i class="fa-solid fa-star"></i> <?php echo $kay['rating']?></span>
                     </a>
                   </div>
                   <div class="card-message">
@@ -243,7 +244,6 @@
                       <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
                     <?php endforeach; endif;?>
                     </ul>
-
 
                     <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
                       <a href="/f/a/ratingCh/1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>" class="upvo">&#5169;</a>
@@ -287,10 +287,10 @@
                     <input type="file" name="messageFiles[]" class="form-control" id="inputGroupFile01" multiple>
                     <div id="passwordHelpBlock" class="form-text">До 5 файлов включительно. Каждый файл не больше 2мб! Разрешено большенство типов.</div>
                   </div>
-                  <p class="lead">Как будет выглядеть сообщение в md:</p>
+                  <p class="lead"><b>Как будет выглядеть текст в сообщении:</b></p>
                   <div v-html="compiledMarkdown" class="compiledMarkdown text-left" v-show="!focus" @click="setFocus()"></div>
                 </div>
-                <button type="submit" class="btn btn-primary mb-3 mt-3">Создать</button>
+                <button type="submit" class="btn btn-primary mb-3 mt-3 btn-lg">Написать</button>
               </form>
 
               <script type="application/javascript">
@@ -298,7 +298,7 @@
                 el: '#app',
                 data: {
                   focus: false,
-                  input: '### Markdown Demo **Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt.'
+                  input: '' //### Markdown Demo **Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt.
                 },
                 computed: {
                   compiledMarkdown: function () {
@@ -362,7 +362,7 @@
                       <p class="pb-3 mb-0 small lh-sm border-bottom">
                       <?php if($data['topicData']['login'] != NULL): ?>
                           <strong class="d-block text-gray-dark">@<?php echo $data['topicData']['login']?></strong>
-                          <?php echo $data['topicData']["userRating"]?>
+                          <i class="fa-solid fa-star"></i> <?php echo $data['topicData']["userRating"]?>
                         <?php else:?>
                           <strong class="d-block text-gray-dark"><i>Пользователь удалён</i></strong>
                         <?php endif;?>
@@ -382,7 +382,7 @@
                         <p class="pb-3 mb-0 small lh-sm border-bottom">
                           <?php if($data['messages']['topMessage']['login'] != NULL): ?>
                             <strong class="d-block text-gray-dark">@<?php echo $data['messages']['topMessage']['login']?></strong>
-                            <?php echo $data['messages']['topMessage']["userRating"]?>
+                            <i class="fa-solid fa-star"></i> <?php echo $data['messages']['topMessage']["userRating"]?>
                           <?php else:?>
                             <strong class="d-block text-gray-dark"><i>Пользователь удалён</i></strong>
                           <?php endif;?>

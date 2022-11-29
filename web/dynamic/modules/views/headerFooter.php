@@ -5,11 +5,11 @@
       <meta name="author" content="a9165185808@gmail.com">
       <meta name="viewport" content="width=device-width" />
       <link rel="icon" type="image/png" href="/src/img/siteImg/ico.png">
-      <title><?php echo $name ?></title><!-------ИЗМЕНИТЬ-ПУТЬ------------------------------------>
+      <title><?php echo $name ?></title>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
       <link href="/src/css/lib/bootstrap.min.css" rel="stylesheet">
       <link href="/src/css/main.css" rel="stylesheet">
-      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> -->
       <?php if(array_key_exists('css', $data)){
         foreach($data['css'] as &$value)
           echo '<link href="/src/css/'.$value.'.css" rel="stylesheet">';
@@ -29,32 +29,14 @@
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="/f">Форум</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Link</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li>
           </ul>
         </div>
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="/f/find" method="POST">
-          <input type="search" class="form-control" placeholder="Search..." name="find" aria-label="Search">
+          <input type="search" class="form-control" placeholder="Поиск топика" name="find" aria-label="Search">
         </form>
         <?php if(array_key_exists('login', $_COOKIE)): // Шапка для авторизированных ?>
         <div class="collapse navbar-collapse justify-content-end" id="navbarScroll">
           <ul class="navbar-nav navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="#">Home</a>
-            </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">@<? echo decode($_COOKIE['login'])?></a>
               <ul class="dropdown-menu">
@@ -92,7 +74,6 @@
       <ul class="nav justify-content-center pb-3 mb-3">
         <li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Главная</a></li>
         <li class="nav-item"><a href="/f" class="nav-link px-2 text-muted">Форум</a></li>
-        <li class="nav-item"><a href="/about" class="nav-link px-2 text-muted">О форуме</a></li>
       </ul>
       <p class="text-center text-muted">&copy; IT forum, 2022</p>
     </footer>

@@ -14,7 +14,7 @@
             <label for="login"><span class="req">* </span> Логин: </label>
             <div class="form-group"> 	
                 <input type="text" name="login" id="login" maxlength="20" class="form-control" placeholder="andreyerr"/> 
-                <div id="passwordHelpBlock" class="form-text">На английском + цифры. Вас будут знать по этому логину.</div> 
+                <div id="passwordHelpBlock" class="form-text">На английском. Так же можно использовать цифры. Вас будут знать по этому логину.</div> 
                 <i class="fas fa-check-circle"></i>
                 <i class="fas fa-exclamation-circle"></i>
                 <small></small>
@@ -49,7 +49,8 @@
         </div><!-- ends col-6 -->
         <div class="col-md-6">
             <h1 class="page-header">Регистрация на форум</h1>
-            <p>Вы в одном шаге от обсуждения мира IT qwerty123# Зарегестрируйтесь и получите полноый доступ к IT forum. Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p>                           
+            <p>Вы в одном шаге от обсуждения мира IT qwerty123# Зарегестрируйтесь и получите полноый доступ к IT forum. Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p> 
+            <img src="/src/img/mainTop<?php echo $data['upImage']?>.png" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">                   
         </div>           
     </div>
 </main>

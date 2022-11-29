@@ -1,5 +1,5 @@
 <?php if($data['userstatusdig'] == -1): // Пользователь не существует?>
-  <h2 style="color: #696969; padding: 20px;">Пользователь не существует или удалён :(</h2>
+  <h2 style="color: #696969; padding: 20px;">Пользователь не существует или удалён <i class="fa-regular fa-face-sad-tear"></i></h2>
 <?php else:?>
   <?php if($data['user']['login'] == $data['decodedMyLogin']): // Пользователь владелец страницы?>
     <h2>Привет, <?php echo $data['user']['name']?>, чем займёмся сегодня?</h2>
@@ -23,7 +23,7 @@
           <a href="/f/<?php echo $kay['unitUrl']?>/<?php echo $kay['topicId']?>" class="btn btn-primary">Посмотреть</a>
         </div>
         <div class="card-footer text-muted">
-          <?php echo $kay['createDate']?>
+        <i class="fa-solid fa-calendar-days"></i> <?php echo $kay['createDate']?> | <i class="fa-solid fa-eye"></i> <?php echo $kay['viewAllTime']?>
         </div>
       </div>
     </div>

@@ -97,7 +97,7 @@
                   <div class="modal-body">
                     <form action="/user/a/changePass" method="post">
                       <fieldset>
-                        <legend class="text-center">Запомните новый пароль. qwerty123#</legend>
+                        <legend class="text-center">Запомните новый пароль. (qwerty123#)</legend>
                         <label for="pass">Старый пароль: </label>
                         <div class="form-group"> 
                           <input class="form-control" type="password" name="oldPass" id="pass" maxlength="20" required/>  
@@ -162,7 +162,7 @@
                     <form action="/user/a/changeEmail" method="post">
                       <fieldset>
                         <legend class="text-center">Ваша новая почта.</legend>
-                        <label for="email"><span class="req">* </span> Новый email: </label> 
+                        <label for="email">Новый email: </label> 
                         <div class="form-group">
                             <input class="form-control mb-3" type="email" name="email" id="email" maxlength="40" required/>   
                             <div id="passwordHelpBlock" class="form-text"></div> 
@@ -184,11 +184,12 @@
               <div class="modal-dialog modal-fullscreen-sm-down">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Удаление аккаунта</h5>
+                    <h5 class="modal-title">Удаление аккаунта <i class="fa-solid fa-triangle-exclamation text-danger"></i></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <p>Это действие удалит ваш аккаунт без возможности востановления! НО все ваши сообщения и темы останутся в истории сайта!</p>
+                    <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i></h3>
+                    <p>Это действие удалит ваш аккаунт без возможности востановления! НО все ваши сообщения и темы останутся в истории сайта и будут помечены как от <i>удалённого аккаунта</i>!</p>
                     <div class="d-grid gap-2 col-6 mx-auto">
                       <hr>
                       <form method="post" action="/user/a/deleteAcc" class="btn btn-danger"><button class="btn" type="submit">Удалить</button></form>

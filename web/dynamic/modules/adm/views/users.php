@@ -14,7 +14,7 @@
 
         <span class="badge text-bg-<?php echo $color;?>"><?php echo $status[$kay['status']];?></span>
       </div>
-      <span class="d-block">@<?php echo $kay['login']?>| <?php echo $kay['regdate']?></span>
+      <span class="d-block"><b>@<?php echo $kay['login']?></b> | <i class="fa-solid fa-calendar-days"></i> <?php echo $kay['regdate']?> | <i class="fa-solid fa-star"></i> <?php echo $kay['userRating']?></span><br>
       <a href="/u/<?php echo $kay['login']?>"><button type="button" class="btn btn-primary btn-sm">Посмотреть</button></a>
 
         <?php // Подбор цвета кнопки в зависимости от статуса
@@ -23,9 +23,9 @@
         
         if($kay['loginUser'] == NULL && $kay['status'] != 2): // Кнопка в зависимости от статуса?>
 
-      <a href="/adm/a/ban/<?php echo $kay['login']?>"><button type="button" class="btn btn-<?php echo $color?> btn-sm">Заблокировать</button></a>
+      <a href="/adm/a/ban/<?php echo $kay['login']?>"><button type="button" class="btn btn-<?php echo $color?> btn-sm">Заблокировать <i class="fa-solid fa-ban"></i></button></a>
       <?php elseif($kay['status'] != 2):?>
-      <a href="/adm/a/unban/<?php echo $kay['login']?>"><button type="button" class="btn btn-danger btn-sm">Разблокировать</button></a>
+      <a href="/adm/a/unban/<?php echo $kay['login']?>"><button type="button" class="btn btn-danger btn-sm">Разблокировать <i class="fa-solid fa-scale-unbalanced-flip"></i></button></a>
       <?php endif;?>
     </div>
   </div>
