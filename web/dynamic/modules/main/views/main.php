@@ -1,7 +1,7 @@
 <!--Верхний блок главной страницы-->
 <?php if(array_key_exists('login', $_COOKIE)): // Верхний блок для авторизированных ?>
 <div class="container col-xxl-9 px-4 py-5">
-<div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+  <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
     <div class="col-10 col-sm-8 col-lg-6">
       <img src="/src/img/mainTop<?php echo $data['upImage']?>.png" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
     </div>

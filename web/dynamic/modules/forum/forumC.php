@@ -3,6 +3,7 @@
 namespace controllers;
 
 use system\controller;
+use system\model;
 
 class forumC extends controller{
     public function __construct($page, $action){
@@ -11,26 +12,30 @@ class forumC extends controller{
     }
     
     private function dataCollect($page,$action){
-        //debug($action);
         if(array_key_exists(1,$this->path) && $this->path[1] == "find"){
             $this->findTopListForming();
+
         }elseif($action != NULL && array_key_exists(2,$this->path) && $this->path[2] == "ratingCh"){
             $this->model->$action($this->path[3], $this->path[4], $this->path[5], $this->path[6]);
+
         }elseif($action != NULL && array_key_exists(2,$this->path) && ($this->path[2] == "deleteMes" || $this->path[2] == "topMes")){
             $this->model->$action($this->path[3], $this->path[4], $this->path[5]);
+
         }elseif($action != NULL && array_key_exists(3,$this->path)){
             $this->model->$action($this->path[3]);
+
         }elseif($action != NULL){
             $this->model->$action();
+
         }elseif(array_key_exists(2,$this->path)){
             $this->topicsForming();
+
         }elseif(array_key_exists(1,$this->path)){
             $this->topicsListForming();
+
         }else{
             $this->unitsListForming();
         }
-        //<input type="hidden" value="0" name="activate" />
-
     }
 
     // Страница списка главных тем
@@ -67,7 +72,7 @@ class forumC extends controller{
             );
             $this->view->rander('forum/views/topicsList', $data);
         }else{
-            parent::relocate('/f', 3, 'Тема не найдена!');
+            model::relocate('/f', 3, 'Тема не найдена!');
         }
     }
 
@@ -79,7 +84,6 @@ class forumC extends controller{
             $this->model->upperTopicView($allAboutTopic["topicId"]); // Обновление счётчика просмотров
             $topicViews = $this->model->countTopicMessages($allAboutTopic["topicId"]); // Подсчёт сообщений в топике
             $selectedMessages = $this->model->selectMessages($allAboutTopic['type'], $this->path[2]); // Берём сообщения
-            //debug($selectedMessages);
             $allAboutUnit = $this->model->selectAllAboutUnit($this->path[1]);
 
 
@@ -98,7 +102,7 @@ class forumC extends controller{
             );
             $this->view->rander('forum/views/topic', $data);
         }else{
-            parent::relocate('/f', 3, 'Топик не найден!');
+            model::relocate('/f', 3, 'Топик не найден!');
         }
     }
 }

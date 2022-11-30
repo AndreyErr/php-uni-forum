@@ -15,7 +15,6 @@
           <div class="profile-usertitle-name">
 
             <?php if($data['userstatusdig'] != -1) echo '@'.$data['user']['login']; // Отображение логина?>
-
             <?php if($data['bloclstat'] == 1) echo ' (заблокирован)'; // Отображение логина?>
 
           </div>
@@ -38,7 +37,7 @@
 
             <?php endif; // Отображение если пользователь страницы - админ?>
 
-            <?php if(chAccess("ban") && $data['userstatusdig'] != 2 && $data['user']['login'] != $data['decodedMyLogin']): // Отображение кнопок управления?>
+            <?php if(chAccess("ban") && $data['userstatusdig'] != view::specialDataGet('STATUS_UNBAN') && $data['user']['login'] != view::specialDataGet('UNBAN_LOGIN') && $data['user']['login'] != $data['decodedMyLogin']): // Отображение кнопок управления?>
                 
                 <?php // Подбор цвета иконки в зависимости от статуса
                 $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
@@ -164,8 +163,8 @@
                         <legend class="text-center">Ваша новая почта.</legend>
                         <label for="email">Новый email: </label> 
                         <div class="form-group">
-                            <input class="form-control mb-3" type="email" name="email" id="email" maxlength="40" required/>   
-                            <div id="passwordHelpBlock" class="form-text"></div> 
+                          <input class="form-control mb-3" type="email" name="email" id="email" maxlength="40" required/>   
+                          <div id="passwordHelpBlock" class="form-text"></div> 
                         </div>
                         <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>
                       </fieldset>
@@ -178,7 +177,7 @@
               </div>
             </div>
             <?php endif;?>
-            <?php if(chAccess("deleteAkk")):?>
+            <?php if(chAccess("deleteAkk") && $data['user']['login'] != view::specialDataGet('UNBAN_LOGIN')):?>
             <a href="#" class="list-group-item list-group-item-action" style="color: red;" data-bs-toggle="modal" data-bs-target="#ModalDelete">Удалить аккаунт</a>
             <div class="modal fade" tabindex="-1" id="ModalDelete" aria-hidden="true">
               <div class="modal-dialog modal-fullscreen-sm-down">

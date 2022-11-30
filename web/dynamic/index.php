@@ -1,5 +1,7 @@
 <?php
 
+// Точка входа
+
 namespace system;
 
 session_start();
@@ -18,4 +20,5 @@ spl_autoload_register(function ($class) {
     }
 });
 
-$app = new route;
+// Вызов роутера
+$app = new router;

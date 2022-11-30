@@ -8,6 +8,7 @@ class mainM extends model{
         return parent::selectUnits($quantity);
     }
 
+    // Выборка постов для рекомендаций на главной странице
     public function selectRecomendedTopics($count = 2){
         $mysqli = openmysqli();
         $count = $mysqli->real_escape_string($count);

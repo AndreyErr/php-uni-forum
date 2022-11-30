@@ -77,7 +77,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userId`, `login`, `status`, `name`, `email`, `pass`, `photo`, `regdate`, `userRating`) VALUES
-(1, 'AndreyErr', 2, 'Андрей', 'a9165185808@gmail.com', '$2y$10$n2hIZg6B45U8FYzqzrcsKe.IlJMHvpGcuUXL83PsZ0eEc6CI9JHzS', 1, '2022-11-27', 0);
+(1, 'AndreyErr', 2, 'Андрей', 'a9165185808@gmail.com', '$2y$10$n2hIZg6B45U8FYzqzrcsKe.IlJMHvpGcuUXL83PsZ0eEc6CI9JHzS', -1, '2022-11-27', 0); -- pass: qwerty123#
 
 -- --------------------------------------------------------
 

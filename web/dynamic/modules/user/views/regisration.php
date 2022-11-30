@@ -43,10 +43,9 @@
                 <small></small>
             </div>
             <button type="submit" class="btn btn-primary mb-3">Регистрация</button>
-
             </fieldset>
-            </form><!-- ends register form -->  
-        </div><!-- ends col-6 -->
+            </form>
+        </div>
         <div class="col-md-6">
             <h1 class="page-header">Регистрация на форум</h1>
             <p>Вы в одном шаге от обсуждения мира IT qwerty123# Зарегестрируйтесь и получите полноый доступ к IT forum. Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p> 

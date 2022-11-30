@@ -4,9 +4,12 @@ namespace system;
 
 class model{
 
-    // Подключение файла с настройками
-    protected function specialDataConnect(){
-        return require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
+    // Подключение файла с базовыми настройками
+    protected function specialDataGet($get){
+        $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
+        if(is_array($secData) && array_key_exists($get, $secData))
+            return $secData[$get];
+        return 'Get_Err';
     }
 
     // Взятие главных тем (исп в 2 моделях)
@@ -21,7 +24,7 @@ class model{
     }
 
     // Кастомная переадресация
-    public function relocate($page, $status = -1, $message = ''){ // Путь, тип сообщения (не обяз), сообщение (не обяз)
+    public static function relocate($page, $status = -1, $message = ''){ // Путь, тип сообщения (не обяз), сообщение (не обяз)
         if($status != -1)
             $_SESSION['message'] = [$status, $message]; // Сессия с Собщением
         header('Location: '.$page);

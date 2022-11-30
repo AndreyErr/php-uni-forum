@@ -27,6 +27,7 @@ class admC extends controller{
         $css = array();
         $js = array();
         $dataToView = array(
+            "statuses" => $this->getStatuses(),
             "css" => $css, 
             "js" => $js
         );
@@ -35,16 +36,23 @@ class admC extends controller{
 
     // Формирование страницы с пользователями
     private function usersPage(){
-        $css = array();
-        $js = array();
         $allUsers = $this->model->selectCountUsers();
         $users = $this->model->selectFromUsers();
+
+        $css = array();
+        $js = array();
         $dataToView = array(
-            "css" => $css, 
-            "js" => $js,
+            "statuses" => $this->getStatuses(),
             "allUsers" => $allUsers,
-            "users" => $users
+            "users" => $users,
+            "css" => $css, 
+            "js" => $js
         );
         $this->view->rander('adm/views/users', $dataToView, 'adm/views/admLayout', 'Админ панель - пользователи');
+    }
+
+    // Взятие массива статусов
+    private function getStatuses(){
+        return require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');
     }
 }

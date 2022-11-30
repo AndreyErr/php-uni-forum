@@ -33,7 +33,7 @@ class admM extends model{
             $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
             $userBanAlready = $mysqli->query("SELECT * FROM usersBanOnSite WHERE loginUser = '".$login."';");
             $user = mysqli_fetch_assoc($user1);
-            if($user1->num_rows == 0 || $userBanAlready->num_rows > 0 || $user['status'] == 2){
+            if($user1->num_rows == 0 || $userBanAlready->num_rows > 0 || $user['status'] == model::specialDataGet('STATUS_UNBAN') || $user['login'] == model::specialDataGet('UNBAN_LOGIN')){
                 $mysqli->close();
                 parent::relocate('/adm/users', 3, 'Ошибка бана!');
             }
@@ -65,8 +65,7 @@ class admM extends model{
     // Изменение статуса пользователя
     public function changeStatusAction(){
         if (!empty($_POST) && chAccess("changeStatus")) {
-            $specdata = model::specialDataConnect(); // Для получения логина главного админа
-            if(!$_POST['login'] || $_POST['stat'] < 0 || $_POST['stat'] > 3 || $_POST['login'] == $specdata['UNBAN_LOGIN'])
+            if(!$_POST['login'] || $_POST['stat'] < 0 || $_POST['stat'] > 3 || $_POST['login'] == model::specialDataGet('UNBAN_LOGIN'))
                 parent::relocate('/adm', 3, 'Что-то не так!');
             else{
                 $mysqli = openmysqli();
@@ -76,7 +75,7 @@ class admM extends model{
                     $mysqli->close();  
                     parent::relocate('/', 3, 'Такого логина не существует!');
                 }else{
-                    $mysqli->query("UPDATE users SET status = '".$_POST['stat']."' WHERE login = '".$login."';");
+                    $mysqli->query("UPDATE users SET status = ".$_POST['stat']." WHERE login = '".$login."';");
                     $mysqli->close();
                     parent::relocate('/adm', 2, 'Статус пользователя изменён!');
                 }

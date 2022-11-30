@@ -1,5 +1,3 @@
-<?php $status = require($_SERVER['DOCUMENT_ROOT'].'/settings/status.php');?>
-
 <h2>Админ панель</h2>
 <hr>
 <?php if(chAccess("changeStatus")): ?>
@@ -11,12 +9,10 @@
   </div>
   <label for="floatingInput">Статус доступа:</label>
   <select class="form-select" aria-label="Default select example" name="stat">
-
-      <?php $c = -1; foreach ($status as $kay){$c++;}; $i = 0; while ($i < $c):?>
-
-      <option value="<?php echo $i?>"><?php echo $status[$i]?></option>
-
-      <?php $i++; endwhile;?>
+    
+    <?php $c = -1; foreach ($data['statuses'] as $kay){$c++;}; $i = 0; while ($i < $c):?>
+    <option value="<?php echo $i?>"><?php echo $data['statuses'][$i]?></option>
+    <?php $i++; endwhile;?>
 
   </select>
   <br>

@@ -2,7 +2,10 @@
 
 class view{
     // Рендер нужного вида 
-    public function rander($path, $data = [], $addonLayout = '', $name = 'IT Forum'){ // Путь к виду, данные, доп вид (не обяз)
+    public function rander($path, $data = [], $addonLayout = '', $name = ''){ // Путь к виду, данные, доп вид (не обяз)
+        if($name == ''){
+            $name = $this->specialDataGet('STANDART_TITLE'); // Стандартный заголовок
+        }
         extract($data);
         $path = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path.'.php';
         if (file_exists($path)){
@@ -39,6 +42,14 @@ class view{
             return ob_get_clean();
         }else
             header('Location: /err/error.html');
+    }
+
+    // Подключение файла с базовыми настройками
+    public static function specialDataGet($get){
+        $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
+        if(is_array($secData) && array_key_exists($get, $secData))
+            return $secData[$get];
+        return 'Get_Err';
     }
 
     // Показ сообщений если есть сессия с ним

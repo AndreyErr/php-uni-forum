@@ -225,7 +225,7 @@ class userM extends model{
     }
 
     // Последние топики пользователя + главный топик
-    public function selectLastTopics($id, $count = 4){
+    private function selectLastTopics($id, $count = 4){
         $mysqli = openmysqli();
         $id = $mysqli->real_escape_string($id);
         $count = $mysqli->real_escape_string($count);
@@ -248,7 +248,7 @@ class userM extends model{
 
     // Удаление аккаунта
     public function deleteAccAction(){
-        if(chAccess("deleteAkk")){
+        if(chAccess("deleteAkk") && decode($_COOKIE['login']) != view::specialDataGet('UNBAN_LOGIN')){
             $mysqli = openmysqli();
             $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE userId = ".$_COOKIE['id'].";"));
             if($deletFoto['photo'] == 0){

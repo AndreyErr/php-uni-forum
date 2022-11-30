@@ -9,7 +9,6 @@
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
       <link href="/src/css/lib/bootstrap.min.css" rel="stylesheet">
       <link href="/src/css/main.css" rel="stylesheet">
-      <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> -->
       <?php if(array_key_exists('css', $data)){
         foreach($data['css'] as &$value)
           echo '<link href="/src/css/'.$value.'.css" rel="stylesheet">';

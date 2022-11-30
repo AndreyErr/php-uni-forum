@@ -2,9 +2,7 @@
 
 namespace system;
 
-use system;
-
-class route{
+class router{
     // Разбиение пути на состовляющие
     public function __construct(){
         $path = explode('/', trim($_SERVER['REDIRECT_URL'], '/'));
@@ -23,7 +21,7 @@ class route{
         if($controller != "-1" && $model != "-1"){
             $model = $path[0].'M';
             $action = $this->checkAction($path);
-            $controllerClass = new $controller($page, $action);
+            new $controller($page, $action);
         }    
         else
             header('Location: /err/404.html');

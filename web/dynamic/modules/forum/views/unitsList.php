@@ -33,15 +33,6 @@
   </div>
   <?php endif; ?>
 
-
-
-
-
-
-
-
-
-          
           
   <!--Главные темы-->
   <div class="container px-4 py-5" id="hanging-icons">
@@ -55,7 +46,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/f/a/addMain" method="post">
+            <form action="/f/a/addUnit" method="post">
               <fieldset>
                 <legend class="text-center">Тема для подтем!</legend>
                 <label for="name">Тема:</label>
