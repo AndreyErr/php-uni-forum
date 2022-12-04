@@ -19,7 +19,7 @@
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
   <div class="row align-items-center g-lg-5 py-5">
     <div class="col-lg-7 text-center text-lg-start">
-      <h1 class="display-4 fw-bold lh-1 mb-3">Войти (qwerty123#)</h1>
+      <h1 class="display-4 fw-bold lh-1 mb-3">Войти</h1>
       <p class="col-lg-10 fs-4">Войдите в свой аккаунт для полного доступа к IT forum. Здесь вы сможете получить ответы на свои вопросы в сфере технологий и пообщаться на актуальные темы с сообществом.</p>
     </div>
     <div class="col-md-10 mx-auto col-lg-5">

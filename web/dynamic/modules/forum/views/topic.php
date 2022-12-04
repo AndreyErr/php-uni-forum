@@ -11,6 +11,32 @@
           <strong class="d-block text-gray-dark"><i>уже удалённого пользователя</i></strong>
         <?php endif;?>
       </p>
+      <?php if($data['messages']['topType'] != -1): foreach ($data['messagesForRef'] as $kay):
+        if($kay['messageId'] == 1):?>
+      <hr>
+      <p v-html="markdownToHtml" id="mesStart"></p>
+      <ul class="list-group">
+                    
+      <?php if(array_key_exists($kay['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['messageId']] as $kay2):?>
+        <li class="list-group-item text-bg-dark"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
+      <?php endforeach; endif;?>
+      </ul>
+      <script type="application/javascript">
+      var vm = new Vue({
+          el: '#mesStart',
+          data(){
+            return{
+              markdown: "<?php echo $kay['message']?>",
+            };
+        },
+          computed: {
+            markdownToHtml: function () {
+              return marked(this.markdown);
+            }
+          }
+        });
+      </script>
+      <?php endif; endforeach; endif;?>
     </div>
   </div>
 <?php if(chAccess("controlTopic") || (array_key_exists('id', $_COOKIE) && $_COOKIE['id'] == $data['topicData']['userId'])):?>
@@ -130,7 +156,14 @@
                     <?php else:?>
                       <span class="profile-info__name"><i>Пользователь удалён</i></span>
                     <?php endif;?>
-                      <span class="profile-info__username"><?php echo $data['messages']['topMessage']['date']?> в <?php echo $data['messages']['topMessage']['time']?></span></a></div>
+                    <span class="profile-info__username">№: <?php echo $data['messages']['topMessage']['messageId']?> | <?php echo $data['messages']['topMessage']['date']?> в <?php echo $data['messages']['topMessage']['time']?>
+                        <?php if($data['messages']['topMessage']['idMesRef'] != 0):?>
+                          в ответ 
+                          <?php foreach ($data['messagesForRef'] as $refmes): if($refmes['messageId'] == $data['messages']['topMessage']['idMesRef']):?>
+                            <i <?php if($refmes['login'] == $data['userLogin']) echo 'style="color: #B22222; font-weight: 1000;"'?>><?php echo $refmes['login']?></i> на сообщение № <?php echo $refmes['messageId']?>
+                          <?php endif; endforeach;?>
+                        <?php endif;?>
+                         | <i class="fa-solid fa-star"></i> <?php echo $data['messages']['topMessage']['rating']?></span></a></div>
                   <div class="card-message">
                   <p v-html="markdownToHtml" id="mes<?php echo $data['messages']['topMessage']['messageId']?>"></p>
                   <div class="card-message-stamp">
@@ -167,7 +200,8 @@
                     <b><?php echo $data['messages']['topMessage']['rating']?></b>
                     <?php if(array_key_exists('login', $_COOKIE) && !array_search($data['messages']['topMessage']['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
                       <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>" class="dowvo">&#5167;</a>
-                    <?php endif;?>
+                      <button onclick="insert('<?php echo $data['messages']['topMessage']['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
+                      <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
@@ -212,7 +246,14 @@
                     <?php else:?>
                       <span class="profile-info__name"><i>Пользователь удалён</i></span>
                     <?php endif;?>
-                      <span class="profile-info__username"><?php echo $kay['date']?> в <?php echo $kay['time']?> | <i class="fa-solid fa-star"></i> <?php echo $kay['rating']?></span>
+                      <span class="profile-info__username" style="white-space: nowrap">№: <?php echo $kay['messageId']?> | <?php echo $kay['date']?> в <?php echo $kay['time']?>
+                        <?php if($kay['idMesRef'] != 0):?>
+                          в ответ 
+                          <?php foreach ($data['messagesForRef'] as $refmes): if($refmes['messageId'] == $kay['idMesRef']):?>
+                            <i <?php if($refmes['login'] == $data['userLogin']) echo 'style="color: #B22222; font-weight: 1000;"'?>><?php echo $refmes['login']?></i> на сообщение № <?php echo $refmes['messageId']?>
+                          <?php endif; endforeach;?>
+                        <?php endif;?>
+                         | <i class="fa-solid fa-star"></i> <?php echo $kay['rating']?></span>
                     </a>
                   </div>
                   <div class="card-message">
@@ -222,7 +263,7 @@
                       <?php if(chAccess("topic") && $kay['messageId'] != 1 && (chAccess("controlTopic") || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
                         <a href="/f/a/deleteMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Удалить</a>
                       <?php endif;?>
-                      <?php if(chAccess("topic") && $data['messages']['topType'] == 2 && $kay['messageId'] != 1 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
+                      <?php if(chAccess("topic") && $kay['messageId'] != 1 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
                         <a href="/f/a/topMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Лучший ответ</a>
                       <?php endif;?>
                     </span>
@@ -251,7 +292,8 @@
                     <b><?php echo $kay['rating']?></b>
                     <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
                       <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>" class="dowvo">&#5167;</a>
-                    <?php endif;?>
+                      <button onclick="insert('<?php echo $kay['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
+                      <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
@@ -274,11 +316,12 @@
                 <?php endif;?>
 
                 <?php if(array_key_exists('login', $_COOKIE)):?>
-              <hr><h5 style="margin-top: 35px;">Добавть свой ответ:</h5>
+              <hr><h5 style="margin-top: 35px;">Добавть сообщение<span id="ans"></span>:</h5>
               <form action="/f/a/addMessage/<?php echo $data["topicData"]["topicId"]?>" method="post" id="app" enctype="multipart/form-data">
                 <div class="form-group"> 
+                  <input id="ref" class="visually-hidden" name="ref">
                   <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Первое сообщение:</label>
+                    <label for="exampleFormControlTextarea1" class="form-label">Cообщение:</label>
                     <textarea class="form-control" name="text" v-model="input" @blur="focus = false" :value="input" @input="update" id="input" rows="3" placeholder="Ваше сообщение. Можно использовать разметку md!" required></textarea>
                     <div id="passwordHelpBlock" class="form-text">Текст должен быть в длинну не меньше 1 и не больше 1000. Можно использовать разметку md!</div>
                   </div>
@@ -298,7 +341,7 @@
                 el: '#app',
                 data: {
                   focus: false,
-                  input: '' //### Markdown Demo **Lorem ipsum** dolor sit amet consectetur adipisicing elit. Quam, optio minima, **[Vue.js guide](https://vuejs.org/v2/guide)** aut cupiditate voluptatem voluptatum enim nostrum at, sequi tempore dolorem magni impedit sunt.
+                  input: ''
                 },
                 computed: {
                   compiledMarkdown: function () {
@@ -324,6 +367,17 @@
                   $(window).scrollTop(sessionStorage.scrollTop);
                 }
               });
+
+              function insert (word) {
+                let inp = document.getElementById('ref');
+                var ans = document.getElementById('ans');
+                ans.textContent = " как ответ на сообщение №" + word;
+                let start = inp.selectionStart;
+                inp.value = inp.value.substring(0, start) + word +
+                inp.value.substring(inp.selectionEnd, inp.value.length) 
+                inp.focus();
+                inp.setSelectionRange(start, start + word.length)
+              }
               </script>
               <?php else:?>
               <div class="text-secondary px-4 py-5 text-center">

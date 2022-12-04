@@ -84,6 +84,7 @@ class forumC extends controller{
             $this->model->upperTopicView($allAboutTopic["topicId"]); // Обновление счётчика просмотров
             $topicViews = $this->model->countTopicMessages($allAboutTopic["topicId"]); // Подсчёт сообщений в топике
             $selectedMessages = $this->model->selectMessages($allAboutTopic['type'], $this->path[2]); // Берём сообщения
+            $selectedMessagesSmallVers = $this->model->selectMessagesSmalVers($this->path[2]); // Берём сообщения
             $allAboutUnit = $this->model->selectAllAboutUnit($this->path[1]);
 
 
@@ -91,10 +92,12 @@ class forumC extends controller{
                 "typeTopic" => $typeTopic,
                 'topicViews' => $topicViews,
                 "messages" => $selectedMessages,
+                "messagesForRef" => $selectedMessagesSmallVers,
                 "unit" => $allAboutUnit['name'],
                 "unitSrc" => $this->path[1],
                 "topicData" => $allAboutTopic,
                 "nowDate" => date("Y-m-d"),
+                "userLogin" => decode($_COOKIE['login']),
 
                 "css" => array("topic"),
                 "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),

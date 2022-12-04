@@ -73,7 +73,7 @@ class admM extends model{
                 $user1 = $mysqli->query("SELECT * FROM users WHERE login = '".$login."';");
                 if($user1->num_rows == 0){
                     $mysqli->close();  
-                    parent::relocate('/', 3, 'Такого логина не существует!');
+                    parent::relocate('/adm', 3, 'Такого логина не существует!');
                 }else{
                     $mysqli->query("UPDATE users SET status = ".$_POST['stat']." WHERE login = '".$login."';");
                     $mysqli->close();

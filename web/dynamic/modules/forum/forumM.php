@@ -146,6 +146,7 @@ class forumM extends model{
                     messageId int(11) NOT NULL AUTO_INCREMENT,
                     idUser int(11) NOT NULL COMMENT 'id пользователя написавшего сообщение',
                     message text NOT NULL,
+                    idMesRef int(11) NOT NULL COMMENT 'id сообщения, на который дан ответ',
                     date date NOT NULL,
                     time time NOT NULL,
                     rating int(11) NOT NULL COMMENT 'Рейтинг сообщения',
@@ -155,7 +156,7 @@ class forumM extends model{
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
 
-                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topicId']." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
+                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topicId']." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', 0, '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
                 
                 $mysqli->query("
                 CREATE TABLE filesForTopicId".$topicId['topicId']." (
@@ -268,11 +269,15 @@ class forumM extends model{
                 }
                 $fileStatus = 1;
             }
-            $mysqli = openmysqli();      
+            $mysqli = openmysqli(); 
+            $ref = $mysqli->real_escape_string(trim($_POST['ref']));
+            $messSrc = $mysqli->query("SELECT messageId FROM messagesForTopicId".$topicId." WHERE messageId = ".$ref.";");
+            if($messSrc == NULL || $messSrc->num_rows == 0)
+                $ref = 0;     
             $date = date("Y-m-d");
             $time = date("H:i:s");
             $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
-            $mysqli->query("INSERT INTO messagesForTopicId".$topicId." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
+            $mysqli->query("INSERT INTO messagesForTopicId".$topicId." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', ".$ref.", '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
             $messageId = mysqli_fetch_assoc($mysqli->query("SELECT messageId FROM messagesForTopicId".$topicId." WHERE idUser = '".$_COOKIE['id']."' ORDER BY messageId DESC LIMIT 1;"));
             if($fileStatus == 1){
                 $this->messageFileUpload($unitSrc['unitUrl'], $topicId, $messageId['messageId']);
@@ -324,6 +329,7 @@ class forumM extends model{
             parent::relocate('/f');
     }
 
+    // Установка оценки
     public function ratingChAction($movement, $unit, $topicId, $message){
         if (array_key_exists('id', $_COOKIE)) {
             if($movement > 1 || $movement < -1 || $movement == 0){
@@ -441,6 +447,14 @@ class forumM extends model{
             'all' => $all
         );
         return $data;
+    }
+
+    // Взятие сообщений из бд (Короткая версия)
+    public function selectMessagesSmalVers($id){
+        $mysqli = openmysqli();
+        $all = $mysqli->query("SELECT * FROM messagesForTopicId".$id." LEFT JOIN users ON messagesForTopicId".$id.".idUser = users.userId ORDER BY messagesForTopicId".$id.".messageId DESC;");
+        $mysqli->close();
+        return $all;
     }
 
     // Поднятие рейтинга

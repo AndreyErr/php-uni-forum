@@ -96,7 +96,7 @@
                   <div class="modal-body">
                     <form action="/user/a/changePass" method="post">
                       <fieldset>
-                        <legend class="text-center">Запомните новый пароль. (qwerty123#)</legend>
+                        <legend class="text-center">Запомните новый пароль.</legend>
                         <label for="pass">Старый пароль: </label>
                         <div class="form-group"> 
                           <input class="form-control" type="password" name="oldPass" id="pass" maxlength="20" required/>  
