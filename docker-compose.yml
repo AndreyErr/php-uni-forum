@@ -38,10 +38,3 @@ services:
       - 8082:80
     environment:
       - PMA_ARBITRARY=1
-
-  redis:
-    container_name: redis
-    image: redis:alpine3.16
-    restart: always
-    ports:
-      - "6379:6379"

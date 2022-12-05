@@ -42,6 +42,7 @@ class forumM extends model{
         parent::relocate('/f');
     }
 
+    // Перевод русского текста в английский
     private function translitToUrl($value){
         $converter = array(
             'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
@@ -365,7 +366,7 @@ class forumM extends model{
         $mysqli = openmysqli();
         $unitUrl = $mysqli->real_escape_string($unitUrl);
         $unit = mysqli_fetch_assoc($mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$unitUrl."';"));
-        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId WHERE topic.idUnit = '".$unit['unitId']."';");
+        $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId WHERE topic.idUnit = '".$unit['unitId']."' ORDER BY topic.topicId DESC;");
         $mysqli->close();
         return $topics;
     }
@@ -375,7 +376,7 @@ class forumM extends model{
         if($_POST['find']){
             $mysqli = openmysqli();
             $find = $mysqli->real_escape_string($_POST['find']);
-            $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId LEFT JOIN unit ON topic.idUnit = unit.unitId WHERE topic.topicName LIKE '%".$find."%';");
+            $topics = $mysqli->query("SELECT * FROM topic LEFT JOIN users ON topic.idUserCreator = users.userId LEFT JOIN unit ON topic.idUnit = unit.unitId WHERE topic.topicName LIKE '%".$find."%' ORDER BY topic.topicId DESC;");
             $mysqli->close();
             return $topics;
         }else

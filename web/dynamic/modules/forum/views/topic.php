@@ -316,7 +316,7 @@
                 <?php endif;?>
 
                 <?php if(array_key_exists('login', $_COOKIE)):?>
-              <hr><h5 style="margin-top: 35px;">Добавть сообщение<span id="ans"></span>:</h5>
+              <hr><h5 style="margin-top: 35px;">Добавть сообщение<span id="ans"></span>:<span id="ansbtn"></span></h5>
               <form action="/f/a/addMessage/<?php echo $data["topicData"]["topicId"]?>" method="post" id="app" enctype="multipart/form-data">
                 <div class="form-group"> 
                   <input id="ref" class="visually-hidden" name="ref">
@@ -369,14 +369,29 @@
               });
 
               function insert (word) {
-                let inp = document.getElementById('ref');
-                var ans = document.getElementById('ans');
-                ans.textContent = " как ответ на сообщение №" + word;
-                let start = inp.selectionStart;
-                inp.value = inp.value.substring(0, start) + word +
-                inp.value.substring(inp.selectionEnd, inp.value.length) 
-                inp.focus();
-                inp.setSelectionRange(start, start + word.length)
+                if(word != 0){
+                  let inp = document.getElementById('ref');
+                  var ans = document.getElementById('ans');
+                  var ansbtn = document.getElementById('ansbtn');
+                  ans.textContent = " как ответ на сообщение №" + word;
+                  ansbtn.innerHTML ='<button onclick="insert(0)" class="btn btn-outline-secondary btn-sm m-1">Это не ответ</button>'; 
+                  let start = inp.selectionStart;
+                  inp.value = inp.value.substring(0, start) + word +
+                  inp.value.substring(inp.selectionEnd, inp.value.length) 
+                  inp.focus();
+                  inp.setSelectionRange(start, start + word.length)
+                }else{
+                  let inp = document.getElementById('ref');
+                  var ans = document.getElementById('ans');
+                  var ansbtn = document.getElementById('ansbtn');
+                  ans.textContent = "";
+                  ansbtn.textContent = "";
+                  let start = inp.selectionStart;
+                  inp.value = inp.value.substring(0, start) + word +
+                  inp.value.substring(inp.selectionEnd, inp.value.length) 
+                  inp.focus();
+                  inp.setSelectionRange(start, start + word.length)
+              }
               }
               </script>
               <?php else:?>
