@@ -202,6 +202,8 @@
                       <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>" class="dowvo">&#5167;</a>
                       <button onclick="insert('<?php echo $data['messages']['topMessage']['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
                       <?php endif;?>
+                      <?php if(array_key_exists('login', $_COOKIE)):?>
+                      <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
@@ -291,9 +293,11 @@
                     <?php endif;?>
                     <b><?php echo $kay['rating']?></b>
                     <?php if(array_key_exists('login', $_COOKIE) && !array_search($kay['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
-                      <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>" class="dowvo">&#5167;</a>
-                      <button onclick="insert('<?php echo $kay['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
-                      <?php endif;?>
+                    <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>" class="dowvo">&#5167;</a>
+                    <?php endif;?>
+                    <?php if(array_key_exists('login', $_COOKIE)):?>
+                    <button onclick="insert('<?php echo $kay['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
+                    <?php endif;?>
                   </div>
                     <script type="application/javascript">
                       var vm = new Vue({
