@@ -5,7 +5,7 @@ namespace system;
 class model{
 
     // Подключение файла с базовыми настройками
-    protected function specialDataGet($get){
+    protected static function specialDataGet($get){
         $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
         if(is_array($secData) && array_key_exists($get, $secData))
             return $secData[$get];

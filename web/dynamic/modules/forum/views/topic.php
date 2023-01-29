@@ -200,9 +200,9 @@
                     <b><?php echo $data['messages']['topMessage']['rating']?></b>
                     <?php if(array_key_exists('login', $_COOKIE) && !array_search($data['messages']['topMessage']['messageId'].$_COOKIE['id'], $data['messages']["raiting"])):?>
                       <a href="/f/a/ratingCh/-1/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $data['messages']['topMessage']['messageId']?>" class="dowvo">&#5167;</a>
-                      <button onclick="insert('<?php echo $data['messages']['topMessage']['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
                       <?php endif;?>
                       <?php if(array_key_exists('login', $_COOKIE)):?>
+                        <button onclick="insert('<?php echo $data['messages']['topMessage']['messageId']?>')" class="btn btn-outline-secondary btn-sm m-1">Ответить</button>
                       <?php endif;?>
                   </div>
                     <script type="application/javascript">
@@ -265,7 +265,7 @@
                       <?php if(chAccess("topic") && $kay['messageId'] != 1 && (chAccess("controlTopic") || ($_COOKIE['id'] == $kay['idUser'] && $data["nowDate"] == $kay['date']))):?>
                         <a href="/f/a/deleteMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Удалить</a>
                       <?php endif;?>
-                      <?php if(chAccess("topic") && $kay['messageId'] != 1 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
+                      <?php if(chAccess("topic") && $kay['messageId'] != 1 && $data["topicData"]["type"] == 2 && ($_COOKIE['id'] == $data['topicData']['userId'])):?>
                         <a href="/f/a/topMes/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['messageId']?>">Лучший ответ</a>
                       <?php endif;?>
                     </span>
@@ -362,6 +362,7 @@
                   }
                 }
               });
+              
               $(window).scroll(function() {
                 sessionStorage.scrollTop = $(this).scrollTop();
               });

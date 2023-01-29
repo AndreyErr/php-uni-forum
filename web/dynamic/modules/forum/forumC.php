@@ -100,7 +100,7 @@ class forumC extends controller{
                 "userLogin" => decode($_COOKIE['login']),
 
                 "css" => array("topic"),
-                "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"),
+                "jsUpSrc" => array("https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js", "https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js", "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js", "https://code.jquery.com/jquery-3.2.1.slim.min.js"),
                 "jsSrc" => array(),
             );
             $this->view->rander('forum/views/topic', $data);
