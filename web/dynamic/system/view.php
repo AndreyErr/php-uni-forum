@@ -15,7 +15,7 @@ class view{
             $content = $this->randLayouts($content, $data, $addonLayout, $name);
             echo $content;
         }else
-            header('Location: /err/error.html');
+            echo $this->viewError('Не найдено представление', $path);
         exit;
     }
 
@@ -30,7 +30,7 @@ class view{
             require $path;
             return ob_get_clean();
         }else
-            header('Location: /err/error.html');
+            echo $this->viewError('Не найден лейаут', 'headerFooter');
     }
 
     // Рендер доп лейаутов
@@ -40,8 +40,8 @@ class view{
             ob_start();
             require $path;
             return ob_get_clean();
-        }else
-            header('Location: /err/error.html');
+        } else
+            echo $this->viewError('Не найден дополнительный лейаут', $addonLayout);
     }
 
     // Подключение файла с базовыми настройками
@@ -50,6 +50,28 @@ class view{
         if(is_array($secData) && array_key_exists($get, $secData))
             return $secData[$get];
         return 'Get_Err';
+    }
+
+    // Подгрузка частей для визуализации
+    public static function useViewTmp($module, $nameViewTmp){
+        if ($module != 'default') { // default распологается в главной папке представлений
+            $path = $_SERVER['DOCUMENT_ROOT'] . '/modules/' . $module . '/views/tmp/' . $nameViewTmp . '.php';
+        }else{
+            $path = $_SERVER['DOCUMENT_ROOT'] . '/modules/views/tmp/' . $nameViewTmp . '.php';
+        }
+        if (file_exists($path))
+                return require $path;
+        echo self::viewError('Не найдена часть представления', $module.' / '.$nameViewTmp);
+    }
+
+    // Показ ошибки
+    private static function viewError($text, $src = 'NON'){
+        $text = '<div class="alert alert-danger" style="z-index: 9999; margin: 10vh 5vh;" role="alert">
+                    <h4 class="alert-heading"><i class="fa-solid fa-triangle-exclamation"></i> ОШИБКА!</h4>
+                    <hr>
+                    <p class="mb-0">'.ucfirst($text).' ( '.$src.' )</p>
+                 </div>';
+        return $text;
     }
 
     // Показ сообщений если есть сессия с ним
