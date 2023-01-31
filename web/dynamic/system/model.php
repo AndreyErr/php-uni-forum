@@ -9,7 +9,7 @@ class model{
         $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
         if(is_array($secData) && array_key_exists($get, $secData))
             return $secData[$get];
-        return 'Get_Err';
+        return 'getErr';
     }
 
     // Взятие главных тем (исп в 2 моделях)

@@ -3,9 +3,8 @@
 class view{
     // Рендер нужного вида 
     public function rander($path, $data = [], $addonLayout = '', $name = ''){ // Путь к виду, данные, доп вид (не обяз)
-        if($name == ''){
+        if($name == '')
             $name = $this->specialDataGet('STANDART_TITLE'); // Стандартный заголовок
-        }
         extract($data);
         $path = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path.'.php';
         if (file_exists($path)){
@@ -14,9 +13,8 @@ class view{
             $content = ob_get_clean();
             $content = $this->randLayouts($content, $data, $addonLayout, $name);
             echo $content;
-        }else
-            echo $this->viewError('Не найдено представление', $path);
-        exit;
+        }
+        echo $this->viewError('Не найдено представление', $path);
     }
 
     // Рендер доп контента (шипки и подвала)
@@ -29,8 +27,8 @@ class view{
             ob_start();
             require $path;
             return ob_get_clean();
-        }else
-            echo $this->viewError('Не найден лейаут', 'headerFooter');
+        }
+        echo $this->viewError('Не найден лейаут', 'headerFooter');
     }
 
     // Рендер доп лейаутов
@@ -40,8 +38,8 @@ class view{
             ob_start();
             require $path;
             return ob_get_clean();
-        } else
-            echo $this->viewError('Не найден дополнительный лейаут', $addonLayout);
+        }
+        echo $this->viewError('Не найден дополнительный лейаут', $addonLayout);
     }
 
     // Подключение файла с базовыми настройками
@@ -49,18 +47,17 @@ class view{
         $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
         if(is_array($secData) && array_key_exists($get, $secData))
             return $secData[$get];
-        return 'Get_Err';
+        return 'getErr';
     }
 
     // Подгрузка частей для визуализации
     public static function useViewTmp($module, $nameViewTmp){
-        if ($module != 'default') { // default распологается в главной папке представлений
+        if ($module != 'default') // default распологается в главной папке представлений
             $path = $_SERVER['DOCUMENT_ROOT'] . '/modules/' . $module . '/views/tmp/' . $nameViewTmp . '.php';
-        }else{
+        else
             $path = $_SERVER['DOCUMENT_ROOT'] . '/modules/views/tmp/' . $nameViewTmp . '.php';
-        }
         if (file_exists($path))
-                return require $path;
+            return require $path;
         echo self::viewError('Не найдена часть представления', $module.' / '.$nameViewTmp);
     }
 
