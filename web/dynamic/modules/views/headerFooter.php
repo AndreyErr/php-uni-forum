@@ -28,6 +28,9 @@
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="/f">Форум</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="https://github.com/AndreyErr/php-uni-forum" target="_blank">GitHub</a>
+            </li>
           </ul>
         </div>
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="/f/find" method="POST">

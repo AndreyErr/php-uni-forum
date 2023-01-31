@@ -70,6 +70,9 @@ class userM extends model{
                     setcookie("login", encode($user['login']), $cookTime, "/");
                     setcookie("status", encode($user['status']), $cookTime, "/");
                     setcookie("photo", $photo, $cookTime, "/");
+                    
+                    // Тестовое сообшение для сервера
+                    mail("recipient", "subject", "message for ".$user['login'], "From: Sender");
                     parent::relocate('/u');
                 }
             }
