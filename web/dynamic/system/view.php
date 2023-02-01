@@ -13,8 +13,9 @@ class view{
             $content = ob_get_clean();
             $content = $this->randLayouts($content, $data, $addonLayout, $name);
             echo $content;
-        }
-        echo $this->viewError('Не найдено представление', $path);
+        }else
+            echo $this->viewError('Не найдено представление', $path);
+        exit;
     }
 
     // Рендер доп контента (шипки и подвала)

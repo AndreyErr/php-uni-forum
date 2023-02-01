@@ -137,35 +137,13 @@ class userM extends model{
     // Изменение аватарки
     public function updatePhotoAction(){
         if(chAccess("сhInProfile")){
-            $uploaddir = $_SERVER['DOCUMENT_ROOT'].'/files/img/avatar/';
             if (!empty($_FILES)) {
-                $error = "";
-                $fileName = $_FILES['avatar']['name'];
-                $fileSize = $_FILES['avatar']['size'];
-                $fileType = $_FILES['avatar']['type'];
-                $fileFormat = explode('/',$fileType)[1];
-                $fileExt = explode('.',$fileName);
-                $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
-                $expensions = array("000","jpeg","jpg","png");
-                if(!array_search($fileFormat, $expensions)) {
-                    $error = 'Неправильный формат файла'; 
-                }elseif ($fileSize == 0) {
-                    $error = 'Файл пустой';
-                }elseif($fileSize > 2097152){ // Биты
-                    $error = 'Файл > 2mb';  
-                }
-                if($error == ""){
-                    $fileTmp = $_FILES['avatar']['tmp_name'];
-                    $filename = $_COOKIE['id'].'.png';
-                    move_uploaded_file($fileTmp, $uploaddir.$filename);
-                    $mysqli = openmysqli();
-                    $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
-                    $mysqli->close();
-                    setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
-                    parent::relocate('/u', 2, "Файл загружен!");
-                }else{
-                    parent::relocate('/u', 3, $error."!");
-                }
+                parent::fileUpload('avatar', $_FILES, $_COOKIE['id'], 'png');
+                $mysqli = openmysqli();
+                $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
+                $mysqli->close();
+                setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
+                parent::relocate('/u', 2, "Файл загружен!");
             }else
                 parent::relocate('/u');
         }else

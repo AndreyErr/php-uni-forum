@@ -79,8 +79,6 @@
       </ul>
       <p class="text-center text-muted">&copy; IT forum, 2022</p>
     </footer>
-    <script src="/src/js/lib/bootstrap.min.js"></script>
-    <script src="/src/js/lib/bootstrap.bundle.min.js"></script>
     <?php if(array_key_exists('jsSrc', $data)){
       foreach($data['jsSrc'] as &$value){
       echo '<script src="'.$value.'"></script>';
@@ -91,5 +89,7 @@
       echo '<script src="/src/js/'.$value.'.js"></script>';
     }
     }?>
+    <script src="/src/js/lib/bootstrap.min.js"></script>
+    <script src="/src/js/lib/bootstrap.bundle.min.js"></script>
   </body>
 </html>
