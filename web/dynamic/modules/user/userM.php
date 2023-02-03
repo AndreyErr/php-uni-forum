@@ -153,14 +153,14 @@ class userM extends model{
     // Удаление аватарки
     public function deletePhotoAction(){
         if(chAccess("сhInProfile")){
-            $uploaddir = '/files/img/avatar/';
+            $uploaddir = parent::specialDataGet('FILE_SERVER').parent::specialDataGet('fileData/avatar/folder');
             if ($_COOKIE['photo'] != 0) {
                 if ($_COOKIE['photo'] >= 0) {
-                    $photo = rand(-1, -9); // Вулючительно
+                    $photo = rand(-1, -9); // Включительно
                     $mysqli = openmysqli();
                     $mysqli->query("UPDATE users SET photo = ".$photo." WHERE login = '".decode($_COOKIE['login'])."';");
                     $mysqli->close();
-                    unlink($_SERVER['DOCUMENT_ROOT'].$uploaddir.$_COOKIE['photo'].".png");
+                    unlink($uploaddir.$_COOKIE['photo'].".png");
                     setcookie("photo", $photo, time()+(3600), "/");
                     parent::relocate('/u', 2, 'Аватар удалён!');
                 }else
@@ -229,11 +229,11 @@ class userM extends model{
 
     // Удаление аккаунта
     public function deleteAccAction(){
-        if(chAccess("deleteAkk") && decode($_COOKIE['login']) != view::specialDataGet('UNBAN_LOGIN')){
+        if(chAccess("deleteAkk") && decode($_COOKIE['login']) != parent::specialDataGet('UNBAN_LOGIN')){
             $mysqli = openmysqli();
             $deletFoto = mysqli_fetch_assoc($mysqli->query("SELECT photo FROM users WHERE userId = ".$_COOKIE['id'].";"));
             if($deletFoto['photo'] == 0){
-                $dir = $_SERVER['DOCUMENT_ROOT']."/files/img/avatar/".$_COOKIE['id'].".png";
+                $dir = parent::specialDataGet('FILE_SERVER').parent::specialDataGet('fileData/avatar/folder').$_COOKIE['id'].".png";
                 unlink($dir);
             }
             $mysqli->query("DELETE FROM users WHERE userId = ".$_COOKIE['id'].";");

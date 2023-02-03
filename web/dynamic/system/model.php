@@ -1,15 +1,24 @@
 <?php
 
 namespace system;
+use view;
 
 class model{
 
-    // Подключение файла с базовыми настройками
-    protected static function specialDataGet($get){
+    // Подключение файла с базовыми настройками (запрос настройки по форме xxx/xxx/xx)
+    // Пример: получение пути загрузки аватарок: 'fileData/avatar/folder'
+    public static function specialDataGet($get = ""){
         $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
-        if(is_array($secData) && array_key_exists($get, $secData))
-            return $secData[$get];
-        return 'getErr';
+        if ($get != "") {
+            $get = explode('/', $get);
+            foreach ($get as &$value)
+                if (isset($secData[$value]))
+                    $secData = $secData[$value];
+                else
+                    self::relocate('/', -1, 'Не найдена настойка ' . $get . ' в файле "config_data"');
+            return $secData;
+        }else
+            return $secData;
     }
 
     // Взятие главных тем (исп в 2 моделях)
@@ -26,8 +35,8 @@ class model{
     // Загрузка файлов
     // Аргументы: откуда пришёл запрос, объект файл, новое имя, новое расширение, нестандартный путь
     protected function fileUpload($tupe, $file, $newName, $setExt = '', $src = ''){
-        
-        $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
+        $secData = $this->specialDataGet();
+        self::checkConfigData('file' ,$tupe);
 
         $error = "";
         if(!isset($file[$tupe]))
@@ -35,7 +44,6 @@ class model{
         
         $fileName = $file[$tupe]['name'];
         $fileSize = $file[$tupe]['size'];
-        $fileType = $file[$tupe]['type'];
         $fileExt = explode('.',$fileName);
         $fileExt = strtolower(end($fileExt));
 
@@ -44,7 +52,8 @@ class model{
         }elseif ($fileSize == 0) {
             $error = 'Файл "'.$fileName.'" пустой';
         }elseif($fileSize > $secData['fileData'][$tupe]['maxSize']){ // Биты
-            $error = 'Файл "'.$fileName.'" слишком большого размера (больше '. $secData["fileData"][$tupe]["maxSize"]/1024/1024 .' мб)';  
+            $error = 'Файл "'.$fileName.'" слишком большого размера (больше '
+                .$secData["fileData"][$tupe]["maxSize"]/1024/1024 .' мб)';  
         }
 
         if($error == ""){
@@ -58,7 +67,13 @@ class model{
             move_uploaded_file($fileTmp, $src.$fileNewName); // Загрузка файла
 
             // Проверка по mime-типу
-            if($secData['mimeTypeCheck'] == true){
+            if($secData['mimeTypeCheck'] == true && !(isset($secData['fileData'][$tupe]['mimeTypeCheck']) 
+            && $secData['fileData'][$tupe]['mimeTypeCheck'] == false)){
+                if(!isset($secData['fileData'][$tupe]['mimeExtensions'])){
+                    exec('rm ' .$src.$fileNewName, $fileExt);
+                    self::relocate('/', -1, 'Неправильная настройка fileData => '
+                        .$tupe.' - отсутствует mimeTypeCheck при включённой функции mimeTypeCheck');
+                }
                 exec('file -i ' . $src.$fileNewName, $fileExt); // Запись mime типа методами linux
     
                 // Проверяем на совподение mime типа по массиву резрешённых
@@ -73,7 +88,10 @@ class model{
                 }
                 if ($isCorrect == false){
                     exec('rm ' .$src.$fileNewName, $fileExt);
-                    $error = 'Неправильный mime формат файла "'.$fileName.'"!<hr>Это могло произойти, если вы вручную поменяли расшерение оригинального файла!<br><br>Mime-тип оригинального файла - '.explode(':', $fileExt[0])[1];
+                    $error = 'Неправильный mime формат файла "'.$fileName
+                        .'"!<hr>Это могло произойти, если вы вручную поменяли расшерение оригинального файла!<br>'
+                        .'<br>Mime-тип оригинального файла - '
+                        .explode(':', $fileExt[0])[1];
                 }
             }
         }
@@ -81,10 +99,25 @@ class model{
             $this->relocate('/u', 3, $error.'!');
     }
 
+    // Проверка файла config_data.php (обязательных параметров)
+    public static function checkConfigData($tupe = '', $data = ''){
+        $secData = require 'settings/config_data.php';
+        if ($tupe != '' && is_array($secData) && !isset($secData['UNBAN_LOGIN']) || !isset($secData['STANDART_TITLE']) 
+            || !isset($secData['STATUS_UNBAN']) || !isset($secData['EMAIL']) || !isset($secData['FILE_SERVER'])) {
+            header('Location: /err/wrongSettings.html');
+            exit;
+        }elseif($tupe == 'file' &&  $data != ''){
+            if(!isset($secData['fileData'][$data]['folder']) || !isset($secData['fileData'][$data]['extensions']) 
+                || !isset($secData['fileData'][$data]['maxSize']))
+                self::relocate('/', -1, 'Неправильная настройка fileData => '.$data);
+        }
+    }
+
     // Кастомная переадресация
-    public static function relocate($page, $status = -1, $message = ''){ // Путь, тип сообщения (не обяз), сообщение (не обяз)
-        if($status != -1)
+    public static function relocate($page, $status = -2, $message = ''){ // Путь, тип сообщения (не обяз), сообщение (не обяз)
+        if($status != -2)
             $_SESSION['message'] = [$status, $message]; // Сессия с Собщением
         header('Location: '.$page);
+        exit;
     }
 }

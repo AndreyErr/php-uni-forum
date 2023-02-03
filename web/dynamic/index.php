@@ -20,5 +20,8 @@ spl_autoload_register(function ($class) {
     }
 });
 
+// Первоначальная проверка основных настроек сайта
+model::checkConfigData();
+
 // Вызов роутера
 $app = new router;

@@ -52,7 +52,7 @@
             </li>
             <li class="nav-item navbar-brand">
               <a href="/u" class="d-block">
-                <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="32" height="32" class="img-responsive rounded-circle mx-auto img-top">
+                <img src="<?php echo view::specialDataGet('fileData/avatar/folder').$_COOKIE['photo']; ?>.png" alt="X" width="32" height="32" class="img-responsive rounded-circle mx-auto img-top">
               </a>
             </li>
           </ul>

@@ -1,4 +1,5 @@
 <?php
+use system\model;
 
 class view{
     // Рендер нужного вида 
@@ -44,11 +45,8 @@ class view{
     }
 
     // Подключение файла с базовыми настройками
-    public static function specialDataGet($get){
-        $secData = require 'settings/config_data.php'; // Некоторые стандартные переменные в массиве (см. config_data.php)
-        if(is_array($secData) && array_key_exists($get, $secData))
-            return $secData[$get];
-        return 'getErr';
+    protected static function specialDataGet($get = ""){
+        return model::specialDataGet($get);
     }
 
     // Подгрузка частей для визуализации
@@ -62,43 +60,57 @@ class view{
         echo self::viewError('Не найдена часть представления', $module.' / '.$nameViewTmp);
     }
 
-    // Показ ошибки
-    private static function viewError($text, $src = 'NON'){
-        $text = '<div class="alert alert-danger" style="z-index: 9999; margin: 10vh 5vh;" role="alert">
-                    <h4 class="alert-heading"><i class="fa-solid fa-triangle-exclamation"></i> ОШИБКА!</h4>
-                    <hr>
-                    <p class="mb-0">'.ucfirst($text).' ( '.$src.' )</p>
-                 </div>';
-        return $text;
-    }
-
     // Показ сообщений если есть сессия с ним
     private function messageShow() {
         if (array_key_exists('message', $_SESSION) && array_key_exists(0, $_SESSION['message'])){
             switch ($_SESSION['message'][0]) {
                 case 2: // Удача
                     $bg = "success";
+                    $tupeMessage = 1;
                     break;
                 case 3: // Ошибка
                     $bg = "danger";
+                    $tupeMessage = 1;
+                    break;
+                case -1: // Критическая ошибка настройки сайта
+                    $tupeMessage = 2;
                     break;
                 default: // Информация
                     $bg = "primary";
+                    $tupeMessage = 1;
+                    break;
             }
-            $message = '
-            <div aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3">
-                <div class="toast align-items-center text-bg-'.$bg.' border-0 fade show role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                      <div class="toast-body">'.$_SESSION['message'][1].'</div>
-                      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            if($tupeMessage == 1)
+                $message = '
+                <div aria-live="polite" aria-atomic="true" class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div class="toast align-items-center text-bg-'.$bg.' border-0 fade show role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                          <div class="toast-body">'.$_SESSION['message'][1].'</div>
+                          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            ';
+                ';
+            else {
+                $_SESSION['message'][1] = explode('|',$_SESSION['message'][1]);
+                $message = self::viewError($_SESSION['message'][1][0], $_SESSION['message'][1][1]);
+            }
             $_SESSION['message'] = array();
         }else{
             $message = '';
         }
         return $message;
+    }
+
+    // Показ ошибки
+    private static function viewError($text){
+        $text = '<div class="alert alert-danger" style="z-index: 9999; margin: 10vh 5vh;" role="alert">
+                    <h4 class="alert-heading"><i class="fa-solid fa-triangle-exclamation"></i> КРИТИЧЕСКАЯ ОШИБКА!</h4>
+                    <hr>
+                    <p class="mb-0">'.ucfirst($text).'</p>
+                    <hr>
+                    <p class="mb-0">Если вы видите это сообщение, то обратитесь к администрации по почте <b>'.self::specialDataGet('EMAIL').'</b>, желательно, приложив скрин данной ошибки!</p>
+                 </div>';
+        return $text;
     }
 }

@@ -75,7 +75,9 @@ class userC extends controller{
             "bloclstat" => $userBanStat,
             "decodedMyLogin" => $myLogin,
             "fileUploadInfo" => (require 'settings/config_data.php')['fileData']['avatar'],
-            "fileUploadCheck" => (require 'settings/config_data.php')['mimeTypeCheck']
+            "fileUploadCheck" => ((require 'settings/config_data.php')['mimeTypeCheck'] 
+            && isset((require 'settings/config_data.php')['fileData']['avatar']['mimeTypeCheck'])
+            && (require 'settings/config_data.php')['fileData']['avatar']['mimeTypeCheck'])
         );
 
         if($allAboutActualUser['allAboutUser']['login'] == "")
