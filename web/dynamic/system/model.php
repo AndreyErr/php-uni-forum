@@ -33,14 +33,20 @@ class model{
     }
 
     // Загрузка файлов
-    // Аргументы: откуда пришёл запрос, объект файл, новое имя, новое расширение, нестандартный путь
-    protected function fileUpload($tupe, $file, $newName, $setExt = '', $src = ''){
+    // Аргументы: откуда пришёл запрос (назание поля загрузки файлов), объект файл, новое имя, новое расширение, нестандартный путь (в дополнение к основному из файла настроек)
+    protected function fileUpload($tupe, $file, $newName, $setExt = '', $addonSrc = ''){
         $secData = $this->specialDataGet();
         self::checkConfigData('file' ,$tupe);
 
         $error = "";
-        if(!isset($file[$tupe]))
-            $this->relocate('/u', 3, "Не совпадает тип в html и тип в настойках вункции загрузки (тип ".$tupe." не найден)!");
+        if (!isset($file[$tupe])) {
+            // Дополнительная проверка для множества файлов 
+            // (при отправле множества файлов через foreach, тип файлов может не передаваться в них самих (в корню)
+            // поэтому пробуем подставить тип в корень)
+            $file = [$tupe => $file];
+            if (!isset($file[$tupe]))
+                return "Не совпадает тип в html и тип в настойках функции загрузки (тип " . $tupe . " не найден)!";
+        }
         
         $fileName = $file[$tupe]['name'];
         $fileSize = $file[$tupe]['size'];
@@ -61,8 +67,7 @@ class model{
             if ($setExt != '')
                 $fileExt = $setExt;
             $fileNewName = $newName.'.'.$fileExt;
-            if ($src == '')
-                $src = $secData['fileData'][$tupe]['folder'];
+            $src = $secData['FILE_SERVER'].$secData['fileData'][$tupe]['folder'].ltrim($addonSrc, '/');
 
             move_uploaded_file($fileTmp, $src.$fileNewName); // Загрузка файла
 
@@ -95,8 +100,9 @@ class model{
                 }
             }
         }
-        if($error != "")
-            $this->relocate('/u', 3, $error.'!');
+        if ($error != "")
+            return $error.'!';
+        return 'OK';
     }
 
     // Проверка файла config_data.php (обязательных параметров)
@@ -108,7 +114,7 @@ class model{
             exit;
         }elseif($tupe == 'file' &&  $data != ''){
             if(!isset($secData['fileData'][$data]['folder']) || !isset($secData['fileData'][$data]['extensions']) 
-                || !isset($secData['fileData'][$data]['maxSize']))
+                || !isset($secData['fileData'][$data]['maxSize']) || !isset($secData['fileData'][$data]['maxFilesCount']))
                 self::relocate('/', -1, 'Неправильная настройка fileData => '.$data);
         }
     }

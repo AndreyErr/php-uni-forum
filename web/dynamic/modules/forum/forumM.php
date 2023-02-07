@@ -108,26 +108,6 @@ class forumM extends model{
             elseif(!topicTextCheck($_POST['text']))
                 parent::relocate('/f/'.$unit, 3, 'Неправильно заполнено поле сообщения!');
             else{
-                $fileStatus = 0;
-                if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
-                    parent::relocate('/f/'.$unit, 3, 'Слишком много файлов, можно загрузить не более 5!'); // 413 ошибка при большом запросе СДЕДАТЬ СТРАНИЦУ
-                    exit;
-                }elseif($_FILES['messageFiles']["type"][0] != ""){
-                    $files = array();
-                        foreach($_FILES['messageFiles'] as $k => $l) {
-                        	foreach($l as $i => $v) {
-                        		$files[$i][$k] = $v;
-                        	}
-                        }		
-                        $_FILES['messageFiles'] = $files;
-                        $fileCheck = $this->messageFileCheck();
-                        if($fileCheck != 0){
-                            parent::relocate('/f/'.$unit, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
-                            exit;
-                        }
-                        $fileStatus = 1;
-                        
-                }
                 $mysqli = openmysqli();
                 $chechUrl = mysqli_fetch_assoc($mysqli->query("SELECT unitId FROM unit WHERE unitUrl = '".$unit."';"));
                 if($chechUrl == NULL){
@@ -141,7 +121,7 @@ class forumM extends model{
                 $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
                 $mysqli->query("INSERT INTO topic VALUES (NULL, ".$_COOKIE['id'].", ".$chechUrl['unitId'].", '".$date."', '".$name."', ".$type.", 0);");
                 $topicId = mysqli_fetch_assoc($mysqli->query("SELECT topicId FROM topic WHERE idUserCreator = '".$_COOKIE['id']."' ORDER BY topicId DESC;"));
-                
+
                 $mysqli->query("
                 CREATE TABLE messagesForTopicId".$topicId['topicId']." (
                     messageId int(11) NOT NULL AUTO_INCREMENT,
@@ -156,8 +136,6 @@ class forumM extends model{
                     PRIMARY KEY (messageId)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 ");
-
-                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topicId']." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', 0, '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
                 
                 $mysqli->query("
                 CREATE TABLE filesForTopicId".$topicId['topicId']." (
@@ -171,9 +149,20 @@ class forumM extends model{
 
                 mkdir($_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId['topicId']);
 
-                if($fileStatus == 1){
-                    $this->messageFileUpload($unit, $topicId['topicId'], 1);
+                $fileStatus = $this->messageFileUpload($unit, $topicId['topicId'], '1');
+                if ($fileStatus == 'OK')
+                    $fileStatus = 1;
+                elseif($fileStatus == 'OK_NO_FILE')
+                    $fileStatus = 0;
+                else{
+                    $deleteTopicStatus = $this->deleteTopic($topicId['topicId'], $unit);
+                    if($deleteTopicStatus == 'OK')
+                        parent::relocate('/f/'.$unit, 3, $fileStatus);
+                    else
+                        parent::relocate('/f/'.$unit, 3, 'Ошибка отката создания топика: '.$deleteTopicStatus.'!');
                 }
+
+                $mysqli->query("INSERT INTO messagesForTopicId".$topicId['topicId']." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', 0, '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
 
                 $mysqli->query("
                 CREATE TABLE raitingForTopicId".$topicId['topicId']." (
@@ -191,51 +180,46 @@ class forumM extends model{
             parent::relocate('/f');
     }
 
-    // Проверка файлов для сообщений
-    private function messageFileCheck(){
-        foreach($_FILES['messageFiles'] as $k) {
-            $error = "";
-            $fileName = $k['name'];
-            $fileSize = $k['size'];
-            $fileType = $k['type'];
-            $fileFormat = explode('/',$fileType)[1];
-            $fileExt = explode('.',$fileName);
-            $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
-            $expensions = array("000","jpeg","jpg","png", "plain", "pdf", "octet-stream", "vnd.openxmlformats-officedocument.wordprocessingml.document");
-            if(!array_search($fileFormat, $expensions)) {
-                $error = 'Формат файла "'.$fileFormat.'" (.'.$fileExt.') в файле "'.$fileName.'" не поддерживается'; 
-            }elseif ($fileSize == 0) {
-                $error = 'Файл '.$fileName.' пустой';
-            }elseif($fileSize > 2097152){ // Биты
-                $error = 'Файл '.$fileName.' слишком большой (> 2mb)';  
-            }
-        }
-        if($error == "")
-            return 0;
-        else
-            return $error;
-    }
-
     // Загрузка файлов для сообщений
-    private function messageFileUpload($unit, $topicId, $messageId){// тема, топик, id сообщения
-        $mysqli = openmysqli();
-        $uploaddir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId."/";
-        foreach($_FILES['messageFiles'] as $k) {
-            $fileType = $k['type'];
-            $fileName = $k['name'];
-            $fileFormat = explode('/',$fileType)[1];
-            $unit = $mysqli->real_escape_string($unit);
-            $topicId = $mysqli->real_escape_string($topicId);
-            $messageId = $mysqli->real_escape_string($messageId);
-            $fileExt = explode('.',$fileName);
-            $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
-            $mysqli->query("INSERT INTO filesForTopicId".$topicId." VALUES (NULL, ".$messageId.", '".$fileFormat."', '".$fileExt."');");
-            $fileId = mysqli_fetch_assoc($mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = ".$messageId." ORDER BY fileId DESC LIMIT 1;"));
-            $fileTmp = $k['tmp_name'];
-            $filename = $fileId['fileId'].'.'.$fileExt;
-            move_uploaded_file($fileTmp, $uploaddir.$filename);
+    private function messageFileUpload($unitUrl, $topicId, $messageId){// тема, топик, id сообщения
+        $fileUploadStatus = "Неизвестная ошибка при загрузке файлов (messageFileUpload)";
+        if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > parent::specialDataGet('fileData/messageFiles/maxFilesCount'))){
+            return 'Слишком много файлов, можно загрузить не более '.parent::specialDataGet('fileData/messageFiles/maxFilesCount').'!';
+        }elseif($_FILES['messageFiles']["type"][0] != ""){
+
+            // Группировка данных из $_FILES['messageFiles'] по файлам 
+            $files = array();
+            foreach($_FILES['messageFiles'] as $k => $l) {
+                foreach($l as $i => $v) {
+                    $files[$i][$k] = $v;
+                }
+            }		
+            $_FILES['messageFiles'] = $files;
+
+            $mysqli = openmysqli();
+            foreach($_FILES['messageFiles'] as $k) {
+                $fileFormat = $k['type'];
+                $fileName = $k['name'];
+                $fileFormat = explode('/',$fileFormat)[1];
+                $unitUrl = $mysqli->real_escape_string($unitUrl);
+                $topicId = $mysqli->real_escape_string($topicId);
+                $messageId = $mysqli->real_escape_string($messageId);
+                $fileExt = explode('.',$fileName);
+                $fileExt = strtolower(end($fileExt)); // END требует передачи по ссылке, поэтому в 2 строки!
+                //////ПЕРЕДЕЛАТЬ
+                $mysqli->query("INSERT INTO filesForTopicId".$topicId." VALUES (NULL, ".$messageId.", '".$fileFormat."', '".$fileExt."');");
+                $fileId = mysqli_fetch_assoc($mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = ".$messageId." ORDER BY fileId DESC LIMIT 1;"));
+                ///////////////
+                $fileUploadStatus = parent::fileUpload('messageFiles', $k, $fileId['fileId'], '', $unitUrl."/".$topicId."/");
+                if ($fileUploadStatus == 'OK') {
+                    return "OK";
+                }
+            }
+            $mysqli->close();
+            return $fileUploadStatus;
+        }else{
+            return 'OK_NO_FILE';
         }
-        $mysqli->close();
     }
 
     // Создание сообщения
@@ -244,7 +228,7 @@ class forumM extends model{
         $mysqli = openmysqli();
         $topicId = $mysqli->real_escape_string($topicId);
         $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT idUnit  FROM topic WHERE topicId  = '".$topicId."';"));
-        $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$unitSrc['idUnit']."';"));
+        $unitSrc = mysqli_fetch_assoc($mysqli->query("SELECT unitId, unitUrl FROM unit WHERE unitId = '".$unitSrc['idUnit']."';"));
         $mysqli->close();
         if(!$_POST['text'])
         parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неверное заполнение некоторых полей!');
@@ -252,24 +236,8 @@ class forumM extends model{
             parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Неправильно заполнено поле сообщения!');
         else{
             $fileStatus = 0;
-            if($_FILES['messageFiles']["type"][0] != "" && (count($_FILES['messageFiles']['name']) > 5)){
-                parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Слишком много файлов, можно загрузить не более 5!');
-                exit;
-            }elseif($_FILES['messageFiles']["type"][0] != ""){
-                $files = array();
-                foreach($_FILES['messageFiles'] as $k => $l) {
-                    foreach($l as $i => $v) {
-                        $files[$i][$k] = $v;
-                    }
-                }		
-                $_FILES['messageFiles'] = $files;
-                $fileCheck = $this->messageFileCheck();
-                if($fileCheck != 0){
-                    parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Ошибка загрузки файлов: '.$fileCheck.'!');
-                    exit;
-                }
+            if ($_FILES['messageFiles']["type"][0] != "")
                 $fileStatus = 1;
-            }
             $mysqli = openmysqli(); 
             $ref = $mysqli->real_escape_string(trim($_POST['ref']));
             $messSrc = $mysqli->query("SELECT messageId FROM messagesForTopicId".$topicId." WHERE messageId = ".$ref.";");
@@ -278,12 +246,19 @@ class forumM extends model{
             $date = date("Y-m-d");
             $time = date("H:i:s");
             $text = $mysqli->real_escape_string(str_replace(array("\r\n", "\n", "\r"), '\n', $_POST['text']));
+            // ПОМЕНЯТЬ НА ТРАНЗАКЦИИ
             $mysqli->query("INSERT INTO messagesForTopicId".$topicId." VALUES (NULL, ".$_COOKIE['id'].", '".$text."', ".$ref.", '".$date."', '".$time."', 0, 0, ".$fileStatus.");");
             $messageId = mysqli_fetch_assoc($mysqli->query("SELECT messageId FROM messagesForTopicId".$topicId." WHERE idUser = '".$_COOKIE['id']."' ORDER BY messageId DESC LIMIT 1;"));
-            if($fileStatus == 1){
-                $this->messageFileUpload($unitSrc['unitUrl'], $topicId, $messageId['messageId']);
-            }
+            ///////////////////////////
             $mysqli->close();
+            $fileStatus = $this->messageFileUpload($unitSrc['unitUrl'], $topicId, $messageId['messageId']);
+            if($fileStatus != 'OK' && $fileStatus != 'OK_NO_FILE'){
+                $deleteMessageStatus = $this->deleteMesage($unitSrc['unitId'], $topicId, $messageId['messageId']);
+                if($deleteMessageStatus == 'OK')
+                    parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, $fileStatus);
+                else
+                    parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 3, 'Ошибка отката сообщения сообщения: '.$deleteMessageStatus.'!');
+            }
             parent::relocate('/f/'.$unitSrc['unitUrl'].'/'.$topicId, 2, 'Сообщение добавлено!');
         }
     }else
@@ -500,54 +475,79 @@ class forumM extends model{
         if($message == 1){
             parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'Первое сообщение удалить нельзя!');
         }else{
-            if(chAccess("topic")){
-                $mysqli = openmysqli();
-                $message = $mysqli->real_escape_string($message);
-                $topicId = $mysqli->real_escape_string($topicId);
-                $messageDel = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
-                if(chAccess("controlTopic") || $messageDel['idUser'] == $_COOKIE['id']){
-                    $deletedFiles = mysqli_fetch_assoc($mysqli->query("SELECT files FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
-                    if($deletedFiles['files'] == 1){
-                        $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit."/".$topicId."/";
-                        $deletedFiles = $mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = '".$message."';");
-                        foreach ($deletedFiles as $kay){
-                            $file = glob($dir.$kay['fileId'].".*");
-                            unlink($file[0]);
-                        }
-                        $mysqli->query("DELETE FROM filesForTopicId".$topicId." WHERE idMes = '".$message."';");
-                    }
-                    $mysqli->query("DELETE FROM raitingForTopicId".$topicId." WHERE idMessage = '".$message."';");
-                    $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';");
-                    $mysqli->close();
-                    parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
-                }else
-                    parent::relocate('/f/'.$unit.'/'.$topicId, 3, 'У вас нет прав для удаления сообщения!');
-            }
+
+            $deleteMessageStatus = $this->deleteMesage($unit, $topicId, $message);
+
+            if($deleteMessageStatus == 'OK')
+                parent::relocate('/f/'.$unit.'/'.$topicId, 2, 'Сообщение удалено!');
+            else
+                parent::relocate('/f/'.$unit.'/'.$topicId, 3, $deleteMessageStatus);
         }
+    } 
+
+    // Удаление сообщения
+    private function deleteMesage($unit, $topicId, $message){
+        if(chAccess("topic")){
+            $mysqli = openmysqli();
+            $topicId = $mysqli->real_escape_string($topicId);
+            $messageDel = mysqli_fetch_assoc($mysqli->query("SELECT idUser FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
+            if(chAccess("controlTopic") || $messageDel['idUser'] == $_COOKIE['id']){
+                $deletedFiles = mysqli_fetch_assoc($mysqli->query("SELECT files FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';"));
+                if($deletedFiles['files'] == 1){
+                    $dir = parent::specialDataGet('FILE_SERVER').parent::specialDataGet('fileData/messageFiles/folder').$unit."/".$topicId."/";
+                    $deletedFiles = $mysqli->query("SELECT fileId FROM filesForTopicId".$topicId." WHERE idMessage = '".$message."';");
+                    foreach ($deletedFiles as $kay){
+                        $file = glob($dir.$kay['fileId'].".*");
+                        if(isset($file[0]))
+                            unlink($file[0]);
+                    }
+                    $mysqli->query("DELETE FROM filesForTopicId".$topicId." WHERE idMes = '".$message."';");
+                }
+                $mysqli->query("DELETE FROM raitingForTopicId".$topicId." WHERE idMessage = '".$message."';");
+                $mysqli->query("DELETE FROM messagesForTopicId".$topicId." WHERE messageId  = '".$message."';");
+                $mysqli->close();
+                return 'OK';
+            }else
+                return 'У вас нет прав для удаления сообщения!';
+        }
+        return 'У вас нет прав для удаления сообщения!';
     } 
 
     // Удаление топика
     public function deleteTopicAction($id){
-        if(chAccess("topic")){
             $mysqli = openmysqli();
             $id = $mysqli->real_escape_string($id);
             $deletedTopic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE topicId  = '".$id."';"));
             $unit = mysqli_fetch_assoc($mysqli->query("SELECT unitUrl FROM unit WHERE unitId = '".$deletedTopic['idUnit']."';"));
+            $mysqli->close();
+            $deleteTopicStatus = $this->deleteTopic($id, $unit['unitUrl']);
+            if($deleteTopicStatus == 'OK')
+                parent::relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
+            else
+                parent::relocate('/f/'.$unit['unitUrl'], 3, $deleteTopicStatus);
+    }
+
+    // Удаление топика
+    private function deleteTopic($id, $unitUrl){
+        if(chAccess("topic")){
+            $mysqli = openmysqli();
+            $id = $mysqli->real_escape_string($id);
+            $deletedTopic = mysqli_fetch_assoc($mysqli->query("SELECT * FROM topic WHERE topicId  = '".$id."';"));
             if(chAccess("controlTopic") || $deletedTopic['idUserCreator'] == $_COOKIE['id']){
-                $dir = $_SERVER['DOCUMENT_ROOT']."/files/forum/".$unit['unitUrl']."/".$id;
+                $dir = parent::specialDataGet('FILE_SERVER').parent::specialDataGet('fileData/messageFiles/folder').$unitUrl."/".$id;
                 $this->deleteFolder($dir);
-                $mysqli->query("DROP TABLE filesForTopicId".$id.";");
-                $mysqli->query("DROP TABLE messagesForTopicId".$id.";");
-                $mysqli->query("DROP TABLE raitingForTopicId".$id.";");
+                $mysqli->query("DROP TABLE IF EXISTS filesForTopicId".$id.";");
+                $mysqli->query("DROP TABLE IF EXISTS messagesForTopicId".$id.";");
+                $mysqli->query("DROP TABLE IF EXISTS raitingForTopicId".$id.";");
                 $mysqli->query("DELETE FROM topic WHERE topicId  = '".$id."';");
                 $mysqli->close();
-                parent::relocate('/f/'.$unit['unitUrl'], 2, 'Удалён топик '.$deletedTopic['topicName'].'!');
+                return 'OK';
             }else{
                 $mysqli->close();
-                parent::relocate('/f/'.$unit['unitUrl'], 3, 'У вас нет прав на удаление топика '.$deletedTopic['topicName'].'!');
+                return 'У вас нет прав на удаление топика '.$deletedTopic['topicName'].'!';
             }
         }else
-            parent::relocate('/f');
+            return 'Ошибка доступа!';
     }
 
     // Удаление главной темы

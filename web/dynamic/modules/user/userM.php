@@ -138,14 +138,17 @@ class userM extends model{
     public function updatePhotoAction(){
         if(chAccess("сhInProfile")){
             if (!empty($_FILES)) {
-                parent::fileUpload('avatar', $_FILES, $_COOKIE['id'], 'png');
-                $mysqli = openmysqli();
-                $mysqli->query("UPDATE users SET photo = 0 WHERE login = '".decode($_COOKIE['login'])."';");
-                $mysqli->close();
-                setcookie("photo", $_COOKIE['id'], time()+(3600), "/");
-                parent::relocate('/u', 2, "Файл загружен!");
+                $fileUploadStatus = parent::fileUpload('avatar', $_FILES, $_COOKIE['id'], 'png');
+                if ($fileUploadStatus == 'OK') {
+                    $mysqli = openmysqli();
+                    $mysqli->query("UPDATE users SET photo = 0 WHERE login = '" . decode($_COOKIE['login']) . "';");
+                    $mysqli->close();
+                    setcookie("photo", $_COOKIE['id'], time() + (3600), "/");
+                    parent::relocate('/u', 2, "Файл загружен!");
+                }else
+                    parent::relocate('/u', 3, $fileUploadStatus);
             }else
-                parent::relocate('/u');
+                parent::relocate('/u', 3, 'Нет файлов!');
         }else
             parent::relocate('/');
     }

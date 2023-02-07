@@ -18,7 +18,7 @@
       <ul class="list-group">
                     
       <?php if(array_key_exists($kay['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['messageId']] as $kay2):?>
-        <li class="list-group-item text-bg-dark"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
+        <li class="list-group-item text-bg-dark"><a target="_blank" href="<?php echo view::specialDataGet('fileData/messageFiles/folder').$data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
       <?php endforeach; endif;?>
       </ul>
       <script type="application/javascript">
@@ -182,7 +182,7 @@
                       <?php if($kay['type'] == "jpeg" || $kay['type'] == "jpg" || $kay['type'] == "png"):?>
                     <div class="col-sm-6">
                     <div class="card">
-                      <img src="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['fileId'].".".$kay['ext']?>" class="card-img-top">
+                      <img src="<?php echo view::specialDataGet('fileData/messageFiles/folder').$data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['fileId'].".".$kay['ext']?>" class="card-img-top">
                     </div>
                     </div>
                       <?php endif;?>
@@ -191,7 +191,7 @@
                     <ul class="list-group">
                     
                     <?php if(array_key_exists($data['messages']['topMessage']['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$data['messages']['topMessage']['messageId']] as $kay):?>
-                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['fileId'].".".$kay['ext']?>"><?php echo "Файл ".$kay['ext']?></a></li>
+                      <li class="list-group-item"><a target="_blank" href="<?php echo view::specialDataGet('fileData/messageFiles/folder').$data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay['fileId'].".".$kay['ext']?>"><?php echo "Файл ".$kay['ext']?></a></li>
                     <?php endforeach; endif;?>
                     </ul>
 
@@ -277,7 +277,7 @@
                       <?php if($kay2['type'] == "jpeg" || $kay2['type'] == "jpg" || $kay2['type'] == "png"):?>
                     <div class="col-sm-6">
                     <div class="card">
-                      <img src="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>" class="card-img-top" style="max-height: 500px;">
+                      <img src="<?php echo view::specialDataGet('fileData/messageFiles/folder').$data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>" class="card-img-top" style="max-height: 500px;">
                     </div>
                     </div>
                       <?php endif;?>
@@ -286,7 +286,7 @@
                     <ul class="list-group">
                     
                     <?php if(array_key_exists($kay['messageId'], $data['messages']['files'])): foreach ($data['messages']['files'][$kay['messageId']] as $kay2):?>
-                      <li class="list-group-item"><a target="_blank" href="/files/forum/<?php echo $data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
+                      <li class="list-group-item"><a target="_blank" href="<?php echo view::specialDataGet('fileData/messageFiles/folder').$data["unitSrc"]?>/<?php echo $data["topicData"]["topicId"]?>/<?php echo $kay2['fileId'].".".$kay2['ext']?>"><?php echo "Файл ".$kay2['ext']?></a></li>
                     <?php endforeach; endif;?>
                     </ul>
 
@@ -334,7 +334,18 @@
                   <div class="mb-3">
                     <label class="form-label" for="inputGroupFile01">Файлы к сообщению:</label>
                     <input type="file" name="messageFiles[]" class="form-control" id="inputGroupFile01" multiple>
-                    <div id="passwordHelpBlock" class="form-text">До 5 файлов включительно. Каждый файл не больше 2мб! Разрешено большенство типов.</div>
+                    <div id="passwordHelpBlock" class="form-text">До <?php echo view::specialDataGet('fileData/messageFiles/maxFilesCount')?> файлов включительно. Каждый файл не больше <?php echo view::specialDataGet('fileData/messageFiles/maxSize')/1024/1024 ?>мб!</div>
+                  <a class="text-primary" data-bs-toggle="collapse" href="#collapseExample2" aria-controls="collapseExample2">Более подробно про загрузку</a>
+                  <div class="collapse" id="collapseExample2">
+                    <div class="card card-body">
+                      Разрешённые типы файлов: <?php echo implode(', ', view::specialDataGet('fileData/messageFiles/extensions')) ?>
+                      <?php if(view::specialDataGet('mimeTypeCheck') == true):?>
+                        <hr>
+                        На сайте присутствует дополнительная проверка на mime-тип файла! Она проверяет, в каком расширении он был создан. Если вы изменяли вручную расширение, и оно не подходит под список разрешённых mime-типов - файл не будет загружен!
+                        <br>Список разрешённых mime-типов для аватарки: <?php echo implode(', ', view::specialDataGet('fileData/messageFiles/mimeExtensions')) ?>
+                      <?php endif;?>
+                    </div>
+                  </div>
                   </div>
                   <p class="lead"><b>Как будет выглядеть текст в сообщении:</b></p>
                   <div v-html="compiledMarkdown" class="compiledMarkdown text-left" v-show="!focus" @click="setFocus()"></div>

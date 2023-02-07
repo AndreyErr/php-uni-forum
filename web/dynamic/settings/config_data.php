@@ -28,12 +28,15 @@ return[
             'extensions' => array('png', 'jpeg', 'jpg'), // тип (Для проверки типа ".something")
             'mimeExtensions' => array('png', 'jpeg', 'jpg'), // mime-тип (Для проверки meme-типа (сигнатуры). Список: https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_MIME-%D1%82%D0%B8%D0%BF%D0%BE%D0%B2)
             'maxSize' => 2097152, // В байтах / 2мб
+            'maxFilesCount' => 1, // Сколько разрешено загружать файлов одновременно
         ],
 
-        'forumMessage' => [
-            // 'folder' => $_SERVER['DOCUMENT_ROOT'].'',
-            // 'extensions' => array("jpeg","jpg","png", "plain", "pdf", "octet-stream", "vnd.openxmlformats-officedocument.wordprocessingml.document"),
-            // 'maxSize' => 2097152,
+        'messageFiles' => [
+            'folder' => '/files/forum/',
+            'extensions' => array("jpeg","jpg","png", "plain", "pdf", "octet-stream", "word"),
+            'mimeExtensions' => array("jpeg","jpg","png", "plain", "pdf", "octet-stream", "vnd.openxmlformats-officedocument.wordprocessingml.document"),
+            'maxSize' => 2097152,
+            'maxFilesCount' => 5,
         ],
     ],
 ];
