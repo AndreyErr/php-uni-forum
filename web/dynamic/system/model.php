@@ -1,7 +1,6 @@
 <?php
 
 namespace system;
-use view;
 
 class model{
 
@@ -16,33 +15,31 @@ class model{
                     $secData = $secData[$value];
                 else
                     self::relocate('/', -1, 'Не найдена настойка ' . $get . ' в файле "config_data"');
-            return $secData;
-        }else
-            return $secData;
+        }
+        return $secData;
     }
 
     // Взятие главных тем (исп в 2 моделях)
-    protected function selectUnits($quantity = -1){ // Число нужных записей
+    protected function selectUnits($quantity = 100){ // Число нужных записей
         $mysqli = openmysqli();
-        if($quantity == -1)
-            $resultArr = $mysqli->query("SELECT * FROM unit ORDER BY unitId DESC;");
-        else
-            $resultArr = $mysqli->query("SELECT * FROM unit ORDER BY unitId DESC LIMIT ".$quantity.";");
+        $resultArr = $mysqli->query("SELECT * FROM unit ORDER BY unitId DESC LIMIT ".$quantity.";");
         $mysqli->close();
         return $resultArr;
     }
 
     // Загрузка файлов
-    // Аргументы: откуда пришёл запрос (назание поля загрузки файлов), объект файл, новое имя, новое расширение, нестандартный путь (в дополнение к основному из файла настроек)
+    // Аргументы: откуда пришёл запрос (назание поля загрузки файлов), объект файл, новое имя, новое расширение,
+    // нестандартный путь (в дополнение к основному из файла настроек)
     protected function fileUpload($tupe, $file, $newName, $setExt = '', $addonSrc = ''){
         $secData = $this->specialDataGet();
         self::checkConfigData('file' ,$tupe);
 
         $error = "";
+        // Название поля в форме и в настройках должны совпадать
         if (!isset($file[$tupe])) {
             // Дополнительная проверка для множества файлов 
             // (при отправле множества файлов через foreach, тип файлов может не передаваться в них самих (в корню)
-            // поэтому пробуем подставить тип в корень)
+            //  поэтому пробуем подставить тип в корень)
             $file = [$tupe => $file];
             if (!isset($file[$tupe]))
                 return "Не совпадает тип в html и тип в настойках функции загрузки (тип " . $tupe . " не найден)!";

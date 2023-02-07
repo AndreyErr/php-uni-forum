@@ -18,10 +18,10 @@ class userC extends controller{
         if($action != NULL){
             $this->model->$action();
 
-        }else if(($this->path[1] == "reg" && !chAccess("reg")) || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
+        }elseif(($this->path[1] == "reg" && !chAccess("reg")) || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
             $this->regForming();
             
-        }else if($this->path[1] != "" ){
+        }elseif($this->path[1] != "" ){
             $this->userPageForming($page, $this->path[1]);
             
         }else{
