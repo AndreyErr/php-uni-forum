@@ -7,7 +7,7 @@ require_once 'lib/formCheck.php'; // Проверка форм
 class forumM extends model{
     
     // Взятие главных тем
-    public function selectUnits($quantity = -1){
+    public function selectUnits($quantity = 100){
         return parent::selectUnits($quantity);
     }
 
