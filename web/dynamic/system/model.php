@@ -118,7 +118,7 @@ class model{
 
     // Кастомная переадресация
     public static function relocate($page, $status = -2, $message = ''){ // Путь, тип сообщения (не обяз), сообщение (не обяз)
-        if($status != -2)
+        if($status != -2 && $message != '')
             $_SESSION['message'] = [$status, $message]; // Сессия с Собщением
         header('Location: '.$page);
         exit;

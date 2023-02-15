@@ -10,7 +10,7 @@ class router{
     }
 
     // Выбор контроллера (по первому параметру ссылки)
-    public function router($path){
+    private function router($path){
         $page = $path[0] = $this->selectControllerByPage($path[0]);
         if(!$this->chAccess($page)){
             header('Location: /err/404.html');
