@@ -10,7 +10,7 @@ class router{
     }
 
     // Выбор контроллера (по первому параметру ссылки)
-    public function router($path){
+    private function router($path){
         $page = $path[0] = $this->selectControllerByPage($path[0]);
         if(!$this->chAccess($page)){
             header('Location: /err/404.html');
@@ -18,12 +18,11 @@ class router{
         }
         $controller = $this->checkController($path);
         $model = $this->checkModel($path);
-        if($controller != "-1" && $model != "-1"){
+        if($controller != "NOT_FOUND" && $model != "NOT_FOUND"){
             $model = $path[0].'M';
             $action = $this->checkAction($path);
             new $controller($page, $action);
-        }    
-        else
+        }else
             header('Location: /err/404.html');
     }
 
@@ -40,28 +39,32 @@ class router{
 
     // Проверка существования контроллера
     private function checkController($path){
-        $controllerPath = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path[0].'/'.$path[0].'C.php'; // Задание пути к контроллеру
-        $controllerClass = "controllers\\".$path[0].'C'; // Задание пути к классу контроллера
+        // Задание пути к контроллеру
+        $controllerPath = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path[0].'/'.$path[0].'C.php';
+        // Задание пути к классу контроллера
+        $controllerClass = "controllers\\".$path[0].'C';
         if(file_exists($controllerPath)){
             require_once $controllerPath;
             if(class_exists($controllerClass))
                 return $controllerClass;
         }
-        return -1;
+        return "NOT_FOUND";
     }
 
     // Проверка существования модели
     private function checkModel($path){
         if ($path[0] == "") 
             $path[0] = "main";
-        $modelPath = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path[0].'/'.$path[0].'M.php'; // Задание пути к модели
-        $modelClass = $path[0].'M'; // Задание пути к классу модели
+        // Задание пути к модели
+        $modelPath = $_SERVER['DOCUMENT_ROOT'].'/modules/'.$path[0].'/'.$path[0].'M.php';
+        // Задание пути к классу модели
+        $modelClass = $path[0].'M';
         if(file_exists($modelPath)){
             require_once $modelPath;
             if(class_exists($modelClass))
                 return $modelClass;
         }
-        return -1;
+        return "NOT_FOUND";
     }
 
     // Проверка существования действия
@@ -76,7 +79,8 @@ class router{
 
     // Проверка на доступ к модулю
     private function chAccess($module){
-        $access = (require 'settings/access.php')['modules']; // Массив доступа к модулям
+        // Массив доступа к модулям
+        $access = (require 'settings/access.php')['modules'];
         if(array_key_exists($module, $access))
             if(!array_key_exists('id', $_COOKIE) || array_search(decode($_COOKIE['status']), $access[$module]) === false)
                 return false;

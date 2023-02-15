@@ -13,8 +13,10 @@ class controller{
         $path = explode('/', trim($_SERVER['REDIRECT_URL'], '/'));
         if ($path[0] == "")
             $path[0] = $page = "main";
-        require_once($_SERVER['DOCUMENT_ROOT'].'/modules/'.$page.'/'.$page.'M.php'); // Задание пути к модели
-        require_once($_SERVER['DOCUMENT_ROOT'].'/system/view.php'); // Задание пути к представлению
+        // Задание пути к модели
+        require_once($_SERVER['DOCUMENT_ROOT'].'/modules/'.$page.'/'.$page.'M.php');
+        // Задание пути к представлению
+        require_once($_SERVER['DOCUMENT_ROOT'].'/system/view.php');
         $model = $page.'M';
         $view = 'view';
         $this->path = $path;

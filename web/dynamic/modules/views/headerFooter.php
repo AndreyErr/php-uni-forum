@@ -28,6 +28,9 @@
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="/f">Форум</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="https://github.com/AndreyErr/php-uni-forum" target="_blank">GitHub</a>
+            </li>
           </ul>
         </div>
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="/f/find" method="POST">
@@ -49,7 +52,7 @@
             </li>
             <li class="nav-item navbar-brand">
               <a href="/u" class="d-block">
-                <img src="/files/img/avatar/<?php echo $_COOKIE['photo']; ?>.png" alt="X" width="32" height="32" class="img-responsive rounded-circle mx-auto img-top">
+                <img src="<?php echo view::specialDataGet('fileData/avatar/folder').$_COOKIE['photo']; ?>.png" alt="X" width="32" height="32" class="img-responsive rounded-circle mx-auto img-top">
               </a>
             </li>
           </ul>
@@ -76,8 +79,6 @@
       </ul>
       <p class="text-center text-muted">&copy; IT forum, 2022</p>
     </footer>
-    <script src="/src/js/lib/bootstrap.min.js"></script>
-    <script src="/src/js/lib/bootstrap.bundle.min.js"></script>
     <?php if(array_key_exists('jsSrc', $data)){
       foreach($data['jsSrc'] as &$value){
       echo '<script src="'.$value.'"></script>';
@@ -88,5 +89,7 @@
       echo '<script src="/src/js/'.$value.'.js"></script>';
     }
     }?>
+    <script src="/src/js/lib/bootstrap.min.js"></script>
+    <script src="/src/js/lib/bootstrap.bundle.min.js"></script>
   </body>
 </html>

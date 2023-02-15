@@ -30,6 +30,13 @@ services:
       MYSQL_PASSWORD: qwerty
     volumes: 
         - ./server-config/init:/docker-entrypoint-initdb.d
+
+  mailhog: 
+    image: mailhog/mailhog:latest 
+    restart: always 
+    ports: 
+      - 1025:1025 
+      - 8025:8025
   
   phpmyadmin:
     image: phpmyadmin

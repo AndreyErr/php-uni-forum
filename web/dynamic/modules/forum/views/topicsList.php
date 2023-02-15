@@ -106,7 +106,26 @@
                 <div class="mb-3">
                   <label class="form-label" for="inputGroupFile01">Файлы к сообщению:</label>
                   <input type="file" name="messageFiles[]" class="form-control" id="inputGroupFile01" multiple>
-                  <div id="passwordHelpBlock" class="form-text">До 5 файлов включительно. Каждый файл не больше 2мб! Разрешено большенство типов.</div>
+
+
+
+                  
+                  <div id="passwordHelpBlock" class="form-text">До <?php echo view::specialDataGet('fileData/messageFiles/maxFilesCount')?> файлов включительно. Каждый файл не больше <?php echo view::specialDataGet('fileData/messageFiles/maxSize')/1024/1024 ?>мб!</div>
+                  <a class="text-primary" data-bs-toggle="collapse" href="#collapseExample2" aria-controls="collapseExample2">Более подробно про загрузку</a>
+                  <div class="collapse" id="collapseExample2">
+                    <div class="card card-body">
+                      Разрешённые типы файлов: <?php echo implode(', ', view::specialDataGet('fileData/messageFiles/extensions')) ?>
+                      <?php if(view::specialDataGet('mimeTypeCheck') == true):?>
+                        <hr>
+                        На сайте присутствует дополнительная проверка на mime-тип файла! Она проверяет, в каком расширении он был создан. Если вы изменяли вручную расширение, и оно не подходит под список разрешённых mime-типов - файл не будет загружен!
+                        <br>Список разрешённых mime-типов для аватарки: <?php echo implode(', ', view::specialDataGet('fileData/messageFiles/mimeExtensions')) ?>
+                      <?php endif;?>
+                    </div>
+                  </div>
+
+
+                
+                
                 </div>
                 <p class="lead">Как будет выглядеть текст в сообщении:</p>
                 <div v-html="compiledMarkdown" class="compiledMarkdown text-left" v-show="!focus" @click="setFocus()"></div>

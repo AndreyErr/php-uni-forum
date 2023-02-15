@@ -18,10 +18,10 @@ class userC extends controller{
         if($action != NULL){
             $this->model->$action();
 
-        }else if(($this->path[1] == "reg" && !chAccess("reg")) || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
+        }elseif(($this->path[1] == "reg" && !chAccess("reg")) || ($this->path[1] == "" && !array_key_exists('login', $_COOKIE))){
             $this->regForming();
             
-        }else if($this->path[1] != "" ){
+        }elseif($this->path[1] != "" ){
             $this->userPageForming($page, $this->path[1]);
             
         }else{
@@ -73,7 +73,11 @@ class userC extends controller{
             "userstatusdig" => $statusdig,
             "userstatus" => $status,
             "bloclstat" => $userBanStat,
-            "decodedMyLogin" => $myLogin
+            "decodedMyLogin" => $myLogin,
+            "fileUploadInfo" => (require 'settings/config_data.php')['fileData']['avatar'],
+            "fileUploadCheck" => ((require 'settings/config_data.php')['mimeTypeCheck'] 
+            && isset((require 'settings/config_data.php')['fileData']['avatar']['mimeTypeCheck'])
+            && (require 'settings/config_data.php')['fileData']['avatar']['mimeTypeCheck'])
         );
 
         if($allAboutActualUser['allAboutUser']['login'] == "")

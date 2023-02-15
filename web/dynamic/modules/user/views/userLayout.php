@@ -3,8 +3,9 @@
     <div class="col-md-3">
       <div class="profile-sidebar">
         <div class="profile-userpic">
-          <img src="/files/img/avatar/<?php // Отображение фото
+          <img src="<?php // Отображение фото
 
+            echo view::specialDataGet('fileData/avatar/folder');
             if($data['userstatusdig'] == -1) echo "nonUser";
             else if($data['user']['photo'] == 0) echo $data['user']['userId'];
             else echo $data['user']['photo'];
@@ -136,7 +137,22 @@
                         <label for="name">Новая авотарка: </label>
                         <div class="form-group">
                           <input type="file" class="form-control" id="customFile" name="avatar" required>
-                          <div id="passwordHelpBlock" class="form-text">Тип: png, jpg, jpeg<br>Размер: не более 2 мб<br>Лучше аватарку загружать в виде квадрата т.к. она именно так будет отображаться на сайте.</div>                           
+                          <div id="passwordHelpBlock" class="form-text">
+                                Тип: <?php echo implode(', ', $data['fileUploadInfo']['extensions']) ?>
+                            <br>Размер: не более <?php echo $data['fileUploadInfo']["maxSize"]/1024/1024 ?> мб
+                            <br><a class="text-primary" data-bs-toggle="collapse" href="#collapseExample2" aria-controls="collapseExample2">Более подробно про загрузку</a>
+                            <div class="collapse" id="collapseExample2">
+                              <div class="card card-body">
+                                Рекомендуется загружать аватарку в виде квадрата т.к. она именно так она будет отображаться на сайте.
+                                <?php if($data['fileUploadCheck'] == true):?>
+                                  <hr>
+                                  На сайте присутствует дополнительная проверка на mime-тип файла! Она проверяет, в каком расширении он был создан. Если вы изменяли вручную расширение, и оно не подходит под список разрешённых mime-типов - файл не будет загружен!
+                                  <br>Список разрешённых mime-типов для аватарки: <?php echo implode(', ', $data['fileUploadInfo']['mimeExtensions']) ?>
+                                <?php endif;?>
+                              </div>
+                            </div>
+                            <br><br>
+                          </div>                           
                         </div>
                         <button type="submit" class="btn btn-primary mb-3">Сохранить изменения</button>
                       </fieldset>
